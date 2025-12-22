@@ -87,7 +87,7 @@ export default function Navbar() {
                   }`}
                 style={{ fontFamily: 'Lato, sans-serif' }}
               >
-                ABOUT
+                ABOUUUT
               </Link>
             </div>
 
