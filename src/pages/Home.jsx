@@ -125,9 +125,9 @@ export default function Home() {
                   className="w-full h-full object-cover rounded-lg"
                 />
 
-                {/* White Text Overlay on Right */}
-                <div className="absolute top-4 right-4 bottom-4 left-4 sm:left-auto sm:w-[400px] lg:w-[450px] bg-[#E3E3E3] backdrop-blur-sm p-4 sm:p-6 lg:p-8 shadow-lg flex flex-col justify-center rounded-lg sm:rounded-lg">
-                  <div className="space-y-4 sm:space-y-6">
+                {/* White Text Overlay on Right - Desktop */}
+                <div className="hidden sm:flex absolute top-4 right-4 bottom-4 w-[400px] lg:w-[450px] bg-[#E3E3E3] backdrop-blur-sm p-6 lg:p-8 shadow-lg flex-col justify-center rounded-lg">
+                  <div className="space-y-4 lg:space-y-6">
                     {/* MEDICAL-FIRST APPROACH */}
                     <div>
                       <h3 className="text-[16px] font-bold text-[#181818] mb-2 uppercase tracking-wide" style={{ fontFamily: 'Lato' }}>
@@ -177,6 +177,61 @@ export default function Home() {
                         our clients report significant improvements in health and vitality after just one program
                       </p>
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* White Text Box - Mobile (below image) */}
+              <div className="sm:hidden w-full bg-[#E3E3E3] p-6 shadow-lg rounded-lg mt-6">
+                <div className="space-y-4">
+                  {/* MEDICAL-FIRST APPROACH */}
+                  <div>
+                    <h3 className="text-[16px] font-bold text-[#181818] mb-2 uppercase tracking-wide" style={{ fontFamily: 'Lato' }}>
+                      MEDICAL-FIRST APPROACH
+                    </h3>
+                    <p className="text-[16px] text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato' }}>
+                      all retreats are designed and supervised by Ayurvedic doctors
+                    </p>
+                  </div>
+
+                  {/* PERSONALISATION */}
+                  <div>
+                    <h3 className="text-[16px] font-bold text-[#181818] mb-2 uppercase tracking-wide" style={{ fontFamily: 'Lato' }}>
+                      PERSONALISATION
+                    </h3>
+                    <p className="text-[16px] text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato' }}>
+                      each program is created according to the client&apos;s health condition
+                    </p>
+                  </div>
+
+                  {/* VERIFIED CLINICS & THERAPISTS */}
+                  <div>
+                    <h3 className="text-[16px] font-bold text-[#181818] mb-2 uppercase tracking-wide" style={{ fontFamily: 'Lato' }}>
+                      VERIFIED CLINICS & THERAPISTS
+                    </h3>
+                    <p className="text-[16px] text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato' }}>
+                      we collaborate only with accredited facilities with the highest level of expertise
+                    </p>
+                  </div>
+
+                  {/* END-TO-END CARE */}
+                  <div>
+                    <h3 className="text-[16px] font-bold text-[#181818] mb-2 uppercase tracking-wide" style={{ fontFamily: 'Lato' }}>
+                      END-TO-END CARE
+                    </h3>
+                    <p className="text-[16px] text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato' }}>
+                      from diagnostics to post-retreat guidance
+                    </p>
+                  </div>
+
+                  {/* HIGH SUCCESS RATE */}
+                  <div>
+                    <h3 className="text-[16px] font-bold text-[#181818] mb-2 uppercase tracking-wide" style={{ fontFamily: 'Lato' }}>
+                      HIGH SUCCESS RATE
+                    </h3>
+                    <p className="text-sm text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato' }}>
+                      our clients report significant improvements in health and vitality after just one program
+                    </p>
                   </div>
                 </div>
               </div>
@@ -291,7 +346,7 @@ export default function Home() {
                 </div>
               </div>
 
-           
+
 
               {/* Discover All Retreats Button */}
               <div className="text-center mt-24 sm:mt-32">
@@ -781,20 +836,20 @@ export default function Home() {
               <div className="lg:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <p className="text-base sm:text-lg text-[#181818] mb-4 leading-relaxed" style={{ fontFamily: 'Lato' }}>
-                  Healing is a gentle return to your natural balance.
+                    Healing is a gentle return to your natural balance.
                   </p>
                   <p className="text-base sm:text-lg text-[#181818] mb-4 leading-relaxed" style={{ fontFamily: 'Lato' }}>
-                  Beginning with stillness, awareness, and personalised care. At Raya LongLife, our Ayurvedic Healing Retreats combine traditional wisdom with tailored treatments and restorative rituals that support body, mind, and nervous system. We guide you with personal care from the first consultation to your return home. Healing is a journey back to yourself.
+                    Beginning with stillness, awareness, and personalised care. At Raya LongLife, our Ayurvedic Healing Retreats combine traditional wisdom with tailored treatments and restorative rituals that support body, mind, and nervous system. We guide you with personal care from the first consultation to your return home. Healing is a journey back to yourself.
                   </p>
                 </div>
                 <div>
                   <p className="text-base sm:text-lg text-[#181818] mb-4 leading-relaxed" style={{ fontFamily: 'Lato' }}>
-                  Wellbeing begins with understanding your body’s unique needs. At Raya LongLife, we take a personalised, deeply attentive approach to every retreat. Through Ayurvedic diagnostics, mindful therapies, nourishing routines, and compassionate guidance, we help you create space for renewal and long-term balance. Your journey is supported at every step — with clarity, safety, and genuine care. True wellbeing unfolds when you return to yourself.
+                    Wellbeing begins with understanding your body’s unique needs. At Raya LongLife, we take a personalised, deeply attentive approach to every retreat. Through Ayurvedic diagnostics, mindful therapies, nourishing routines, and compassionate guidance, we help you create space for renewal and long-term balance. Your journey is supported at every step — with clarity, safety, and genuine care. True wellbeing unfolds when you return to yourself.
                   </p>
                   {/* <p className="text-base sm:text-lg text-[#181818] mb-6 leading-relaxed" style={{ fontFamily: 'Lato' }}>
                     Discover how our holistic approach can transform your health and restore balance to your body, mind, and spirit.
                   </p> */}
-                  
+
                 </div>
               </div>
             </div>
