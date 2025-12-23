@@ -87,7 +87,7 @@ export default function Navbar() {
                   }`}
                 style={{ fontFamily: 'Lato, sans-serif' }}
               >
-                ABOUUUT
+                ABOUT
               </Link>
             </div>
 
@@ -136,7 +136,18 @@ export default function Navbar() {
             </div>
 
             {/* Column 6 - Spacing */}
-            <div></div>
+            <div> 
+              <Link
+                to="/"
+                className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white whitespace-nowrap uppercase text-sm ${isActive("/")
+                  ? "opacity-90"
+                  : "hover:opacity-80"
+                  }`}
+                style={{ fontFamily: 'Lato, sans-serif' }}
+              >
+                Vouchers
+              </Link>
+            </div>
 
             {/* Column 7 - BOOKING & CONTACT */}
             <div className="flex items-center justify-center">

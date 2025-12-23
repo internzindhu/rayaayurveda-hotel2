@@ -10,14 +10,39 @@ export default function Home() {
   const [blur, setBlur] = useState(false);
   const [videoEnded, setVideoEnded] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+  const [visibleSections, setVisibleSections] = useState(new Set());
+  const [imageVisible, setImageVisible] = useState(false);
+  const [overlayVisible, setOverlayVisible] = useState(false);
+  const [processImageVisible, setProcessImageVisible] = useState(false);
+  const [processOverlayVisible, setProcessOverlayVisible] = useState(false);
+  const [ayurvedaImageVisible, setAyurvedaImageVisible] = useState(false);
+  const [ayurvedaOverlayVisible, setAyurvedaOverlayVisible] = useState(false);
+  const [benefitsImageVisible, setBenefitsImageVisible] = useState(false);
+  const [benefitsOverlayVisible, setBenefitsOverlayVisible] = useState(false);
+  const [karinImageVisible, setKarinImageVisible] = useState(false);
+  const [karinOverlayVisible, setKarinOverlayVisible] = useState(false);
 
   const videoRef = useRef(null);
+  const sectionRefs = useRef([]);
+  const imageRef = useRef(null);
+  const overlayRef = useRef(null);
+  const processImageRef = useRef(null);
+  const processOverlayRef = useRef(null);
+  const ayurvedaImageRef = useRef(null);
+  const ayurvedaOverlayRef = useRef(null);
+  const benefitsImageRef = useRef(null);
+  const benefitsOverlayRef = useRef(null);
+  const karinImageRef = useRef(null);
+  const karinOverlayRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      setScrollY(currentScrollY);
       // Only set blur from scroll if video hasn't ended yet
       if (!videoEnded) {
-        setBlur(window.scrollY > window.innerHeight * 0.6);
+        setBlur(currentScrollY > window.innerHeight * 0.6);
       }
     };
     const handleVideoEnd = () => {
@@ -35,6 +60,106 @@ export default function Home() {
     };
   }, [videoEnded]);
 
+  // Intersection Observer for scroll reveal animations (MacBook-style)
+  useEffect(() => {
+    const observers = [];
+
+    sectionRefs.current.forEach((ref, index) => {
+      if (!ref) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              // Add a slight delay for staggered effect
+              setTimeout(() => {
+                setVisibleSections((prev) => new Set([...prev, index]));
+              }, index * 50); // Stagger by 50ms per section
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        {
+          threshold: 0.15,
+          rootMargin: '0px 0px -80px 0px',
+        }
+      );
+
+      observer.observe(ref);
+      observers.push(observer);
+    });
+
+    return () => {
+      observers.forEach((observer) => observer.disconnect());
+    };
+  }, []);
+
+  // Intersection Observer for image and overlay side animations
+  useEffect(() => {
+    const createObserver = (ref, setVisible, delay = 0) => {
+      if (!ref.current) return null;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setTimeout(() => setVisible(true), delay);
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        {
+          threshold: 0.2,
+          rootMargin: '0px 0px -100px 0px',
+        }
+      );
+
+      observer.observe(ref.current);
+      return observer;
+    };
+
+    const observers = [];
+
+    // Medical-first section
+    const imgObs1 = createObserver(imageRef, setImageVisible, 100);
+    const overlayObs1 = createObserver(overlayRef, setOverlayVisible, 300);
+    if (imgObs1) observers.push(imgObs1);
+    if (overlayObs1) observers.push(overlayObs1);
+
+    // Our process section
+    const processImgObs = createObserver(processImageRef, setProcessImageVisible, 100);
+    const processOverlayObs = createObserver(processOverlayRef, setProcessOverlayVisible, 300);
+    if (processImgObs) observers.push(processImgObs);
+    if (processOverlayObs) observers.push(processOverlayObs);
+
+    // Ayurveda section
+    const ayurvedaImgObs = createObserver(ayurvedaImageRef, setAyurvedaImageVisible, 100);
+    const ayurvedaOverlayObs = createObserver(ayurvedaOverlayRef, setAyurvedaOverlayVisible, 300);
+    if (ayurvedaImgObs) observers.push(ayurvedaImgObs);
+    if (ayurvedaOverlayObs) observers.push(ayurvedaOverlayObs);
+
+    // Benefits section
+    const benefitsImgObs = createObserver(benefitsImageRef, setBenefitsImageVisible, 100);
+    const benefitsOverlayObs = createObserver(benefitsOverlayRef, setBenefitsOverlayVisible, 300);
+    if (benefitsImgObs) observers.push(benefitsImgObs);
+    if (benefitsOverlayObs) observers.push(benefitsOverlayObs);
+
+    // Karin section
+    const karinImgObs = createObserver(karinImageRef, setKarinImageVisible, 100);
+    const karinOverlayObs = createObserver(karinOverlayRef, setKarinOverlayVisible, 300);
+    if (karinImgObs) observers.push(karinImgObs);
+    if (karinOverlayObs) observers.push(karinOverlayObs);
+
+    return () => {
+      observers.forEach((observer) => observer.disconnect());
+    };
+  }, []);
+
+
+  // Parallax calculations for hero section
+  const heroParallax = scrollY * 0.5; // Video moves slower (50% of scroll)
+  const contentParallax = scrollY * 0.3; // Content moves slower than scroll
+  const overlayParallax = scrollY * 0.4; // Overlay moves at medium speed
 
   return (
     <div className="landing-theme overflow-x-hidden">
@@ -48,7 +173,12 @@ export default function Home() {
           playsInline
           preload="auto"
           className="absolute top-0 left-0 w-full h-full object-cover"
-          style={{ zIndex: 1, objectPosition: 'center top' }}
+          style={{
+            zIndex: 1,
+            objectPosition: 'center top',
+            transform: `translateY(${heroParallax}px) scale(1.1)`,
+            transition: 'transform 0.1s ease-out'
+          }}
         >
           <source src="/landing4.mp4" type="video/mp4" />
         </video>
@@ -56,10 +186,25 @@ export default function Home() {
 
 
       {/* Dark Overlay */}
-      <div className="absolute top-0 left-0 w-full min-h-[100svh] lg:h-screen z-5 bg-black/10"></div>
+      <div
+        className="absolute top-0 left-0 w-full min-h-[100svh] lg:h-screen z-5 bg-black/10"
+        style={{
+          transform: `translateY(${overlayParallax}px)`,
+          transition: 'transform 0.1s ease-out'
+        }}
+      ></div>
 
       {/* Blur Overlay */}
-      <div className={`absolute top-0 left-0 w-full min-h-[100svh] lg:h-screen z-10 pointer-events-none transition-all duration-2000 ease-in-out ${blur ? 'opacity-100' : 'opacity-0'}`} style={{ backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', background: 'rgba(0, 0, 0, 0.5)' }}></div>
+      <div
+        className={`absolute top-0 left-0 w-full min-h-[100svh] lg:h-screen z-10 pointer-events-none transition-all duration-2000 ease-in-out ${blur ? 'opacity-100' : 'opacity-0'}`}
+        style={{
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          background: 'rgba(0, 0, 0, 0.5)',
+          transform: `translateY(${overlayParallax}px)`,
+          transition: 'transform 0.1s ease-out'
+        }}
+      ></div>
 
       {/* Main Content Wrapper */}
       <div className="relative z-20">
@@ -69,7 +214,13 @@ export default function Home() {
         <section className="relative min-h-[100svh] lg:h-[80vh] flex flex-col justify-center items-center text-center px-4">
 
           {/* Cards Container - Side by Side Layout */}
-          <div className="relative z-20 flex flex-col items-center text-center px-4 sm:px-8 lg:px-12 w-full max-w-7xl mx-auto space-y-6">
+          <div
+            className="relative z-20 flex flex-col items-center text-center px-4 sm:px-8 lg:px-12 w-full max-w-7xl mx-auto space-y-6"
+            style={{
+              transform: `translateY(${contentParallax}px)`,
+              transition: 'transform 0.1s ease-out'
+            }}
+          >
             <div className="text-white w-full space-y-2">
               <TextGenerateEffect
                 words="WE DON'T TREAT,"
@@ -104,7 +255,13 @@ export default function Home() {
         </section>
 
         {/* Introductory Paragraph Section */}
-        <section className="py-12 px-4 sm:px-8 bg-[#FFFBF7]">
+        <section
+          ref={(el) => (sectionRefs.current[0] = el)}
+          className={`py-12 px-4 sm:px-8 bg-[#FFFBF7] transition-all duration-1000 ease-out ${visibleSections.has(0)
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-8'
+            }`}
+        >
           <div className="max-w-4xl mx-auto">
             <p className="text-base sm:text-lg text-[#181818] leading-relaxed text-center" style={{ fontFamily: 'poppins' }}>
               Tucked away in the heart of nature, RAYA Longlife honors Ayurvedic wisdom & Ayurveda by pairing each guest-owned holistic retreat, authentic spiritual & wellbeing through transformative healing experiences.
@@ -113,20 +270,36 @@ export default function Home() {
         </section>
 
 
-        <section className="py-16 sm:py-20 px-4 sm:px-8 bg-[#F4F4F4] relative ">
+        <section
+          ref={(el) => (sectionRefs.current[1] = el)}
+          className={`py-16 sm:py-20 px-4 sm:px-8 bg-[#F4F4F4] relative transition-all duration-1000 ease-out ${visibleSections.has(1)
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-12'
+            }`}
+        >
           <div className="max-w-7xl mx-auto">
 
             <div className="relative w-full">
               {/* Full-width Image */}
               <div className="relative w-full aspect-[4/3] sm:h-[500px] lg:h-[600px]">
                 <img
+                  ref={imageRef}
                   src="/home1.jpg"
                   alt="Ayurvedic treatment room"
-                  className="w-full h-full object-cover rounded-lg"
+                  className={`w-full h-full object-cover rounded-lg transition-all duration-1000 ease-out ${imageVisible
+                    ? 'opacity-100 translate-x-0'
+                    : 'opacity-0 -translate-x-12'
+                    }`}
                 />
 
                 {/* White Text Overlay on Right - Desktop */}
-                <div className="hidden sm:flex absolute top-4 right-4 bottom-4 w-[400px] lg:w-[450px] bg-[#E3E3E3] backdrop-blur-sm p-6 lg:p-8 shadow-lg flex-col justify-center rounded-lg">
+                <div
+                  ref={overlayRef}
+                  className={`hidden sm:flex absolute top-4 right-4 bottom-4 w-[400px] lg:w-[450px] bg-[#E3E3E3] backdrop-blur-sm p-6 lg:p-8 shadow-lg flex-col justify-center rounded-lg transition-all duration-1000 ease-out ${overlayVisible
+                    ? 'opacity-100 translate-x-0'
+                    : 'opacity-0 translate-x-12'
+                    }`}
+                >
                   <div className="space-y-4 lg:space-y-6">
                     {/* MEDICAL-FIRST APPROACH */}
                     <div>
@@ -182,7 +355,12 @@ export default function Home() {
               </div>
 
               {/* White Text Box - Mobile (below image) */}
-              <div className="sm:hidden w-full bg-[#E3E3E3] p-6 shadow-lg rounded-lg mt-6">
+              <div
+                className={`sm:hidden w-full bg-[#E3E3E3] p-6 shadow-lg rounded-lg mt-6 transition-all duration-1000 ease-out ${overlayVisible
+                  ? 'opacity-100 translate-y-0'
+                  : 'opacity-0 translate-y-8'
+                  }`}
+              >
                 <div className="space-y-4">
                   {/* MEDICAL-FIRST APPROACH */}
                   <div>
@@ -240,7 +418,13 @@ export default function Home() {
         </section>
 
         {/* Nourish Section */}
-        <section className="py-16 sm:py-20 px-4 sm:px-8 bg-white">
+        <section
+          ref={(el) => (sectionRefs.current[2] = el)}
+          className={`py-16 sm:py-20 px-4 sm:px-8 bg-white transition-all duration-1000 ease-out ${visibleSections.has(2)
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-12'
+            }`}
+        >
           <div className="max-w-7xl mx-auto">
             {/* Header with Logo */}
             <div className="text-center mb-12 sm:mb-16">
@@ -392,12 +576,22 @@ export default function Home() {
             {/* Bottom Section: Image with overlaying text box */}
             <div className="relative px-4 sm:px-6 lg:px-0">
               <img
+                ref={processImageRef}
                 src="/process.png"
                 alt="Natural ingredients and produce"
-                className="w-full lg:w-[892px] h-auto lg:h-[458px] lg:ml-[32%] object-cover rounded-lg lg:rounded-none"
+                className={`w-full lg:w-[892px] h-auto lg:h-[458px] lg:ml-[32%] object-cover rounded-lg lg:rounded-none transition-all duration-1000 ease-out ${processImageVisible
+                  ? 'opacity-100 translate-x-0'
+                  : 'opacity-0 -translate-x-12'
+                  }`}
               />
               {/* Overlaying Text Box */}
-              <div className="relative lg:absolute bottom-0 left-0 lg:left-40 bg-[#F4F4F4] lg:bg-opacity-95 h-auto lg:h-[342px] p-4 sm:p-6 md:p-8 lg:p-10 max-w-full lg:max-w-lg mt-4 lg:mt-0 lg:m-4 lg:m-6 lg:m-8 rounded-lg">
+              <div
+                ref={processOverlayRef}
+                className={`relative lg:absolute bottom-0 left-0 lg:left-40 bg-[#F4F4F4] lg:bg-opacity-95 h-auto lg:h-[342px] p-4 sm:p-6 md:p-8 lg:p-10 max-w-full lg:max-w-lg mt-4 lg:mt-0 lg:m-4 lg:m-6 lg:m-8 rounded-lg transition-all duration-1000 ease-out ${processOverlayVisible
+                  ? 'opacity-100 translate-x-0 translate-y-0'
+                  : 'opacity-0 translate-x-12 translate-y-8'
+                  }`}
+              >
                 <h4 className="text-[#181818] mb-4 lg:mb-5 italic text-lg sm:text-xl lg:text-[20px]" style={{
                   fontFamily: 'Sentient, serif',
                   fontWeight: 400,
@@ -415,7 +609,13 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="py-16 sm:py-20 px-4 sm:px-8 bg-white">
+        <section
+          ref={(el) => (sectionRefs.current[3] = el)}
+          className={`py-16 sm:py-20 px-4 sm:px-8 bg-white transition-all duration-1000 ease-out ${visibleSections.has(3)
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-12'
+            }`}
+        >
           <div className="max-w-7xl mx-auto">
             {/* Header with Logo */}
 
@@ -456,13 +656,18 @@ export default function Home() {
             {/* Bottom Section: Image with overlaying text box */}
             <div className="relative px-4 sm:px-6 lg:px-0">
               <img
+                ref={ayurvedaImageRef}
                 src="/med.png"
                 alt="Natural ingredients and produce"
-                className="w-full lg:w-[892px] h-auto lg:h-[458px] lg:mx-auto object-cover rounded-lg lg:rounded-none"
+                className={`w-full lg:w-[892px] h-auto lg:h-[458px] lg:mx-auto object-cover rounded-lg lg:rounded-none transition-all duration-1000 ease-out ${ayurvedaImageVisible
+                  ? 'opacity-100 translate-x-0'
+                  : 'opacity-0 -translate-x-12'
+                  }`}
               />
               {/* Overlaying Text Box */}
               <div
-                className="
+                ref={ayurvedaOverlayRef}
+                className={`
                   relative
                   lg:absolute
                   lg:-bottom-2
@@ -477,7 +682,12 @@ export default function Home() {
                   lg:max-w-sm
                   mt-8
                   rounded-lg
-                "
+                  transition-all duration-1000 ease-out
+                  ${ayurvedaOverlayVisible
+                    ? 'opacity-100 translate-x-0 translate-y-0'
+                    : 'opacity-0 translate-x-12 translate-y-8'
+                  }
+                `}
               >
                 <h4
                   className="text-[#181818] mb-4 lg:mb-5 italic text-lg sm:text-xl lg:text-[20px]"
@@ -541,7 +751,13 @@ export default function Home() {
         </section> */}
 
         {/* Healing Retreats DESIGNED FOR YOU Section */}
-        <section className="py-16 sm:py-20 px-4 sm:px-8 bg-[#EAE9E3]">
+        <section
+          ref={(el) => (sectionRefs.current[4] = el)}
+          className={`py-16 sm:py-20 px-4 sm:px-8 bg-[#EAE9E3] transition-all duration-1000 ease-out ${visibleSections.has(4)
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-12'
+            }`}
+        >
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col lg:flex-row gap-12  items-start">
               {/* Left Side - Heading */}
@@ -576,7 +792,13 @@ export default function Home() {
         </section>
 
 
-        <section className="py-16 sm:py-20 px-4 sm:px-8 bg-[#F4F4F4]">
+        <section
+          ref={(el) => (sectionRefs.current[5] = el)}
+          className={`py-16 sm:py-20 px-4 sm:px-8 bg-[#F4F4F4] transition-all duration-1000 ease-out ${visibleSections.has(5)
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-12'
+            }`}
+        >
 
           <div className=" w-full pb-10">
 
@@ -604,12 +826,22 @@ export default function Home() {
             {/* Bottom Section: Image with overlaying text box */}
             <div className="relative px-4 sm:px-6 lg:px-0">
               <img
+                ref={benefitsImageRef}
                 src="/benefits.png"
                 alt="Natural ingredients and produce"
-                className="w-full lg:w-[892px] h-auto lg:h-[458px] lg:ml-[32%] object-cover rounded-lg lg:rounded-none"
+                className={`w-full lg:w-[892px] h-auto lg:h-[458px] lg:ml-[32%] object-cover rounded-lg lg:rounded-none transition-all duration-1000 ease-out ${benefitsImageVisible
+                  ? 'opacity-100 translate-x-0'
+                  : 'opacity-0 -translate-x-12'
+                  }`}
               />
               {/* Overlaying Text Box */}
-              <div className="relative lg:absolute bottom-0 left-0 lg:left-40 bg-[#F4F4F4] lg:bg-opacity-95 h-auto lg:h-[342px] p-4 sm:p-6 md:p-8 lg:p-10 max-w-full lg:max-w-lg mt-4 lg:mt-0 lg:m-4 lg:m-6 lg:m-8 rounded-lg">
+              <div
+                ref={benefitsOverlayRef}
+                className={`relative lg:absolute bottom-0 left-0 lg:left-40 bg-[#F4F4F4] lg:bg-opacity-95 h-auto lg:h-[342px] p-4 sm:p-6 md:p-8 lg:p-10 max-w-full lg:max-w-lg mt-4 lg:mt-0 lg:m-4 lg:m-6 lg:m-8 rounded-lg transition-all duration-1000 ease-out ${benefitsOverlayVisible
+                  ? 'opacity-100 translate-x-0 translate-y-0'
+                  : 'opacity-0 translate-x-12 translate-y-8'
+                  }`}
+              >
                 <h4 className="text-[#181818] mb-4 lg:mb-5 italic text-lg sm:text-xl lg:text-[20px]" style={{
                   fontFamily: 'Sentient, serif',
                   fontWeight: 400,
@@ -627,7 +859,13 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="py-16 sm:py-20 px-4 sm:px-8 bg-white">
+        <section
+          ref={(el) => (sectionRefs.current[6] = el)}
+          className={`py-16 sm:py-20 px-4 sm:px-8 bg-white transition-all duration-1000 ease-out ${visibleSections.has(6)
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-12'
+            }`}
+        >
           <div className="max-w-7xl mx-auto">
             {/* Header with Logo */}
 
@@ -668,13 +906,18 @@ export default function Home() {
             {/* Bottom Section: Image with overlaying text box */}
             <div className="relative px-4 sm:px-6 lg:px-0">
               <img
+                ref={karinImageRef}
                 src="/karin.png"
                 alt="Natural ingredients and produce"
-                className="w-full lg:w-[892px] h-auto lg:h-[458px] lg:mx-auto object-cover rounded-lg lg:rounded-none"
+                className={`w-full lg:w-[892px] h-auto lg:h-[458px] lg:mx-auto object-cover rounded-lg lg:rounded-none transition-all duration-1000 ease-out ${karinImageVisible
+                  ? 'opacity-100 translate-x-0'
+                  : 'opacity-0 -translate-x-12'
+                  }`}
               />
               {/* Overlaying Text Box */}
               <div
-                className="
+                ref={karinOverlayRef}
+                className={`
                   relative
                   lg:absolute
                   lg:-bottom-2
@@ -689,7 +932,12 @@ export default function Home() {
                   lg:max-w-sm
                   mt-8
                   rounded-lg
-                "
+                  transition-all duration-1000 ease-out
+                  ${karinOverlayVisible
+                    ? 'opacity-100 translate-x-0 translate-y-0'
+                    : 'opacity-0 translate-x-12 translate-y-8'
+                  }
+                `}
               >
                 <h4
                   className="text-[#181818] mb-4 lg:mb-5 italic text-lg sm:text-xl lg:text-[20px]"
@@ -716,7 +964,13 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="py-16 sm:py-20 px-4 sm:px-8 ">
+        <section
+          ref={(el) => (sectionRefs.current[7] = el)}
+          className={`py-16 sm:py-20 px-4 sm:px-8 transition-all duration-1000 ease-out ${visibleSections.has(7)
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-12'
+            }`}
+        >
           {/* Header with Logo */}
           <div className="text-center mb-12 sm:mb-16">
             {/* Blue line at top */}
@@ -824,7 +1078,13 @@ export default function Home() {
 
           </div></section>
 
-        <section className="py-16 sm:py-20 px-4 sm:px-8 bg-[#EAE9E3]">
+        <section
+          ref={(el) => (sectionRefs.current[8] = el)}
+          className={`py-16 sm:py-20 px-4 sm:px-8 bg-[#EAE9E3] transition-all duration-1000 ease-out ${visibleSections.has(8)
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-12'
+            }`}
+        >
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col lg:flex-row gap-12  items-start">
               {/* Left Side - Heading */}
@@ -857,7 +1117,13 @@ export default function Home() {
         </section>
 
         {/* Stories of Healing - Testimonials Section */}
-        <section className="py-16 sm:py-20 px-4 sm:px-8 bg-white">
+        <section
+          ref={(el) => (sectionRefs.current[9] = el)}
+          className={`py-16 sm:py-20 px-4 sm:px-8 bg-white transition-all duration-1000 ease-out ${visibleSections.has(9)
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-12'
+            }`}
+        >
           <div className="max-w-7xl mx-auto">
             {/* Header Section */}
             <div className="text-center mb-12">
@@ -946,7 +1212,6 @@ export default function Home() {
 
       {/* Hide scrollbar for slider */}
       <style>{`
-
          @keyframes fadeUp {
           from {
             opacity: 0;
@@ -962,11 +1227,29 @@ export default function Home() {
           opacity: 0;
         }
         .scrollbar-hide {
-          -ms-overflow-style: none;  /* Internet Explorer 10+ */
-          scrollbar-width: none;  /* Firefox */
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
         .scrollbar-hide::-webkit-scrollbar {
-          display: none;  /* Safari and Chrome */
+          display: none;
+        }
+        
+        /* Smooth scroll reveal animations */
+        section[class*="transition-all"] {
+          will-change: transform, opacity;
+        }
+        
+        /* Smooth scrolling for the entire page */
+        html {
+          scroll-behavior: smooth;
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+          section[class*="transition-all"] {
+            transition: none;
+            opacity: 1 !important;
+            transform: none !important;
+          }
         }
       `}</style>
 
