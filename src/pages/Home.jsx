@@ -11,6 +11,8 @@ export default function Home() {
   const [videoEnded, setVideoEnded] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1920);
+  const [buttonsVisible, setButtonsVisible] = useState(false);
   const [visibleSections, setVisibleSections] = useState(new Set());
   const [imageVisible, setImageVisible] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(false);
@@ -49,16 +51,30 @@ export default function Home() {
       setVideoEnded(true);
       setBlur(true);
     };
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
 
     const currentVideoRef = videoRef.current;
     window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleResize);
     currentVideoRef?.addEventListener("ended", handleVideoEnd);
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
       currentVideoRef?.removeEventListener("ended", handleVideoEnd);
     };
   }, [videoEnded]);
+
+  // Show buttons after a few seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setButtonsVisible(true);
+    }, 3000); // 3 seconds delay
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Intersection Observer for scroll reveal animations (MacBook-style)
   useEffect(() => {
@@ -234,16 +250,7 @@ export default function Home() {
               />
             </div>
 
-            <div className="text-white space-y-6 animate-fade-up" style={{ animationDelay: '3s' }}>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link to="/consultation" className="px-4 py-2 border border-white rounded-full text-white text-sm font-medium hover:bg-white hover:text-black transition whitespace-nowrap">
-                  CALL AN EXPERT
-                </Link>
-                <Link to="/questionnaire" className="px-4 py-2 border border-white rounded-full text-white text-sm font-medium hover:bg-white hover:text-black transition whitespace-nowrap">
-                  IS AYURVEDA FOR ME?
-                </Link>
-              </div>
-            </div>
+            {/* Buttons moved to fixed position - see below */}
             <div>
               <p className="text-white text-base sm:text-lg text-center max-w-2xl mx-auto" style={{ fontFamily: 'poppins' }}>
                 Ayurvedic healing retreats blending ancient wisdom, expert care, and modern serenity.
@@ -1208,6 +1215,82 @@ export default function Home() {
           </div>
         </section>
 
+      </div>
+
+      {/* Fixed Sticky Buttons - Start on sides, converge on scroll */}
+      <div className="fixed top-30 left-0 right-0 z-50 pointer-events-none px-4">
+        {(() => {
+          const maxTranslate = windowWidth * 0.34;
+          const leftTranslate = buttonsVisible ? Math.min(scrollY * 0.6, maxTranslate) : -200;
+          const rightTranslate = buttonsVisible ? -Math.min(scrollY * 0.6, maxTranslate) : 200;
+
+          // Calculate if buttons should be connected (when they've moved close enough)
+          // They connect when scroll has moved enough that they're within ~300px of each other
+          const connectionThreshold = maxTranslate * 0.7; // Connect at 70% of max convergence
+          const isConnected = buttonsVisible && scrollY * 0.6 >= connectionThreshold;
+
+          return isConnected ? (
+            // Capsule container when buttons are connected
+            <div
+              className="fixed left-1/2 -translate-x-1/2 flex gap-0 pointer-events-auto shadow-lg  border-2 border-white overflow-hidden backdrop-blur-sm"
+              style={{
+                top: '40rem',
+                opacity: buttonsVisible ? 1 : 0,
+                transform: buttonsVisible
+                  ? 'translateX(-50%)'
+                  : 'translateX(-50%) translateX(-200px)',
+                transition: buttonsVisible
+                  ? 'transform 0.3s ease-out, opacity 0.8s ease-out'
+                  : 'transform 0.8s ease-out, opacity 0.8s ease-out'
+              }}
+            >
+              <Link
+                to="/consultation"
+                className="px-6 py-3 sm:px-8 sm:py-4 text-white text-base sm:text-lg font-medium hover:bg-yellow-500 hover:text-black transition whitespace-nowrap bg-yellow-500/90  border-r border-white/50"
+              >
+                CALL AN EXPERT
+              </Link>
+              <Link
+                to="/questionnaire"
+                className="px-6 py-3 sm:px-8 sm:py-4 text-white text-base sm:text-lg font-medium hover:bg-blue-500 hover:text-black transition whitespace-nowrap bg-blue-500/90 "
+              >
+                IS AYURVEDA FOR ME?
+              </Link>
+            </div>
+          ) : (
+            // Separate buttons when far apart
+            <>
+              <Link
+                to="/consultation"
+                className="fixed left-4 sm:left-8 px-6 py-3 sm:px-8 sm:py-4 border-2 border-white  text-white text-base sm:text-lg font-medium hover:bg-yellow-500 hover:text-black transition whitespace-nowrap bg-yellow-500/90 backdrop-blur-sm pointer-events-auto shadow-lg"
+                style={{
+                  top: '40rem',
+                  opacity: buttonsVisible ? 1 : 0,
+                  transform: `translateX(${leftTranslate}px)`,
+                  transition: buttonsVisible
+                    ? 'transform 0.3s ease-out, opacity 0.8s ease-out, background-color 0.3s ease-out, border-color 0.3s ease-out'
+                    : 'transform 0.8s ease-out, opacity 0.8s ease-out'
+                }}
+              >
+                CALL AN EXPERT
+              </Link>
+              <Link
+                to="/questionnaire"
+                className="fixed right-4 sm:right-8 px-6 py-3 sm:px-8 sm:py-4 border-2 border-white text-white text-base sm:text-lg font-medium hover:bg-blue-500 hover:text-black transition whitespace-nowrap bg-blue-500/90 backdrop-blur-sm pointer-events-auto shadow-lg"
+                style={{
+                  top: '40rem',
+                  opacity: buttonsVisible ? 1 : 0,
+                  transform: `translateX(${rightTranslate}px)`,
+                  transition: buttonsVisible
+                    ? 'transform 0.3s ease-out, opacity 0.8s ease-out, background-color 0.3s ease-out, border-color 0.3s ease-out'
+                    : 'transform 0.8s ease-out, opacity 0.8s ease-out'
+                }}
+              >
+                IS AYURVEDA FOR ME?
+              </Link>
+            </>
+          );
+        })()}
       </div>
 
       {/* Hide scrollbar for slider */}

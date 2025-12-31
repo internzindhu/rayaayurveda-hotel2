@@ -128,9 +128,9 @@ export default function Navbar() {
               }`}>
               <Link to="/">
                 <img
-                  src="/Raya_logo_new.png"
+                  src="/logo.png"
                   alt="RAYA Logo"
-                  className="w-40 md:w-[140px] lg:w-[160px] h-auto hover:scale-110 transition-transform duration-300 ease-in-out"
+                  className="w-40 md:w-[140px] lg:w-[150px] h-auto hover:scale-110 transition-transform duration-300 ease-in-out"
                 />
               </Link>
             </div>
