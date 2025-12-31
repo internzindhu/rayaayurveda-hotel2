@@ -1232,7 +1232,7 @@ export default function Home() {
           return isConnected ? (
             // Capsule container when buttons are connected
             <div
-              className="fixed left-1/2 -translate-x-1/2 flex gap-0 pointer-events-auto shadow-lg  border-2 border-white overflow-hidden backdrop-blur-sm"
+              className="fixed left-1/2 -translate-x-1/2 flex gap-0 pointer-events-auto shadow-lg rounded-full  border-2 border-white overflow-hidden backdrop-blur-sm"
               style={{
                 top: '40rem',
                 opacity: buttonsVisible ? 1 : 0,
