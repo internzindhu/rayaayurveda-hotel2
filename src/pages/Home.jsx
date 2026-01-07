@@ -13,6 +13,7 @@ export default function Home() {
   const [scrollY, setScrollY] = useState(0);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1920);
   const [buttonsVisible, setButtonsVisible] = useState(false);
+  const [autoConnectionProgress, setAutoConnectionProgress] = useState(0);
   const [visibleSections, setVisibleSections] = useState(new Set());
   const [imageVisible, setImageVisible] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(false);
@@ -75,6 +76,33 @@ export default function Home() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // Auto-connect buttons after a few seconds regardless of scroll
+  useEffect(() => {
+    if (!buttonsVisible) return;
+
+    const connectionDuration = 4000; // 4 seconds to fully connect
+    const startDelay = 2000; // Wait 2 seconds after buttons appear before starting
+
+    const delayTimer = setTimeout(() => {
+      const startTime = Date.now();
+
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / connectionDuration, 1);
+
+        setAutoConnectionProgress(progress);
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      };
+
+      animate();
+    }, startDelay);
+
+    return () => clearTimeout(delayTimer);
+  }, [buttonsVisible]);
 
   // Intersection Observer for scroll reveal animations (MacBook-style)
   useEffect(() => {
@@ -1220,74 +1248,94 @@ export default function Home() {
       {/* Fixed Sticky Buttons - Start on sides, converge on scroll */}
       <div className="fixed top-30 left-0 right-0 z-50 pointer-events-none px-4">
         {(() => {
-          const maxTranslate = windowWidth * 0.34;
-          const leftTranslate = buttonsVisible ? Math.min(scrollY * 0.6, maxTranslate) : -200;
-          const rightTranslate = buttonsVisible ? -Math.min(scrollY * 0.6, maxTranslate) : 200;
+          const maxTranslate = windowWidth * 0.32;
 
-          // Calculate if buttons should be connected (when they've moved close enough)
-          // They connect when scroll has moved enough that they're within ~300px of each other
-          const connectionThreshold = maxTranslate * 0.7; // Connect at 70% of max convergence
-          const isConnected = buttonsVisible && scrollY * 0.6 >= connectionThreshold;
+          // Calculate scroll-based progress (linear)
+          const scrollTranslate = Math.min(scrollY * 0.6, maxTranslate);
 
-          return isConnected ? (
-            // Capsule container when buttons are connected
-            <div
-              className="fixed left-1/2 -translate-x-1/2 flex gap-0 pointer-events-auto shadow-lg rounded-full  border-2 border-white overflow-hidden backdrop-blur-sm"
-              style={{
-                top: '40rem',
-                opacity: buttonsVisible ? 1 : 0,
-                transform: buttonsVisible
-                  ? 'translateX(-50%)'
-                  : 'translateX(-50%) translateX(-200px)',
-                transition: buttonsVisible
-                  ? 'transform 0.3s ease-out, opacity 0.8s ease-out'
-                  : 'transform 0.8s ease-out, opacity 0.8s ease-out'
-              }}
-            >
-              <Link
-                to="/consultation"
-                className="px-6 py-3 sm:px-8 sm:py-4 text-white text-base sm:text-lg font-medium hover:bg-yellow-500 hover:text-black transition whitespace-nowrap bg-yellow-500/90  border-r border-white/50"
-              >
-                CALL AN EXPERT
-              </Link>
-              <Link
-                to="/questionnaire"
-                className="px-6 py-3 sm:px-8 sm:py-4 text-white text-base sm:text-lg font-medium hover:bg-blue-500 hover:text-black transition whitespace-nowrap bg-blue-500/90 "
-              >
-                IS AYURVEDA FOR ME?
-              </Link>
-            </div>
-          ) : (
-            // Separate buttons when far apart
+          // Calculate auto-connection progress (0 to maxTranslate)
+          const autoTranslate = autoConnectionProgress * maxTranslate;
+
+          // Use whichever is greater - scroll or auto-connection
+          const finalTranslate = Math.max(scrollTranslate, autoTranslate);
+
+          const leftTranslate = buttonsVisible ? finalTranslate : -200;
+          const rightTranslate = buttonsVisible ? -finalTranslate : 200;
+
+          // Calculate how close buttons are (0 to 1)
+          const connectionThreshold = maxTranslate * 0.6;
+          const connectionComplete = maxTranslate * 0.8;
+          const currentProgress = Math.max(scrollTranslate, autoTranslate);
+          const connectionProgress = buttonsVisible && currentProgress >= connectionThreshold
+            ? Math.min((currentProgress - connectionThreshold) / (connectionComplete - connectionThreshold), 1)
+            : 0;
+
+          // Calculate if buttons are close enough to appear connected
+          const isConnected = connectionProgress >= 0.5;
+
+          // Move buttons to bottom when connected and user scrolls
+          const shouldMoveToBottom = isConnected && scrollY > 100;
+
+          return (
             <>
-              <Link
-                to="/consultation"
-                className="fixed left-4 sm:left-8 px-6 py-3 sm:px-8 sm:py-4 border-2 border-white  text-white text-base sm:text-lg font-medium hover:bg-yellow-500 hover:text-black transition whitespace-nowrap bg-yellow-500/90 backdrop-blur-sm pointer-events-auto shadow-lg"
-                style={{
-                  top: '40rem',
-                  opacity: buttonsVisible ? 1 : 0,
-                  transform: `translateX(${leftTranslate}px)`,
-                  transition: buttonsVisible
-                    ? 'transform 0.3s ease-out, opacity 0.8s ease-out, background-color 0.3s ease-out, border-color 0.3s ease-out'
-                    : 'transform 0.8s ease-out, opacity 0.8s ease-out'
-                }}
-              >
-                CALL AN EXPERT
-              </Link>
-              <Link
-                to="/questionnaire"
-                className="fixed right-4 sm:right-8 px-6 py-3 sm:px-8 sm:py-4 border-2 border-white text-white text-base sm:text-lg font-medium hover:bg-blue-500 hover:text-black transition whitespace-nowrap bg-blue-500/90 backdrop-blur-sm pointer-events-auto shadow-lg"
-                style={{
-                  top: '40rem',
-                  opacity: buttonsVisible ? 1 : 0,
-                  transform: `translateX(${rightTranslate}px)`,
-                  transition: buttonsVisible
-                    ? 'transform 0.3s ease-out, opacity 0.8s ease-out, background-color 0.3s ease-out, border-color 0.3s ease-out'
-                    : 'transform 0.8s ease-out, opacity 0.8s ease-out'
-                }}
-              >
-                IS AYURVEDA FOR ME?
-              </Link>
+              {/* Buttons that connect together */}
+              {shouldMoveToBottom ? (
+                // When at bottom, render as centered connected group
+                <div
+                  className="fixed left-1/2 flex gap-0 items-center"
+                  style={{
+                    bottom: '2rem',
+                    opacity: buttonsVisible ? 1 : 0,
+                    transform: 'translateX(calc(-50% + 1rem))',
+                    transition: 'opacity 0.8s ease-out, bottom 0.5s ease-out, transform 0.5s ease-out'
+                  }}
+                >
+                  <Link
+                    to="/consultation"
+                    className="px-8 py-4 sm:px-12 sm:py-6 text-white text-lg sm:text-xl lg:text-2xl font-medium hover:bg-yellow-500 hover:text-black transition whitespace-nowrap bg-[#fdbb3a] backdrop-blur-sm pointer-events-auto shadow-lg flex items-center gap-3 border-r border-white/50 rounded-l-2xl"
+                  >
+                    CALL AN EXPERT
+                  </Link>
+                  <Link
+                    to="/questionnaire"
+                    className="px-8 py-4 sm:px-12 sm:py-6 text-white text-lg sm:text-xl lg:text-2xl font-medium hover:bg-blue-500 hover:text-black transition whitespace-nowrap bg-[#5E17EB] backdrop-blur-sm pointer-events-auto shadow-lg rounded-r-2xl"
+                  >
+                    IS AYURVEDA FOR ME?
+                  </Link>
+                </div>
+              ) : (
+                // When at top, render as separate moving buttons
+                <>
+                  <Link
+                    to="/consultation"
+                    className={`fixed left-0 sm:left-[0px] px-8 py-4 sm:px-12 sm:py-6 text-white text-lg sm:text-xl lg:text-2xl font-medium hover:bg-yellow-500 hover:text-black transition whitespace-nowrap bg-[#fdbb3a] backdrop-blur-sm pointer-events-auto shadow-lg flex items-center gap-3 ${isConnected ? 'border-r border-white/50 rounded-l-2xl' : 'rounded-2xl'}`}
+                    style={{
+                      top: '40rem',
+                      opacity: buttonsVisible ? 1 : 0,
+                      transform: `translateX(${leftTranslate}px)`,
+                      transition: buttonsVisible
+                        ? 'transform 0.3s ease-out, opacity 0.8s ease-out'
+                        : 'transform 0.8s ease-out, opacity 0.8s ease-out'
+                    }}
+                  >
+                    CALL AN EXPERT
+                  </Link>
+                  <Link
+                    to="/questionnaire"
+                    className={`fixed right-0 sm:right-0 px-8 py-4 sm:px-12 sm:py-6 text-white text-lg sm:text-xl lg:text-2xl font-medium hover:bg-blue-500 hover:text-black transition whitespace-nowrap bg-[#5E17EB] backdrop-blur-sm pointer-events-auto shadow-lg ${isConnected ? 'rounded-r-2xl' : 'rounded-2xl'}`}
+                    style={{
+                      top: '40rem',
+                      opacity: buttonsVisible ? 1 : 0,
+                      transform: `translateX(${rightTranslate}px)`,
+                      transition: buttonsVisible
+                        ? 'transform 0.3s ease-out, opacity 0.8s ease-out'
+                        : 'transform 0.8s ease-out, opacity 0.8s ease-out'
+                    }}
+                  >
+                    IS AYURVEDA FOR ME?
+                  </Link>
+                </>
+              )}
             </>
           );
         })()}
@@ -1342,7 +1390,7 @@ export default function Home() {
       {/* Floating Contact Button */}
       <button
         onClick={() => setIsContactOpen(true)}
-        className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 bg-[#5E17EB] hover:bg-[#4B12BD] text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-40 flex items-center gap-2 group"
+        className="fixed bottom-4 right -4 sm:bottom-8 sm:right-8 bg-[#5E17EB] hover:bg-[#4B12BD] text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-40 flex items-center gap-2 group"
         aria-label="Open contact form"
       >
         <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
