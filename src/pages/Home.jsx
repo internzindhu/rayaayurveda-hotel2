@@ -1260,7 +1260,7 @@ export default function Home() {
       {/* Fixed Sticky Buttons - Start on sides, converge on scroll */}
       <div className="fixed top-30 left-0 right-0 z-50 pointer-events-none px-4">
         {(() => {
-          const maxTranslate = windowWidth * 0.32;
+          const maxTranslate = windowWidth * 0.3175; // Reduced from 0.32 to prevent overlap
 
           // Calculate scroll-based progress (linear)
           const scrollTranslate = Math.min(scrollY * 0.6, maxTranslate);
@@ -1320,7 +1320,7 @@ export default function Home() {
                 <>
                   <Link
                     to="/consultation"
-                    className={`fixed left-0 sm:left-[0px] px-8 py-4 sm:px-12 sm:py-6 text-white text-lg sm:text-xl lg:text-2xl font-medium hover:bg-yellow-500 hover:text-black transition whitespace-nowrap bg-[#fdbb3a] backdrop-blur-sm pointer-events-auto shadow-lg flex items-center gap-3 ${isConnected ? 'border-r border-white/50 rounded-l-2xl' : 'rounded-2xl'}`}
+                    className={`fixed left-0 sm:left-[0px] px-8 py-4 sm:px-12 sm:py-6 text-white text-lg sm:text-xl lg:text-2xl font-medium hover:bg-yellow-500 hover:text-black transition whitespace-nowrap bg-[#fdbb3a] backdrop-blur-sm pointer-events-auto shadow-lg flex items-center gap-3 ${isConnected ? 'border-r border-white/50 rounded-l-3xl' : 'rounded-3xl'}`}
                     style={{
                       top: '40rem',
                       opacity: buttonsVisible ? 1 : 0,
@@ -1334,7 +1334,7 @@ export default function Home() {
                   </Link>
                   <Link
                     to="/questionnaire"
-                    className={`fixed right-0 sm:right-0 px-8 py-4 sm:px-12 sm:py-6 text-white text-lg sm:text-xl lg:text-2xl font-medium hover:bg-blue-500 hover:text-black transition whitespace-nowrap bg-[#5E17EB] backdrop-blur-sm pointer-events-auto shadow-lg ${isConnected ? 'rounded-r-2xl' : 'rounded-2xl'}`}
+                    className={`fixed right-0 sm:right-0 px-8 py-4 sm:px-12 sm:py-6 text-white text-lg sm:text-xl lg:text-2xl font-medium hover:bg-blue-500 hover:text-black transition whitespace-nowrap bg-[#5E17EB] backdrop-blur-sm pointer-events-auto shadow-lg ${isConnected ? 'rounded-r-3xl' : 'rounded-3xl'}`}
                     style={{
                       top: '40rem',
                       opacity: buttonsVisible ? 1 : 0,
@@ -1419,7 +1419,7 @@ export default function Home() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
           <p>Free Consultation</p>
-          <span className="hidden sm:inline-block font-medium" style={{ fontFamily: 'poppins' }}>Contact</span>
+          {/* <span className="hidden sm:inline-block font-medium" style={{ fontFamily: 'poppins' }}>Contact</span> */}
         </button>
       )}
 

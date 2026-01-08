@@ -1,10 +1,28 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export default function ConsultationPopup({ isOpen, onClose }) {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      // Small delay to trigger animation
+      setTimeout(() => setIsVisible(true), 10);
+    } else {
+      setIsVisible(false);
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-50 max-w-sm w-[320px] sm:w-[380px]">
+    <div
+      className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-50 max-w-sm w-[320px] sm:w-[380px] transition-all duration-500 ease-out"
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.95)',
+      }}
+    >
       <div className="relative bg-[#F5F1E8]  rounded-lg overflow-hidden shadow-2xl">
         {/* Close Button */}
         <button
