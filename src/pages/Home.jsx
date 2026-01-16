@@ -1346,7 +1346,8 @@ export default function Home() {
                     style={{
                       top: '40rem',
                       opacity: buttonsVisible ? 1 : 0,
-                      transform: `translateX(${rightTranslate}px)`,
+                      transform: `translateX(${rightTra
+                      nslate}px)`,
                       transition: buttonsVisible
                         ? 'transform 0.3s ease-out, opacity 0.8s ease-out'
                         : 'transform 0.8s ease-out, opacity 0.8s ease-out'
@@ -1361,14 +1362,14 @@ export default function Home() {
         })()}
       </div> */}
       <div className="fixed left-0 right-0 z-50 pointer-events-none">
-      <FloatingCTAButtons
-        scrollY={scrollY}
-        windowWidth={windowWidth}
-        buttonsVisible={true}
-        autoConnectionProgress={1} // set 0 → 1 over time if you want animation
-      />
+        <FloatingCTAButtons
+          scrollY={scrollY}
+          windowWidth={windowWidth}
+          buttonsVisible={true}
+          autoConnectionProgress={1} // set 0 → 1 over time if you want animation
+        />
       </div>
-       
+
 
 
       {/* Hide scrollbar for slider */}
@@ -1428,17 +1429,17 @@ export default function Home() {
 
       {/* Floating Contact Button - appears after consultation popup is closed */}
       {consultationPopupClosed && (
-        <button
-          onClick={() => setIsContactOpen(true)}
+        <Link
+          to="/consultation"
           className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 bg-[#5E17EB] hover:bg-[#4B12BD] text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-40 flex items-center gap-2 group"
-          aria-label="Open contact form"
+          aria-label="Go to consultation page"
         >
           <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
-          <p>Free Consultation</p>
+          {/* <p>Free Consultation</p> */}
           {/* <span className="hidden sm:inline-block font-medium" style={{ fontFamily: 'poppins' }}>Contact</span> */}
-        </button>
+        </Link>
       )}
 
     </div>
