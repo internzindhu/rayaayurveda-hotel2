@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useLayoutEffect } from "react";
 import { Link } from "react-router-dom";
 
 export default function FloatingCTAButtons({
@@ -32,12 +32,23 @@ useEffect(() => {
   const isMobile = windowWidth < 640;
 
   // ===== MEASURE BUTTON WIDTHS =====
-  useEffect(() => {
-    if (leftBtnRef.current && rightBtnRef.current) {
+  useLayoutEffect(() => {
+    if (!leftBtnRef.current || !rightBtnRef.current) return;
+  
+    const measure = () => {
       setLeftWidth(leftBtnRef.current.offsetWidth);
       setRightWidth(rightBtnRef.current.offsetWidth);
-    }
-  }, [windowWidth]);
+    };
+  
+    measure();
+  
+    const observer = new ResizeObserver(measure);
+    observer.observe(leftBtnRef.current);
+    observer.observe(rightBtnRef.current);
+  
+    return () => observer.disconnect();
+  }, []);
+  
 
   // ===== TRANSLATION LOGIC =====
   const gap = 0;
@@ -111,40 +122,41 @@ useEffect(() => {
       ) : (
         /* ===== SEPARATE TOP STATE ===== */
         <>
-          <Link
-            ref={leftBtnRef}
-            to="/consultation"
-            className={`fixed left-0 pointer-events-auto px-8 py-4 sm:px-12 sm:py-6 bg-[#fdbb3a] text-white text-lg sm:text-xl font-medium shadow-lg hover:bg-yellow-500 hover:text-black transition ${
-              isConnected
-                ? "rounded-l-3xl border-r border-white/50"
-                : "rounded-3xl"
-            }`}
-            style={{
-              top: "80vh",
-              transform: `translateX(${leftTranslate}px)`,
-              opacity: buttonsVisible ? 1 : 0,
-              transition: "transform 5s ease, opacity 0.4s ease"
-            }}
-          >
-            CALL AN EXPERT
-          </Link>
+  <Link
+    ref={leftBtnRef}
+    to="/consultation"
+    className={`fixed left-0 pointer-events-auto px-8 py-4 sm:px-12 sm:py-6 bg-[#fdbb3a] text-white text-lg sm:text-xl font-medium shadow-lg hover:bg-yellow-500 hover:text-black transition ${
+      isConnected
+        ? "rounded-l-3xl border-r border-white/50"
+        : "rounded-3xl"
+    }`}
+    style={{
+      top: "80vh",
+      transform: `translateX(${isConnected ? maxTranslate : leftTranslate}px)`,
+      opacity: buttonsVisible ? 1 : 0,
+      transition: "transform 5s ease, opacity 0.4s ease"
+    }}
+  >
+    CALL AN EXPERT
+  </Link>
 
-          <Link
-            ref={rightBtnRef}
-            to="/questionnaire"
-            className={`fixed right-0 pointer-events-auto px-8 py-4 sm:px-12 sm:py-6 bg-[#5E17EB] text-white text-lg sm:text-xl font-medium shadow-lg hover:bg-blue-500 hover:text-black transition ${
-              isConnected ? "rounded-r-3xl" : "rounded-3xl"
-            }`}
-            style={{
-              top: "80vh",
-              transform: `translateX(${rightTranslate}px)`,
-              opacity: buttonsVisible ? 1 : 0,
-              transition: "transform 5s ease, opacity 0.4s ease"
-            }}
-          >
-            IS AYURVEDA FOR ME?
-          </Link>
-        </>
+  <Link
+    ref={rightBtnRef}
+    to="/questionnaire"
+    className={`fixed right-0 pointer-events-auto px-8 py-4 sm:px-12 sm:py-6 bg-[#5E17EB] text-white text-lg sm:text-xl font-medium shadow-lg hover:bg-blue-500 hover:text-black transition ${
+      isConnected ? "rounded-r-3xl" : "rounded-3xl"
+    }`}
+    style={{
+      top: "80vh",
+      transform: `translateX(${isConnected ? -maxTranslate : rightTranslate}px)`,
+      opacity: buttonsVisible ? 1 : 0,
+      transition: "transform 5s ease, opacity 0.4s ease"
+    }}
+  >
+    IS AYURVEDA FOR ME?
+  </Link>
+</>
+
 
       )}
     </div>
