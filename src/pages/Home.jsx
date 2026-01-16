@@ -6,6 +6,7 @@ import ScrollReveal from "@/components/lightswind/scroll-reveal";
 import { TextAnimate } from "@/components/ui/text-animate";
 import ContactPopup from "../components/ContactPopup";
 import ConsultationPopup from "../components/ConsultationPopup";
+import FloatingCTAButtons from "@/components/FloaringCTAButtons";
 
 export default function Home() {
   const [blur, setBlur] = useState(false);
@@ -1258,9 +1259,17 @@ export default function Home() {
       </div>
 
       {/* Fixed Sticky Buttons - Start on sides, converge on scroll */}
-      <div className="fixed top-30 left-0 right-0 z-50 pointer-events-none px-4">
+      {/* <div className="fixed top-30 left-0 right-0 z-50 pointer-events-none px-4">
         {(() => {
-          const maxTranslate = windowWidth * 0.3175; // Reduced from 0.32 to prevent overlap
+          const gap = 0; // or 8 if you want spacing
+          const maxTranslate =
+            (windowWidth / 2) - (leftWidth / 2) - gap;
+           // Reduced from 0.32 to prevent overlap
+          const leftBtnRef = useRef(null);
+          const rightBtnRef = useRef(null);
+          const leftWidth = leftBtnRef.current?.offsetWidth || 0;
+          const rightWidth = rightBtnRef.current?.offsetWidth || 0;
+
 
           // Calculate scroll-based progress (linear)
           const scrollTranslate = Math.min(scrollY * 0.6, maxTranslate);
@@ -1290,7 +1299,6 @@ export default function Home() {
 
           return (
             <>
-              {/* Buttons that connect together */}
               {shouldMoveToBottom ? (
                 // When at bottom, render as centered connected group
                 <div
@@ -1351,7 +1359,17 @@ export default function Home() {
             </>
           );
         })()}
+      </div> */}
+      <div className="fixed left-0 right-0 z-50 pointer-events-none">
+      <FloatingCTAButtons
+        scrollY={scrollY}
+        windowWidth={windowWidth}
+        buttonsVisible={true}
+        autoConnectionProgress={1} // set 0 → 1 over time if you want animation
+      />
       </div>
+       
+
 
       {/* Hide scrollbar for slider */}
       <style>{`
