@@ -88,6 +88,12 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Sentient';
+  src: url('/fonts/Sentient-LightItalic.otf') format('opentype');
+  font-weight: 300;
+  font-style: italic;
+}
 
 body {
   margin: 0;

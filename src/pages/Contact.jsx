@@ -5,201 +5,277 @@ export default function Contact() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     subject: "",
-    message: ""
+    message: "",
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     alert("Message sent! (This is a demo - no backend connected)");
-    setFormData({ name: "", email: "", subject: "", message: "" });
+    setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[var(--raya-banana)] to-[var(--raya-jungle)]">
-      <div className="relative">
-        <Navbar />
-        <section className="relative py-32 px-4">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <div className="flex justify-center mb-8">
-                <div className="relative">
-                  <svg width="60" height="60" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[var(--raya-vanilla)]">
-                    <path d="M20 4 L36 12 L36 28 L20 36 L4 28 L4 12 L20 4 Z" stroke="currentColor" strokeWidth="2" fill="none"/>
-                    <path d="M14 18 L20 22 L26 18" stroke="currentColor" strokeWidth="2" fill="none"/>
-                    <path d="M10 16 L30 16" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-                  </svg>
-                  <div className="absolute -top-2 -left-2 w-4 h-4 bg-[var(--raya-soft-gold)] rounded-full opacity-60"></div>
-                  <div className="absolute -bottom-2 -right-2 w-3 h-3 bg-[var(--raya-papaya)] rounded-full opacity-60"></div>
+    <div className="min-h-screen bg-white">
+      <Navbar />
+
+      {/* Main content - white background */}
+      <main className="pt-24 sm:pt-28 pb-16 px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto">
+          {/* Hero headline - centered */}
+          <div className="text-center mb-14 sm:mb-16">
+            <h1
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#181818] font-normal tracking-tight mb-2"
+              style={{ fontFamily: "Lato, sans-serif" }}
+            >
+              LET&apos;S BEGIN YOUR JOURNEY
+            </h1>
+            <p
+              className="text-2xl sm:text-3xl md:text-4xl text-[#5E17EB] italic"
+              style={{ fontFamily: "Sentient, serif" }}
+            >
+              to wellness together.
+            </p>
+          </div>
+
+          {/* Two columns: contact info (left) + form (right) */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+            {/* Left column - Contact information */}
+            <div className="space-y-8">
+              {/* Working Hours */}
+              <div>
+                <h3
+                  className="text-[#181818] font-bold text-base sm:text-lg mb-2"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  Working Hours
+                </h3>
+                <p
+                  className="text-[#181818] text-sm sm:text-base mb-3 leading-relaxed"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  We&apos;re here to welcome you and assist with all your inquiries during the
+                  following hours:
+                </p>
+                <p
+                  className="text-[#181818] text-sm sm:text-base leading-relaxed"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  Monday – Friday: 8:30 AM – 5:00 PM
+                  <br />
+                  Saturday – Sunday: 9:00 AM – 12:00 PM
+                </p>
+              </div>
+
+              {/* General Enquiries */}
+              <div>
+                <h3
+                  className="text-[#181818] font-bold text-base sm:text-lg mb-2"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  General Enquiries
+                </h3>
+                <p
+                  className="text-[#181818] text-sm sm:text-base leading-relaxed"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  rayalonglife@gmail.com
+                  <br />
+                  +94 71 366 7946
+                </p>
+              </div>
+
+              {/* Customer support */}
+              <div>
+                <h3
+                  className="text-[#181818] font-bold text-base sm:text-lg mb-2"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  Customer support
+                </h3>
+                <p
+                  className="text-[#181818] text-sm sm:text-base leading-relaxed"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  rayalonglife@gmail.com
+                  <br />
+                  +94 71 366 7946
+                </p>
+              </div>
+
+              {/* Address */}
+              <div>
+                <h3
+                  className="text-[#181818] font-bold text-base sm:text-lg mb-2"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  Address
+                </h3>
+                <p
+                  className="text-[#181818] text-sm sm:text-base leading-relaxed"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  Raya Longlife, Suite 5, Enterprise House, Moorgate Point, Moorgate Rd, Sri Lanka.
+                </p>
+              </div>
+
+              {/* Follow Us - icons with purple outline */}
+              <div>
+                <h3
+                  className="text-[#181818] font-bold text-base sm:text-lg mb-4"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  FOLLOW US
+                </h3>
+                <div className="flex gap-3">
+                  <a
+                    href="https://instagram.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-12 h-12 rounded-lg border-2 border-[#5E17EB] bg-white flex items-center justify-center text-[#5E17EB] hover:bg-[#5E17EB] hover:text-white transition-colors"
+                    aria-label="Instagram"
+                  >
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path fillRule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.048-1.067-.06-1.407-.06-4.123v-.08c0-2.643.012-2.987.06-4.043.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm0 5.108a3.375 3.375 0 100 6.75 3.375 3.375 0 000-6.75zM12.315 14a5.625 5.625 0 11.000-11.25 5.625 5.625 0 010 11.25z" clipRule="evenodd" />
+                    </svg>
+                  </a>
+                  <a
+                    href="https://facebook.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-12 h-12 rounded-lg border-2 border-[#5E17EB] bg-white flex items-center justify-center text-[#5E17EB] hover:bg-[#5E17EB] hover:text-white transition-colors"
+                    aria-label="Facebook"
+                  >
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd" />
+                    </svg>
+                  </a>
                 </div>
               </div>
-              <h1 className="text-6xl md:text-7xl font-serif font-bold text-[var(--raya-vanilla)] mb-6 leading-tight">
-                Contact Us
-              </h1>
-              <p className="text-xl md:text-2xl text-[var(--raya-vanilla)] max-w-3xl mx-auto leading-relaxed opacity-90">
-                Get in touch with us for any questions or wellness inquiries
-              </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-              <div className="text-center p-6 bg-white/20 backdrop-blur-sm rounded-2xl border border-white/20">
-                <div className="text-3xl mb-3">📞</div>
-                <div className="text-[var(--raya-vanilla)] font-medium">Phone Support</div>
-              </div>
-              <div className="text-center p-6 bg-white/20 backdrop-blur-sm rounded-2xl border border-white/20">
-                <div className="text-3xl mb-3">✉️</div>
-                <div className="text-[var(--raya-vanilla)] font-medium">Email Response</div>
-              </div>
-              <div className="text-center p-6 bg-white/20 backdrop-blur-sm rounded-2xl border border-white/20">
-                <div className="text-3xl mb-3">🌐</div>
-                <div className="text-[var(--raya-vanilla)] font-medium">24/7 Availability</div>
-              </div>
+
+            {/* Right column - Contact form */}
+            <div className="bg-white">
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block text-[#181818] font-bold text-sm mb-1.5"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                  >
+                    Full Name*
+                  </label>
+                  <input
+                    id="name"
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Enter full name"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md bg-white text-[#181818] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-[#181818] font-bold text-sm mb-1.5"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                  >
+                    Email*
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="Enter email address"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md bg-white text-[#181818] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="phone"
+                    className="block text-[#181818] font-bold text-sm mb-1.5"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                  >
+                    Contact Number*
+                  </label>
+                  <input
+                    id="phone"
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    placeholder="+ 94 XX XXX XXXX"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md bg-white text-[#181818] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="subject"
+                    className="block text-[#181818] font-bold text-sm mb-1.5"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                  >
+                    Subject*
+                  </label>
+                  <input
+                    id="subject"
+                    type="text"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    placeholder="Enter Subject"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md bg-white text-[#181818] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="message"
+                    className="block text-[#181818] font-bold text-sm mb-1.5"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                  >
+                    Message
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    rows={5}
+                    placeholder="Enter message..."
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md bg-white text-[#181818] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent resize-y"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                  />
+                </div>
+
+                <div className="flex justify-center pt-2">
+                  <button
+                    type="submit"
+                    className="px-10 py-3 rounded-md border-2 border-[#5E17EB] bg-white text-[#5E17EB] font-bold text-sm uppercase tracking-wider hover:bg-[#5E17EB] hover:text-white transition-colors"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                  >
+                    SUBMIT
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
-        </section>
-
-        {/* Contact Content */}
-        <div className="bg-white/70 fade-in">
-          <section className="py-16 px-4">
-            <div className="max-w-6xl mx-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Contact Information */}
-                <div className="bg-white/80 rounded-2xl shadow-lg p-8 slide-up">
-                  <h2 className="text-3xl font-bold text-[#5E17EB] mb-6">Get In Touch</h2>
-                  
-                  <div className="space-y-6">
-                    <div className="flex items-start">
-                      <div className="w-12 h-12 bg-[#EAE9E3] rounded-full flex items-center justify-center mr-4">
-                        <span className="text-[#5E17EB] text-xl">📍</span>
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-800 mb-1">Address</h3>
-                        <p className="text-gray-700">Hviezdoslavova 81<br />903 28 Ivanka pri Dunaji<br />Slovakia</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start">
-                      <div className="w-12 h-12 bg-[#EAE9E3] rounded-full flex items-center justify-center mr-4">
-                        <span className="text-[#5E17EB] text-xl">📞</span>
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-800 mb-1">Phone</h3>
-                        <p className="text-gray-700">+421 903 244</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start">
-                      <div className="w-12 h-12 bg-[#EAE9E3] rounded-full flex items-center justify-center mr-4">
-                        <span className="text-[#5E17EB] text-xl">✉️</span>
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-800 mb-1">Email</h3>
-                        <p className="text-gray-700">rayalognlife@gmail.com</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start">
-                      <div className="w-12 h-12 bg-[#EAE9E3] rounded-full flex items-center justify-center mr-4">
-                        <span className="text-[#5E17EB] text-xl">🕒</span>
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-800 mb-1">Hours</h3>
-                        <p className="text-gray-700">Monday - Sunday: 24/7</p>
-                        <p className="text-gray-700">Reception: 6:00 AM - 10:00 PM</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Social Media */}
-                  <div className="mt-8">
-                    <h3 className="font-semibold text-gray-800 mb-4">Follow Us</h3>
-                    <div className="flex space-x-4">
-                      <a href="https://facebook.com" className="w-10 h-10 bg-[#EAE9E3] rounded-full flex items-center justify-center hover:bg-[#5E17EB] hover:text-white transition-colors">
-                        <span className="text-[#5E17EB]">📘</span>
-                      </a>
-                      <a href="https://instagram.com" className="w-10 h-10 bg-[#EAE9E3] rounded-full flex items-center justify-center hover:bg-[#5E17EB] hover:text-white transition-colors">
-                        <span className="text-[#5E17EB]">📷</span>
-                      </a>
-                      <a href="https://twitter.com" className="w-10 h-10 bg-[#EAE9E3] rounded-full flex items-center justify-center hover:bg-[#5E17EB] hover:text-white transition-colors">
-                        <span className="text-[#5E17EB]">🐦</span>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Contact Form */}
-                <div className="bg-white/80 rounded-2xl shadow-lg p-8 slide-up">
-                  <h2 className="text-3xl font-bold text-[#5E17EB] mb-6">Send Message</h2>
-                  
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                      <label className="block font-medium text-gray-700 mb-2">Full Name</label>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={(e) => setFormData({...formData, name: e.target.value})}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block font-medium text-gray-700 mb-2">Email</label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({...formData, email: e.target.value})}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block font-medium text-gray-700 mb-2">Subject</label>
-                      <input
-                        type="text"
-                        name="subject"
-                        value={formData.subject}
-                        onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block font-medium text-gray-700 mb-2">Message</label>
-                      <textarea
-                        name="message"
-                        value={formData.message}
-                        onChange={(e) => setFormData({...formData, message: e.target.value})}
-                        rows={5}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent"
-                        required
-                      ></textarea>
-                    </div>
-
-                    <button type="submit" className="bg-[#5E17EB] hover:bg-[#4B12BD] text-white w-full py-3 text-lg rounded-lg transition-colors">
-                      Send Message
-                    </button>
-                  </form>
-                </div>
-              </div>
-
-              {/* Map Section */}
-              <div className="bg-white/80 rounded-2xl shadow-lg p-8 mt-8 slide-up">
-                <h2 className="text-3xl font-bold text-[#5E17EB] mb-6 text-center">Find Us</h2>
-                <div className="relative h-96 rounded-lg overflow-hidden bg-gray-200">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <p className="text-gray-600">Interactive Map Coming Soon</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
-

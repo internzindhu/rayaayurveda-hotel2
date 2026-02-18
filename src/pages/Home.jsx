@@ -318,37 +318,98 @@ export default function Home() {
         </section>
 
 
-        <section
-          ref={(el) => (sectionRefs.current[1] = el)}
-          className={`py-16 sm:py-20 px-4 sm:px-8 bg-[#F4F4F4] relative transition-all duration-1000 ease-out ${visibleSections.has(1)
-            ? 'opacity-100 translate-y-0'
-            : 'opacity-0 translate-y-12'
-            }`}
-        >
-          <div className="max-w-7xl mx-auto">
+          <section
+            ref={(el) => (sectionRefs.current[1] = el)}
+            className={`py-16 sm:py-20 px-4 sm:px-8 bg-[#F4F4F4] relative transition-all duration-1000 ease-out ${visibleSections.has(1)
+              ? 'opacity-100 translate-y-0'
+              : 'opacity-0 translate-y-12'
+              }`}
+          >
+            <div className="max-w-7xl mx-auto">
 
-            <div className="relative w-full">
-              {/* Full-width Image */}
-              <div className="relative w-full aspect-[4/3] sm:h-[500px] lg:h-[600px]">
-                <img
-                  ref={imageRef}
-                  src="/home1.jpg"
-                  alt="Ayurvedic treatment room"
-                  className={`w-full h-full object-cover rounded-lg transition-all duration-1000 ease-out ${imageVisible
-                    ? 'opacity-100 translate-x-0'
-                    : 'opacity-0 -translate-x-12'
-                    }`}
-                />
+              <div className="relative w-full">
+                {/* Full-width Image */}
+                <div className="relative w-full aspect-[4/3] sm:h-[500px] lg:h-[600px]">
+                  <img
+                    ref={imageRef}
+                    src="/home1.jpg"
+                    alt="Ayurvedic treatment room"
+                    className={`w-full h-full object-cover rounded-lg transition-all duration-1000 ease-out ${imageVisible
+                      ? 'opacity-100 translate-x-0'
+                      : 'opacity-0 -translate-x-12'
+                      }`}
+                  />
 
-                {/* White Text Overlay on Right - Desktop */}
+                  {/* White Text Overlay on Right - Desktop */}
+                  <div
+                    ref={overlayRef}
+                    className={`hidden sm:flex absolute top-4 right-4 bottom-4 w-[400px] lg:w-[450px] bg-[#E3E3E3] backdrop-blur-sm p-6 lg:p-8 shadow-lg flex-col justify-center rounded-lg transition-all duration-1000 ease-out ${overlayVisible
+                      ? 'opacity-100 translate-x-0'
+                      : 'opacity-0 translate-x-12'
+                      }`}
+                  >
+                    <div className="space-y-4 lg:space-y-6">
+                      {/* MEDICAL-FIRST APPROACH */}
+                      <div>
+                        <h3 className="text-[16px] font-bold text-[#181818] mb-2 uppercase tracking-wide" style={{ fontFamily: 'Lato' }}>
+                          MEDICAL-FIRST APPROACH
+                        </h3>
+                        <p className="text-[16px] text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato' }}>
+                          all retreats are designed and supervised by Ayurvedic doctors
+                        </p>
+                      </div>
+
+                      {/* PERSONALISATION */}
+                      <div>
+                        <h3 className="text-[16px] font-bold text-[#181818] mb-2 uppercase tracking-wide" style={{ fontFamily: 'Lato' }}>
+                          PERSONALISATION
+                        </h3>
+                        <p className="text-[16px] text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato' }}>
+                          each program is created according to the client&apos;s health condition
+                        </p>
+                      </div>
+
+                      {/* VERIFIED CLINICS & THERAPISTS */}
+                      <div>
+                        <h3 className="text-[16px] font-bold text-[#181818] mb-2 uppercase tracking-wide" style={{ fontFamily: 'Lato' }}>
+                          VERIFIED CLINICS & THERAPISTS
+                        </h3>
+                        <p className="text-[16px] text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato' }}>
+                          we collaborate only with accredited facilities with the highest level of expertise
+                        </p>
+                      </div>
+
+                      {/* END-TO-END CARE */}
+                      <div>
+                        <h3 className="text-[16px] font-bold text-[#181818] mb-2 uppercase tracking-wide" style={{ fontFamily: 'Lato' }}>
+                          END-TO-END CARE
+                        </h3>
+                        <p className="text-[16px] text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato' }}>
+                          from diagnostics to post-retreat guidance
+                        </p>
+                      </div>
+
+                      {/* HIGH SUCCESS RATE */}
+                      <div>
+                        <h3 className="text-[16px] font-bold text-[#181818] mb-2 uppercase tracking-wide" style={{ fontFamily: 'Lato' }}>
+                          HIGH SUCCESS RATE
+                        </h3>
+                        <p className="text-sm sm:text-base text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato' }}>
+                          our clients report significant improvements in health and vitality after just one program
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* White Text Box - Mobile (below image) */}
                 <div
-                  ref={overlayRef}
-                  className={`hidden sm:flex absolute top-4 right-4 bottom-4 w-[400px] lg:w-[450px] bg-[#E3E3E3] backdrop-blur-sm p-6 lg:p-8 shadow-lg flex-col justify-center rounded-lg transition-all duration-1000 ease-out ${overlayVisible
-                    ? 'opacity-100 translate-x-0'
-                    : 'opacity-0 translate-x-12'
+                  className={`sm:hidden w-full bg-[#E3E3E3] p-6 shadow-lg rounded-lg mt-6 transition-all duration-1000 ease-out ${overlayVisible
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-8'
                     }`}
                 >
-                  <div className="space-y-4 lg:space-y-6">
+                  <div className="space-y-4">
                     {/* MEDICAL-FIRST APPROACH */}
                     <div>
                       <h3 className="text-[16px] font-bold text-[#181818] mb-2 uppercase tracking-wide" style={{ fontFamily: 'Lato' }}>
@@ -394,76 +455,15 @@ export default function Home() {
                       <h3 className="text-[16px] font-bold text-[#181818] mb-2 uppercase tracking-wide" style={{ fontFamily: 'Lato' }}>
                         HIGH SUCCESS RATE
                       </h3>
-                      <p className="text-sm sm:text-base text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato' }}>
+                      <p className="text-sm text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato' }}>
                         our clients report significant improvements in health and vitality after just one program
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
-
-              {/* White Text Box - Mobile (below image) */}
-              <div
-                className={`sm:hidden w-full bg-[#E3E3E3] p-6 shadow-lg rounded-lg mt-6 transition-all duration-1000 ease-out ${overlayVisible
-                  ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 translate-y-8'
-                  }`}
-              >
-                <div className="space-y-4">
-                  {/* MEDICAL-FIRST APPROACH */}
-                  <div>
-                    <h3 className="text-[16px] font-bold text-[#181818] mb-2 uppercase tracking-wide" style={{ fontFamily: 'Lato' }}>
-                      MEDICAL-FIRST APPROACH
-                    </h3>
-                    <p className="text-[16px] text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato' }}>
-                      all retreats are designed and supervised by Ayurvedic doctors
-                    </p>
-                  </div>
-
-                  {/* PERSONALISATION */}
-                  <div>
-                    <h3 className="text-[16px] font-bold text-[#181818] mb-2 uppercase tracking-wide" style={{ fontFamily: 'Lato' }}>
-                      PERSONALISATION
-                    </h3>
-                    <p className="text-[16px] text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato' }}>
-                      each program is created according to the client&apos;s health condition
-                    </p>
-                  </div>
-
-                  {/* VERIFIED CLINICS & THERAPISTS */}
-                  <div>
-                    <h3 className="text-[16px] font-bold text-[#181818] mb-2 uppercase tracking-wide" style={{ fontFamily: 'Lato' }}>
-                      VERIFIED CLINICS & THERAPISTS
-                    </h3>
-                    <p className="text-[16px] text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato' }}>
-                      we collaborate only with accredited facilities with the highest level of expertise
-                    </p>
-                  </div>
-
-                  {/* END-TO-END CARE */}
-                  <div>
-                    <h3 className="text-[16px] font-bold text-[#181818] mb-2 uppercase tracking-wide" style={{ fontFamily: 'Lato' }}>
-                      END-TO-END CARE
-                    </h3>
-                    <p className="text-[16px] text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato' }}>
-                      from diagnostics to post-retreat guidance
-                    </p>
-                  </div>
-
-                  {/* HIGH SUCCESS RATE */}
-                  <div>
-                    <h3 className="text-[16px] font-bold text-[#181818] mb-2 uppercase tracking-wide" style={{ fontFamily: 'Lato' }}>
-                      HIGH SUCCESS RATE
-                    </h3>
-                    <p className="text-sm text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato' }}>
-                      our clients report significant improvements in health and vitality after just one program
-                    </p>
-                  </div>
-                </div>
-              </div>
             </div>
-          </div>
-        </section>
+          </section>
 
         {/* Nourish Section */}
         <section

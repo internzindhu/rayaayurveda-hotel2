@@ -1,9 +1,11 @@
 import { Routes, Route } from 'react-router-dom'
+import ScrollToTop from './components/ScrollToTop'
 import Footer from './components/Footer'
 import Home from './pages/Home'
 import About from './pages/About'
 import BookHotel from './pages/BookHotel'
 import HotelDetails from './pages/HotelDetails'
+import WellnessInquiry from './pages/WellnessInquiry'
 import Consultation from './pages/Consultation'
 import Questionnaire from './pages/Questionnaire'
 import QuestionnaireResults from './pages/QuestionnaireResults'
@@ -22,11 +24,13 @@ import Login from './pages/Login'
 function App() {
   return (
     <div className="App">
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/book-hotel" element={<BookHotel />} />
         <Route path="/book-hotel/:id" element={<HotelDetails />} />
+        <Route path="/book-hotel/:id/inquiry" element={<WellnessInquiry />} />
         <Route path="/consultation" element={<Consultation />} />
         <Route path="/questionnaire" element={<Questionnaire />} />
         <Route path="/questionnaire/results" element={<QuestionnaireResults />} />

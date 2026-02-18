@@ -67,6 +67,9 @@ export default function Navbar() {
     return false;
   };
 
+  const isRetreatsActive =
+    isActive("/individual-stays") || isActive("/group-stays");
+
   return (
     <nav className={`w-full bg-[#5E17EB] fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'
       } ${!isAtTop ? 'backdrop-blur-sm' : ''}`}>
@@ -91,18 +94,48 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {/* Column 2 - RETREATS */}
+            {/* Column 2 - RETREATS (Dropdown) */}
             <div className="flex items-center justify-center">
-              <Link
-                to="/treatments"
-                className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white whitespace-nowrap uppercase text-sm ${isActive("/treatments")
-                  ? "opacity-90"
-                  : "hover:opacity-80"
-                  }`}
-                style={{ fontFamily: 'Lato, sans-serif' }}
+              <div
+                className="relative"
+                ref={retreatsDropdownRef}
               >
-                RETREATS
-              </Link>
+                <button
+                  type="button"
+                  className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white whitespace-nowrap uppercase text-sm flex items-center gap-1 ${isRetreatsActive
+                    ? "opacity-90"
+                    : "hover:opacity-80"
+                    }`}
+                  style={{ fontFamily: 'Lato, sans-serif' }}
+                  onClick={() => setIsRetreatsOpen((prev) => !prev)}
+                >
+                  RETREATS
+                  <span className="text-xs">
+                    {isRetreatsOpen ? "▲" : "▼"}
+                  </span>
+                </button>
+
+                {isRetreatsOpen && (
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-48 rounded-lg bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown">
+                    <Link
+                      to="/individual-stays"
+                      className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150"
+                      style={{ fontFamily: 'Lato, sans-serif' }}
+                      onClick={() => setIsRetreatsOpen(false)}
+                    >
+                      Individual Stay
+                    </Link>
+                    <Link
+                      to="/group-stays"
+                      className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150"
+                      style={{ fontFamily: 'Lato, sans-serif' }}
+                      onClick={() => setIsRetreatsOpen(false)}
+                    >
+                      Group Stay
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
             {/* <div></div> */}
 
@@ -136,9 +169,9 @@ export default function Navbar() {
             </div>
 
             {/* Column 6 - Spacing */}
-            <div> 
+            <div>
               <Link
-                to="/"
+                to="/vouchers"
                 className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white whitespace-nowrap uppercase text-sm ${isActive("/")
                   ? "opacity-90"
                   : "hover:opacity-80"
@@ -241,14 +274,44 @@ export default function Navbar() {
             >
               ABOUT
             </Link>
-            <Link
-              to="/treatments"
-              className={`block py-2 text-white font-medium transition-colors duration-200 uppercase text-sm ${isActive("/treatments") ? "opacity-90" : "hover:opacity-80"
-                }`}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              RETREATS
-            </Link>
+            <div>
+              <button
+                type="button"
+                className="flex w-full items-center justify-between py-2 text-white font-medium transition-colors duration-200 uppercase text-sm"
+                onClick={() => setIsRetreatsOpen((prev) => !prev)}
+              >
+                <span>RETREATS</span>
+                <span className="text-xs">
+                  {isRetreatsOpen ? "▲" : "▼"}
+                </span>
+              </button>
+              {isRetreatsOpen && (
+                <div className="ml-4 mt-1 space-y-1">
+                  <Link
+                    to="/individual-stays"
+                    className={`block py-1 text-white/90 text-sm ${isActive("/individual-stays") ? "opacity-90" : "hover:opacity-80"
+                      }`}
+                    onClick={() => {
+                      setIsRetreatsOpen(false);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    Individual Stay
+                  </Link>
+                  <Link
+                    to="/group-stays"
+                    className={`block py-1 text-white/90 text-sm ${isActive("/group-stays") ? "opacity-90" : "hover:opacity-80"
+                      }`}
+                    onClick={() => {
+                      setIsRetreatsOpen(false);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    Group Stay
+                  </Link>
+                </div>
+              )}
+            </div>
             <Link
               to="/consultation"
               className={`block py-2 text-white font-medium transition-colors duration-200 uppercase text-sm ${isActive("/consultation") ? "opacity-90" : "hover:opacity-80"
@@ -278,19 +341,19 @@ export default function Navbar() {
       )}
 
       <style jsx>{`
-        @keyframes fadeIn {
+        @keyframes dropdown {
           from {
             opacity: 0;
-            transform: translateY(-10px);
+            transform: translate(-50%, -6px);
           }
           to {
             opacity: 1;
-            transform: translateY(0);
+            transform: translate(-50%, 0);
           }
         }
-        
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out;
+        .animate-dropdown {
+          animation: dropdown 0.2s ease-out forwards;
+          transform: translateX(-50%);
         }
       `}</style>
     </nav>
