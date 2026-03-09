@@ -147,6 +147,11 @@ export default function About() {
                   className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight"
                   style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
                 />
+                <TextGenerateEffect
+                  words="Personalised Ayurvedic healing retreats rooted in medical expertise, holistic care, and ancient wisdom."
+                  className="text-white text-[20px] sm:text-[22px] md:text-[24px] leading-tight"
+                  style={{ fontFamily: "Lato, sans-serif", fontStyle: "normal", width: '75%', margin: '0 auto' }}
+                />
               </div>
             </div>
           </section>

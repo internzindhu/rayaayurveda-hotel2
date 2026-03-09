@@ -18,7 +18,7 @@ export const TextGenerateEffect = ({
   style?: CSSProperties;
 }) => {
   const [scope, animate] = useAnimate();
-  let wordsArray = words.split(" ");
+  const lines = words.split("\n").map((line) => line.split(" ").filter(Boolean));
   useEffect(() => {
     animate(
       "span",
@@ -36,21 +36,24 @@ export const TextGenerateEffect = ({
   const renderWords = () => {
     return (
       <motion.div ref={scope}>
-        {wordsArray.map((word, idx) => {
-          return (
-            <motion.span
-              key={word + idx}
-              className="text-white opacity-0"
-              style={{
-                filter: filter ? "blur(10px)" : "none",
-                fontFamily: style?.fontFamily,
-                fontStyle: style?.fontStyle,
-              }}
-            >
-              {word}{" "}
-            </motion.span>
-          );
-        })}
+        {lines.map((lineWords, lineIdx) => (
+          <span key={lineIdx}>
+            {lineWords.map((word, idx) => (
+              <motion.span
+                key={word + lineIdx + idx}
+                className="text-white opacity-0"
+                style={{
+                  filter: filter ? "blur(10px)" : "none",
+                  fontFamily: style?.fontFamily,
+                  fontStyle: style?.fontStyle,
+                }}
+              >
+                {word}{" "}
+              </motion.span>
+            ))}
+            {lineIdx < lines.length - 1 && <br />}
+          </span>
+        ))}
       </motion.div>
     );
   };
@@ -58,7 +61,7 @@ export const TextGenerateEffect = ({
   return (
     <div className={cn( className)} style={style}>
       <div className="mt-4">
-        <div className="text-white text-6xl leading-snug tracking-wide" style={style}>
+        <div className="text-white  leading-snug tracking-wide" style={style}>
           {renderWords()}
         </div>
       </div>

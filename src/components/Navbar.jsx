@@ -42,8 +42,9 @@ export default function Navbar() {
         // Always show navbar at the top of the page
         setIsVisible(true);
       } else if (currentScrollY > lastScrollY) {
-        // Scrolling down - hide navbar
+        // Scrolling down - hide navbar and close dropdowns
         setIsVisible(false);
+        setIsRetreatsOpen(false);
       } else {
         // Scrolling up - show navbar
         setIsVisible(true);
@@ -71,8 +72,8 @@ export default function Navbar() {
     isActive("/individual-stays") || isActive("/group-stays");
 
   return (
-    <nav className={`w-full bg-[#5E17EB] fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'
-      } ${!isAtTop ? 'backdrop-blur-sm' : ''}`}>
+    <nav className={`w-full bg-[#5E17EB] fixed top-0 left-0 right-0 transition-all duration-500 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'
+      } ${!isAtTop ? 'backdrop-blur-sm' : ''} ${isMobileMenuOpen ? 'z-[100]' : 'z-50'}`}>
       <div className="relative">
         <div className="relative z-10 h-16 sm:h-20 md:h-[93px] px-4 sm:px-6  pt-8 flex items-center">
 
@@ -97,12 +98,12 @@ export default function Navbar() {
             {/* Column 2 - RETREATS (Dropdown) */}
             <div className="flex items-center justify-center">
               <div
-                className="relative"
+                className="relative z-[60]"
                 ref={retreatsDropdownRef}
               >
                 <button
                   type="button"
-                  className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white whitespace-nowrap uppercase text-sm flex items-center gap-1 ${isRetreatsActive
+                  className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white whitespace-nowrap uppercase text-sm flex items-center gap-1 cursor-pointer ${isRetreatsActive
                     ? "opacity-90"
                     : "hover:opacity-80"
                     }`}
@@ -116,22 +117,22 @@ export default function Navbar() {
                 </button>
 
                 {isRetreatsOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-48 rounded-lg bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown">
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-48 rounded-lg bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60]">
                     <Link
                       to="/individual-stays"
-                      className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150"
+                      className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer"
                       style={{ fontFamily: 'Lato, sans-serif' }}
                       onClick={() => setIsRetreatsOpen(false)}
                     >
-                      Individual Stay
+                      INDIVIDUAL STAY
                     </Link>
                     <Link
                       to="/group-stays"
-                      className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150"
+                      className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer"
                       style={{ fontFamily: 'Lato, sans-serif' }}
                       onClick={() => setIsRetreatsOpen(false)}
                     >
-                      Group Stay
+                      GROUP STAY
                     </Link>
                   </div>
                 )}
@@ -264,11 +265,11 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden bg-[#181818] border-t border-white/10" style={{ fontFamily: 'Lato, sans-serif' }}>
-          <div className="px-4 py-6 space-y-4">
+        <div className="lg:hidden relative z-10 bg-[#181818] border-t border-white/10" style={{ fontFamily: 'Lato, sans-serif' }}>
+          <div className="px-4 py-6 space-y-1">
             <Link
               to="/about"
-              className={`block py-2 text-white font-medium transition-colors duration-200 uppercase text-sm ${isActive("/about") ? "opacity-90" : "hover:opacity-80"
+              className={`block py-3 px-1 text-white font-medium transition-colors duration-200 uppercase text-sm cursor-pointer touch-manipulation ${isActive("/about") ? "opacity-90" : "hover:opacity-80"
                 }`}
               onClick={() => setIsMobileMenuOpen(false)}
             >
@@ -277,7 +278,7 @@ export default function Navbar() {
             <div>
               <button
                 type="button"
-                className="flex w-full items-center justify-between py-2 text-white font-medium transition-colors duration-200 uppercase text-sm"
+                className="flex w-full items-center justify-between py-3 px-1 text-white font-medium transition-colors duration-200 uppercase text-sm cursor-pointer touch-manipulation"
                 onClick={() => setIsRetreatsOpen((prev) => !prev)}
               >
                 <span>RETREATS</span>
@@ -286,43 +287,51 @@ export default function Navbar() {
                 </span>
               </button>
               {isRetreatsOpen && (
-                <div className="ml-4 mt-1 space-y-1">
+                <div className="ml-4 mt-1 space-y-0">
                   <Link
                     to="/individual-stays"
-                    className={`block py-1 text-white/90 text-sm ${isActive("/individual-stays") ? "opacity-90" : "hover:opacity-80"
+                    className={`block py-3 px-1 text-white/90 text-sm cursor-pointer touch-manipulation ${isActive("/individual-stays") ? "opacity-90" : "hover:opacity-80"
                       }`}
                     onClick={() => {
                       setIsRetreatsOpen(false);
                       setIsMobileMenuOpen(false);
                     }}
                   >
-                    Individual Stay
+                    INDIVIDUAL STAY
                   </Link>
                   <Link
                     to="/group-stays"
-                    className={`block py-1 text-white/90 text-sm ${isActive("/group-stays") ? "opacity-90" : "hover:opacity-80"
+                    className={`block py-3 px-1 text-white/90 text-sm cursor-pointer touch-manipulation ${isActive("/group-stays") ? "opacity-90" : "hover:opacity-80"
                       }`}
                     onClick={() => {
                       setIsRetreatsOpen(false);
                       setIsMobileMenuOpen(false);
                     }}
                   >
-                    Group Stay
+                    GROUP STAY
                   </Link>
                 </div>
               )}
             </div>
             <Link
               to="/consultation"
-              className={`block py-2 text-white font-medium transition-colors duration-200 uppercase text-sm ${isActive("/consultation") ? "opacity-90" : "hover:opacity-80"
+              className={`block py-3 px-1 text-white font-medium transition-colors duration-200 uppercase text-sm cursor-pointer touch-manipulation ${isActive("/consultation") ? "opacity-90" : "hover:opacity-80"
                 }`}
               onClick={() => setIsMobileMenuOpen(false)}
             >
               DOCTORS & THERAPISTS
             </Link>
             <Link
+              to="/vouchers"
+              className={`block py-3 px-1 text-white font-medium transition-colors duration-200 uppercase text-sm cursor-pointer touch-manipulation ${isActive("/vouchers") ? "opacity-90" : "hover:opacity-80"
+                }`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              VOUCHERS
+            </Link>
+            <Link
               to="/contact"
-              className={`block py-2 text-white font-medium transition-colors duration-200 uppercase text-sm ${isActive("/contact") ? "opacity-90" : "hover:opacity-80"
+              className={`block py-3 px-1 text-white font-medium transition-colors duration-200 uppercase text-sm cursor-pointer touch-manipulation ${isActive("/contact") ? "opacity-90" : "hover:opacity-80"
                 }`}
               onClick={() => setIsMobileMenuOpen(false)}
             >
@@ -330,7 +339,7 @@ export default function Navbar() {
             </Link>
             <Link
               to="/blogs"
-              className={`block py-2 text-white font-medium transition-colors duration-200 uppercase text-sm ${isActive("/blogs") ? "opacity-90" : "hover:opacity-80"
+              className={`block py-3 px-1 text-white font-medium transition-colors duration-200 uppercase text-sm cursor-pointer touch-manipulation ${isActive("/blogs") ? "opacity-90" : "hover:opacity-80"
                 }`}
               onClick={() => setIsMobileMenuOpen(false)}
             >

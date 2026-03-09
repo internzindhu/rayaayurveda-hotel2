@@ -1,37 +1,101 @@
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import { supabase } from "@/lib/supabase";
+
+const INITIAL_DISPLAY = 4;
+const DROPDOWN_MAX = 8;
+
+function matchHotel(hotel, query) {
+  if (!query || !query.trim()) return true;
+  const q = query.trim().toLowerCase();
+  const name = (hotel.hotel_name || "").toLowerCase();
+  const location = (hotel.hotel_location || "").toLowerCase();
+  const desc = (hotel.description || "").toLowerCase();
+  return name.includes(q) || location.includes(q) || desc.includes(q);
+}
 
 export default function IndividualStays() {
-  const hotels = [
-    {
-      id: 1,
-      name: "Tranquil Palms Ayurveda Resort",
-      location: "Sri Lanka",
-      price: "$2,500",
-      duration: "7 nights",
-      image: "/hotel.png",
-      rating: 4.8
-    },
-    {
-      id: 2,
-      name: "Kerala Wellness Retreat",
-      location: "India",
-      price: "$2,200",
-      duration: "7 nights",
-      image: "/hotel.png",
-      rating: 4.9
-    },
-    {
-      id: 3,
-      name: "Himalayan Healing Center",
-      location: "India",
-      price: "$3,000",
-      duration: "10 nights",
-      image: "/hotel.png",
-      rating: 4.7
+  const [hotels, setHotels] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY);
+  const [searchInput, setSearchInput] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
+  const [priceFilter, setPriceFilter] = useState("");
+  const [periodFilter, setPeriodFilter] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const searchRef = useRef(null);
+  const dropdownCloseTimer = useRef(null);
+
+  const textFilter = appliedSearch || searchInput;
+  const filteredHotels = hotels.filter(
+    (h) =>
+      matchHotel(h, textFilter) &&
+      matchHotel(h, priceFilter) &&
+      matchHotel(h, periodFilter)
+  );
+  const dropdownHotels = hotels
+    .filter((h) => matchHotel(h, searchInput))
+    .slice(0, DROPDOWN_MAX);
+  const hotelsToShow = filteredHotels.slice(0, displayCount);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setShowDropdown(false);
+      }
     }
-  ];
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleSelectHotel = (hotel) => {
+    setSearchInput(hotel.hotel_name);
+    setAppliedSearch(hotel.hotel_name);
+    setDisplayCount(INITIAL_DISPLAY);
+    setShowDropdown(false);
+  };
+
+  const handleSearchClick = () => {
+    setAppliedSearch(searchInput.trim());
+    setDisplayCount(INITIAL_DISPLAY);
+    setShowDropdown(false);
+  };
+
+  const handleSearchInputChange = (value) => {
+    setSearchInput(value);
+    if (!value.trim()) setAppliedSearch("");
+  };
+
+  const handleInputFocus = () => setShowDropdown(true);
+  const handleInputBlur = () => {
+    dropdownCloseTimer.current = setTimeout(() => setShowDropdown(false), 150);
+  };
+  const cancelBlur = () => {
+    if (dropdownCloseTimer.current) clearTimeout(dropdownCloseTimer.current);
+  };
+
+  useEffect(() => {
+    async function fetchHotels() {
+      try {
+        setLoading(true);
+        const { data, error: err } = await supabase
+          .from("hotels")
+          .select("*")
+          .eq("is_active", true)
+          .order("id", { ascending: true });
+        if (err) throw err;
+        setHotels(data ?? []);
+      } catch (e) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchHotels();
+  }, []);
 
   return (
     <div className="landing-theme min-h-screen bg-[#FFFBF7] overflow-x-hidden">
@@ -110,64 +174,107 @@ export default function IndividualStays() {
       <div className="max-w-7xl mx-auto px-4 py-16">
         {/* Search Bar Section */}
         <div className="w-full bg-[#FFF8F2] rounded-xl shadow-sm border border-[#FFF0E0] px-6 sm:px-10 py-6 sm:py-8 mb-12 flex flex-col md:flex-row items-stretch md:items-center gap-6 md:gap-8">
-          {/* Destination */}
-          <div className="flex-1 flex flex-col">
-            <span
+          {/* Destination or Hotel - search input with dropdown */}
+          <div className="flex-1 flex flex-col relative" ref={searchRef}>
+            <label
+              htmlFor="hotel-search"
               className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
               style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
             >
               Destination or Hotel
-            </span>
-            <span
-              className="text-sm sm:text-base text-[#8C8C8C]"
+            </label>
+            <input
+              id="hotel-search"
+              type="text"
+              value={searchInput}
+              onChange={(e) => handleSearchInputChange(e.target.value)}
+              onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
+              placeholder="Country, region, hotel"
+              className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] placeholder:text-[#8C8C8C]"
               style={{ fontFamily: "Lato, sans-serif" }}
-            >
-              Country, region, hotel
-            </span>
+            />
+            {showDropdown && (
+              <ul
+                className="absolute left-0 right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-[#FFF0E0] py-2 max-h-60 overflow-y-auto z-50"
+                style={{ fontFamily: "Lato, sans-serif" }}
+                onMouseDown={cancelBlur}
+              >
+                {searchInput.trim() === "" ? (
+                  <li className="px-4 py-2 text-sm text-[#8C8C8C]">Type to search hotels</li>
+                ) : dropdownHotels.length === 0 ? (
+                  <li className="px-4 py-2 text-sm text-[#8C8C8C]">No hotels match</li>
+                ) : (
+                  dropdownHotels.map((hotel) => (
+                    <li key={hotel.id}>
+                      <button
+                        type="button"
+                        className="w-full text-left px-4 py-2.5 text-sm text-[#181818] hover:bg-[#FFF0E0] transition-colors"
+                        onClick={() => handleSelectHotel(hotel)}
+                      >
+                        <span className="font-medium">{hotel.hotel_name}</span>
+                        {hotel.hotel_location && (
+                          <span className="block text-[#8C8C8C] text-xs mt-0.5 truncate">{hotel.hotel_location}</span>
+                        )}
+                      </button>
+                    </li>
+                  ))
+                )}
+              </ul>
+            )}
           </div>
 
           {/* Divider */}
           <div className="hidden md:block w-px self-stretch bg-[#E0D4C8]" />
 
-          {/* Price Range */}
+          {/* Price Range - simple text filter */}
           <div className="flex-1 flex flex-col">
-            <span
+            <label
+              htmlFor="price-range"
               className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
               style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
             >
               Price Range
-            </span>
-            <span
-              className="text-sm sm:text-base text-[#8C8C8C]"
+            </label>
+            <input
+              id="price-range"
+              type="text"
+              value={priceFilter}
+              onChange={(e) => setPriceFilter(e.target.value)}
+              placeholder="e.g. budget, luxury"
+              className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] placeholder:text-[#8C8C8C]"
               style={{ fontFamily: "Lato, sans-serif" }}
-            >
-              What are you looking for?
-            </span>
+            />
           </div>
 
           {/* Divider */}
           <div className="hidden md:block w-px self-stretch bg-[#E0D4C8]" />
 
-          {/* Period */}
+          {/* Period - simple text filter */}
           <div className="flex-1 flex flex-col">
-            <span
+            <label
+              htmlFor="period-filter"
               className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
               style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
             >
               Period
-            </span>
-            <span
-              className="text-sm sm:text-base text-[#8C8C8C]"
+            </label>
+            <input
+              id="period-filter"
+              type="text"
+              value={periodFilter}
+              onChange={(e) => setPeriodFilter(e.target.value)}
+              placeholder="e.g. 7 nights, weekend"
+              className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] placeholder:text-[#8C8C8C]"
               style={{ fontFamily: "Lato, sans-serif" }}
-            >
-              When &amp; for how long
-            </span>
+            />
           </div>
 
           {/* Search */}
           <button
             type="button"
-            className="md:ml-auto text-[#5E17EB] text-xs sm:text-sm tracking-[0.16em] uppercase"
+            onClick={handleSearchClick}
+            className="md:ml-auto text-[#5E17EB] text-xs sm:text-sm tracking-[0.16em] uppercase hover:underline cursor-pointer"
             style={{ fontFamily: "Lato, sans-serif" }}
           >
             Search &rarr;
@@ -177,102 +284,73 @@ export default function IndividualStays() {
 
 
 
-        {/* Retreat Programs Grid */}
+        {/* Hotels Grid from API */}
         <div className="relative mb-24 sm:mb-24">
-          {/* Vertical separator line */}
-          <div className="hidden md:block absolute left-1/2 top-0 bottom-10 w-px bg-gray-900 transform -translate-x-1/2"></div>
+          <div className="hidden md:block absolute left-1/2 top-0 bottom-24 w-px bg-gray-900 transform -translate-x-1/2"></div>
 
-          {/* 2x2 Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12">
-            {/* Card 1: Ayurvedic Healing Retreat (Signature) */}
-            <div className="flex flex-col">
-              <div className="mb-4">
-                <img
-                  src="/meds.png"
-                  alt="Ayurvedic Healing Retreat"
-                  className="w-full aspect-[4/3] object-cover rounded-lg"
-                />
-              </div>
-              <h3 className="text-xl sm:text-2xl md:text-2xl text-[#181818]  mb-3" style={{ fontFamily: 'Sentient, serif', fontStyle: 'italic' }}>
-                Ayurvedic Healing Retreat (Signature)
-              </h3>
-              <p className="text-sm text-[#181818] mb-4 leading-relaxed" style={{ fontFamily: 'poppins' }}>
-                A comprehensive therapeutic program for regeneration, detoxification, and restoring balance in both body and mind.
-              </p>
-              <Link to="/book-hotel/1" className="text-[#5E17EB] hover:underline inline-block uppercase" style={{ fontFamily: 'Lato', fontWeight: '500', fontStyle: 'normal', fontSize: '14px', lineHeight: '100%', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                VIEW RETREAT →
-              </Link>
+          {loading && (
+            <p className="text-center text-[#181818] py-12" style={{ fontFamily: 'Lato, sans-serif' }}>Loading hotels…</p>
+          )}
+          {error && (
+            <p className="text-center text-red-600 py-12" style={{ fontFamily: 'Lato, sans-serif' }}>Failed to load hotels: {error}</p>
+          )}
+          {!loading && !error && hotels.length === 0 && (
+            <p className="text-center text-[#181818] py-12" style={{ fontFamily: 'Lato, sans-serif' }}>No hotels available.</p>
+          )}
+          {!loading && !error && hotels.length > 0 && filteredHotels.length === 0 && (
+            <p className="text-center text-[#181818] py-12" style={{ fontFamily: 'Lato, sans-serif' }}>
+              No hotels match your search. Try a different destination or hotel name.
+            </p>
+          )}
+          {!loading && !error && hotels.length > 0 && filteredHotels.length > 0 && (
+            <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 items-start">
+              {hotelsToShow.map((hotel, index) => (
+                <div key={hotel.id} className="flex flex-col">
+                  <div className={`mb-4 ${index === 1 ? 'lg:mt-[60px]' : index === 2 ? 'lg:mt-[100px]' : ''}`}>
+                    <img
+                      src={hotel.images || "/hotel.png"}
+                      alt={hotel.hotel_name}
+                      className="w-full aspect-[4/3] object-cover rounded-lg"
+                    />
+                  </div>
+                  <h3 className="text-xl sm:text-2xl md:text-2xl text-[#181818] mb-3" style={{ fontFamily: 'Sentient, serif', fontStyle: 'italic' }}>
+                    {hotel.hotel_name}
+                  </h3>
+                  {hotel.slogan_line && (
+                    <p className="text-sm text-[#5E17EB] mb-1" style={{ fontFamily: 'Lato, sans-serif' }}>{hotel.slogan_line}</p>
+                  )}
+                  <p className="text-sm text-[#8C8C8C] mb-2" style={{ fontFamily: 'Lato, sans-serif' }}>{hotel.hotel_location}</p>
+                  {/* <p className="text-sm text-[#181818] mb-4 leading-relaxed" style={{ fontFamily: 'poppins' }}>
+                    {hotel.description}
+                  </p> */}
+                  {hotel.facilities && Array.isArray(hotel.facilities) && hotel.facilities.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {hotel.facilities.map((f, i) => (
+                        <span key={i} className="text-xs px-2 py-1 bg-[#FFF0E0] rounded" style={{ fontFamily: 'Lato, sans-serif' }}>{f}</span>
+                      ))}
+                    </div>
+                  )}
+                  <Link to={`/book-hotel/${hotel.id}`} className="text-[#5E17EB] hover:underline inline-block uppercase mt-6" style={{ fontFamily: 'Lato', fontWeight: '500', fontStyle: 'normal', fontSize: '14px', lineHeight: '100%', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                    VIEW RETREAT →
+                  </Link>
+                </div>
+              ))}
             </div>
-
-            {/* Card 2: Panchakarma Cleanse */}
-            <div className="flex flex-col">
-              <div className="mb-4 lg:mt-[60px]">
-                <img
-                  src="/panchakarma.jpg"
-                  alt="Panchakarma Cleanse"
-                  className="w-full aspect-[4/3] object-cover rounded-lg"
-                />
+            {displayCount < filteredHotels.length && (
+              <div className="text-center mt-24">
+                <button
+                  type="button"
+                  onClick={() => setDisplayCount((prev) => Math.min(prev + INITIAL_DISPLAY, filteredHotels.length))}
+                  className="text-[#5E17EB] text-sm sm:text-base tracking-[0.1em] uppercase hover:underline px-6 py-6  rounded-lg transition-colors hover:bg-[#5E17EB] hover:text-white"
+                  style={{ fontFamily: 'Lato, sans-serif' }}
+                >
+                  Show more hotels
+                </button>
               </div>
-              <h3 className="text-xl sm:text-2xl md:text-2xl text-[#181818]  mb-3" style={{ fontFamily: 'Sentient, serif', fontStyle: 'italic' }}>
-                Panchakarma Cleanse
-              </h3>
-              <p className="text-sm text-[#181818] mb-4 leading-relaxed" style={{ fontFamily: 'poppins' }}>
-                A deep medical detox supervised by a doctor to reset the nervous system, hormonal balance, and overall health.
-              </p>
-              <Link to="/book-hotel/2" className="text-[#5E17EB] hover:underline inline-block uppercase" style={{ fontFamily: 'Lato', fontWeight: '500', fontStyle: 'normal', fontSize: '14px', lineHeight: '100%', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                VIEW RETREAT →
-              </Link>
-            </div>
-
-            {/* Card 3: Stress & Burnout Recovery */}
-            <div className="flex flex-col">
-              <div className="mb-4 lg:mt-[100px]">
-                <img
-                  src="/stress.png"
-                  alt="Stress & Burnout Recovery"
-                  className="w-full aspect-[4/3] object-cover rounded-lg"
-                />
-              </div>
-              <h3 className="text-xl sm:text-2xl md:text-2xl text-[#181818]  mb-3" style={{ fontFamily: 'Sentient, serif', fontStyle: 'italic' }}>
-                Stress & Burnout Recovery
-              </h3>
-              <p className="text-sm text-[#181818] mb-4 leading-relaxed" style={{ fontFamily: 'poppins' }}>
-                A program focused on exhaustion, insomnia, anxiety, and long-term mental strain.
-              </p>
-              <Link to="/book-hotel/3" className="text-[#5E17EB] hover:underline inline-block uppercase" style={{ fontFamily: 'Lato', fontWeight: '500', fontStyle: 'normal', fontSize: '14px', lineHeight: '100%', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                VIEW RETREAT →
-              </Link>
-            </div>
-
-            {/* Card 4: Digestive & Gut Health Programme */}
-            <div className="flex flex-col">
-              <div className="mb-4">
-                <img
-                  src="/digestive.png"
-                  alt="Digestive & Gut Health Programme"
-                  className="w-full aspect-[4/3] object-cover rounded-lg"
-                />
-              </div>
-              <h3 className="text-xl sm:text-2xl md:text-2xl text-[#181818] mb-3" style={{ fontFamily: 'Sentient, serif', fontStyle: 'italic' }}>
-                Digestive & Gut Health Programme
-              </h3>
-              <p className="text-sm text-[#181818] mb-4 leading-relaxed" style={{ fontFamily: 'poppins' }}>
-                Therapy targeting digestive issues, intolerances, inflammation, and metabolic problems.
-              </p>
-              <Link to="/book-hotel/4" className="text-[#5E17EB] hover:underline inline-block uppercase" style={{ fontFamily: 'Lato', fontWeight: '500', fontStyle: 'normal', fontSize: '14px', lineHeight: '100%', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                VIEW RETREAT →
-              </Link>
-            </div>
-          </div>
-
-
-
-          {/* Discover All Retreats Button */}
-          <div className="text-center mt-24 sm:mt-32">
-            <Link to="/individual-stays" className="text-[#5E17EB]  text-lg hover:underline inline-block" style={{ fontFamily: 'poppins' }}>
-              DISCOVER ALL RETREATS →
-            </Link>
-          </div>
+            )}
+            </>
+          )}
         </div>
       </div>
     </div>

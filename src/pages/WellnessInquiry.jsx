@@ -13,6 +13,8 @@ function formatDate(str) {
   return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
 
+
+
 export default function WellnessInquiry() {
   const { id } = useParams();
   const location = useLocation();
@@ -28,6 +30,7 @@ export default function WellnessInquiry() {
   const [mobile, setMobile] = useState("");
   const [comment, setComment] = useState("");
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const dateFrom = booking.dateFrom || "";
   const dateTo = booking.dateTo || "";
@@ -45,6 +48,50 @@ export default function WellnessInquiry() {
       ? `${formatDate(dateFrom)} - ${formatDate(dateTo)}`
       : "12, Sep, 2025 - 20, Sep, 2025";
 
+
+  const handleSendInquiry = async () => {
+    if (!fullName || !email || !country || !mobile) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+  
+    try {
+      setLoading(true);
+  
+      const response = await fetch(
+        "https://akeroaymrygpdkasjzov.functions.supabase.co/send-wellness-inquiry",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            booking,
+            personal: {
+              gender,
+              fullName,
+              email,
+              country,
+              mobile,
+              comment,
+            },
+            hotelName: hotel.name,
+          }),
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error("Failed to send inquiry");
+      }
+  
+      setShowSuccessPopup(true);
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="min-h-screen bg-[#FFFBF7]">
       <Navbar />
@@ -176,11 +223,12 @@ export default function WellnessInquiry() {
 
             <button
               type="button"
-              onClick={() => setShowSuccessPopup(true)}
+              onClick={handleSendInquiry}
+              disabled={loading}
               className="mt-8 w-full sm:w-auto px-8 py-3 rounded-md bg-[#5E17EB] text-white text-sm font-medium tracking-wide uppercase hover:bg-[#4B12BD] transition-colors"
               style={{ fontFamily: "Lato, sans-serif" }}
             >
-              Send inquiry
+              {loading ? "Sending..." : "Send inquiry"}
             </button>
           </div>
 
