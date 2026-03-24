@@ -342,7 +342,7 @@ export default function IndividualStays() {
                 <button
                   type="button"
                   onClick={() => setDisplayCount((prev) => Math.min(prev + INITIAL_DISPLAY, filteredHotels.length))}
-                  className="text-[#5E17EB] text-sm sm:text-base tracking-[0.1em] uppercase hover:underline px-6 py-6  rounded-lg transition-colors hover:bg-[#5E17EB] hover:text-white"
+                  className="text-[#5E17EB] text-sm sm:text-base tracking-[0.1em] uppercase hover:underline px-6 py-6  rounded-lg transition-colors "
                   style={{ fontFamily: 'Lato, sans-serif' }}
                 >
                   Show more hotels

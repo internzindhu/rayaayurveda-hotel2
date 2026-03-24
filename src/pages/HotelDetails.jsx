@@ -26,6 +26,7 @@ export default function HotelDetails() {
   const [flightIncluded, setFlightIncluded] = useState("Not included");
   const [extras, setExtras] = useState("Insurance 300€");
   const [activeTab, setActiveTab] = useState("reviews"); // "reviews" | "gallery"
+  const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
     async function load() {
@@ -58,8 +59,40 @@ export default function HotelDetails() {
   }, [hotelId]);
 
   const totalDisplay = "Not available"; // API has no price
+
+  const validateForm = () => {
+    const errors = {};
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (!dateFrom) {
+      errors.dateFrom = "Please select a start date.";
+    } else {
+      const from = new Date(dateFrom);
+      if (from < today) errors.dateFrom = "Start date cannot be in the past.";
+    }
+
+    if (!dateTo) {
+      errors.dateTo = "Please select an end date.";
+    } else if (dateFrom && new Date(dateTo) <= new Date(dateFrom)) {
+      errors.dateTo = "End date must be after the start date.";
+    }
+
+    if (flightIncluded === "Select") {
+      errors.flightIncluded = "Please choose a flight option.";
+    }
+
+    return errors;
+  };
+
   const handleBookNow = () => {
     if (!hotel) return;
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    setFormErrors({});
     navigate(`/book-hotel/${hotel.id}/inquiry`, {
       state: {
         dateFrom,
@@ -183,9 +216,17 @@ export default function HotelDetails() {
                       <input
                         type="date"
                         value={dateFrom}
-                        onChange={(e) => setDateFrom(e.target.value)}
-                        className="w-full border border-[#E0D4C8] rounded-md px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB]"
+                        min={new Date().toISOString().split("T")[0]}
+                        onChange={(e) => {
+                          setDateFrom(e.target.value);
+                          if (dateTo && dateTo <= e.target.value) setDateTo("");
+                          setFormErrors((prev) => ({ ...prev, dateFrom: undefined, dateTo: undefined }));
+                        }}
+                        className={`w-full border rounded-md px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.dateFrom ? "border-red-400" : "border-[#E0D4C8]"}`}
                       />
+                      {formErrors.dateFrom && (
+                        <p className="text-red-500 text-[10px] mt-1">{formErrors.dateFrom}</p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-xs text-[#555] mb-1">
@@ -194,9 +235,13 @@ export default function HotelDetails() {
                       <input
                         type="date"
                         value={dateTo}
-                        onChange={(e) => setDateTo(e.target.value)}
-                        className="w-full border border-[#E0D4C8] rounded-md px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB]"
+                        min={dateFrom || new Date().toISOString().split("T")[0]}
+                        onChange={(e) => { setDateTo(e.target.value); setFormErrors((prev) => ({ ...prev, dateTo: undefined })); }}
+                        className={`w-full border rounded-md px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.dateTo ? "border-red-400" : "border-[#E0D4C8]"}`}
                       />
+                      {formErrors.dateTo && (
+                        <p className="text-red-500 text-[10px] mt-1">{formErrors.dateTo}</p>
+                      )}
                     </div>
                   </div>
 
@@ -210,10 +255,8 @@ export default function HotelDetails() {
                       onChange={(e) => setRoomType(e.target.value)}
                       className="w-full border border-[#E0D4C8] rounded-md px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]"
                     >
-                      <option>Select</option>
                       <option>Single</option>
                       <option>Double</option>
-                      <option>Suite</option>
                     </select>
                   </div>
 
@@ -224,13 +267,16 @@ export default function HotelDetails() {
                     </label>
                     <select
                       value={flightIncluded}
-                      onChange={(e) => setFlightIncluded(e.target.value)}
-                      className="w-full border border-[#E0D4C8] rounded-md px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]"
+                      onChange={(e) => { setFlightIncluded(e.target.value); setFormErrors((prev) => ({ ...prev, flightIncluded: undefined })); }}
+                      className={`w-full border rounded-md px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.flightIncluded ? "border-red-400" : "border-[#E0D4C8]"}`}
                     >
                       <option>Select</option>
                       <option>Included</option>
                       <option>Not included</option>
                     </select>
+                    {formErrors.flightIncluded && (
+                      <p className="text-red-500 text-[10px] mt-1">{formErrors.flightIncluded}</p>
+                    )}
                   </div>
 
                   {/* People */}

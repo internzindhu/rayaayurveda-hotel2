@@ -225,7 +225,7 @@ export default function Home() {
         <video
           ref={videoRef}
           autoPlay
-          loop={true} // Stop looping so ended event fires
+          loop={false} // Stop looping so ended event fires
           muted
           playsInline
           preload="auto"
@@ -591,15 +591,7 @@ export default function Home() {
             <div className="mb-6">
 
               <div className="flex flex-col text-center  gap-8 items-center">
-                <h2 className="text-[#5E17EB] mb-4 uppercase" style={{
-                  fontFamily: 'Lato, sans-serif',
-                  fontWeight: 500,
-                  fontSize: '16px',
-                  lineHeight: '100%',
-                  letterSpacing: '0.1em',
-                  textAlign: 'center',
-                  textTransform: 'uppercase'
-                }}>How it works</h2>
+               
 
               </div>
               {/* <p className="text-sm sm:text-base text-[#5E17EB] uppercase tracking-wider mb-2" style={{ fontFamily: 'poppins' }}>WHAT WE OFFER IN</p>
@@ -609,7 +601,16 @@ export default function Home() {
               </p> */}
             </div>
           </div>
-          <div className="bg-[#EAE9E3] w-full pb-10">
+          <div className="bg-[#FFFBF7] w-full pb-10 pt-10">
+          <h2 className="text-[#5E17EB] mb-4 uppercase" style={{
+                  fontFamily: 'Lato, sans-serif',
+                  fontWeight: 500,
+                  fontSize: '16px',
+                  lineHeight: '100%',
+                  letterSpacing: '0.1em',
+                  textAlign: 'center',
+                  textTransform: 'uppercase'
+                }}>How it works</h2>
             {/* Top Section: Heading with vertical separator and description */}
             <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start p-4 sm:p-8 lg:p-12">
               <div className="flex w-full lg:w-1/2 gap-4 lg:gap-6 lg:pl-[20%] items-center justify-between">

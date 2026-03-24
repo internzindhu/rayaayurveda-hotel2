@@ -160,7 +160,7 @@ export default function About() {
 
 
       {/* Our Promise Section */}
-      <section className="py-16 px-4 sm:px-8 bg-[#FFFBF7]">
+      <section className="py-16 px-4 sm:px-8 bg-white">
         <div className="max-w-4xl mx-auto">
           <p className="text-base sm:text-lg text-[#181818] leading-relaxed text-center" style={{ fontFamily: 'poppins' }}>
             Tucked away in the heart of nature, RAYA Longlife honors Ayurvedic wisdom & Ayurveda by pairing each guest-owned holistic retreat, authentic spiritual & wellbeing through transformative healing experiences.
@@ -168,7 +168,7 @@ export default function About() {
         </div>
       </section>
 
-      <section className="py-16 px-4 sm:px-8 bg-[#FFFBF7]">
+      <section className="py-16 px-4 sm:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
 
           <div className="relative w-full">
@@ -176,7 +176,7 @@ export default function About() {
             <div className="relative w-full aspect-[4/3] sm:h-[500px] lg:h-[600px]">
               <img
                 ref={imageRef}
-                src="/home1.jpg"
+                src="/a1.jpg"
                 alt="Ayurvedic treatment room"
                 className={`w-full h-full object-cover rounded-lg transition-all duration-1000 ease-out ${imageVisible
                   ? 'opacity-100 translate-x-0'
@@ -233,7 +233,7 @@ export default function About() {
 
       </div>
 
-      <div className="bg-[#EAE9E3] w-full pb-10 pt-[7%]">
+      <div className="bg-[#FFFBF7] w-full pb-10 pt-[7%]">
         <h2 className="text-[#5E17EB] mb-4 uppercase" style={{
           fontFamily: 'Lato, sans-serif',
           fontWeight: 500,
@@ -242,15 +242,15 @@ export default function About() {
           letterSpacing: '0.1em',
           textAlign: 'center',
           textTransform: 'uppercase'
-        }}>Ayurveda as a medical system</h2>
+        }}>Principles of Healing</h2>
         {/* Top Section: Heading with vertical separator and description */}
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start p-4 sm:p-8 lg:p-12">
           <div className="flex w-full lg:w-1/2 gap-4 lg:gap-6 lg:pl-[20%] items-center justify-between">
-            <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#181818] font-serif" style={{ fontFamily: 'Sentient Bold, serif' }}>Our process</h3>
+            <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#181818] font-serif" style={{ fontFamily: 'Sentient Bold, serif' }}>Our Promise</h3>
             <div className="hidden lg:block w-0 h-24 border-l-2 border-dotted border-[#181818] mr-0 self-center"></div>
           </div>
           <div className="flex w-full lg:w-1/2 items-center gap-4 lg:gap-6 lg:gap-8">
-            <p className="text-[16px] sm:text-lg text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato, sans-serif' }}>We gently guide you from the very first consultation to a fully tailored Ayurvedic retreat, ensuring personalised care, clarity, and support at every step of your healing journey.</p>
+            <p className="text-[16px] sm:text-lg text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato, sans-serif' }}>We offer authentic Ayurvedic care guided by experienced professionals, set in inspiring natural surroundings and supported by a seamless, secure booking experience always tailored to your individual life stage.</p>
           </div>
         </div>
 
@@ -258,7 +258,7 @@ export default function About() {
         <div className="relative px-4 sm:px-6 lg:px-0">
           <img
             ref={processImageRef}
-            src="/process.png"
+            src="/a2.png"
             alt="Natural ingredients and produce"
             className={`w-full lg:w-[892px] h-auto lg:h-[458px] lg:ml-[32%] object-cover rounded-lg lg:rounded-none transition-all duration-1000 ease-out ${processImageVisible
               ? 'opacity-100 translate-x-0'
@@ -280,10 +280,11 @@ export default function About() {
               lineHeight: '100%',
               letterSpacing: '0%'
             }}>
-              A truly ayurvedic journey from the very beginning.
+             Ayurveda focuses on prevention, balance, and long-term health
             </h4>
             <p className="text-[#181818] leading-relaxed text-sm sm:text-base lg:text-[16px]" style={{ fontFamily: 'Lato, sans-serif', lineHeight: '1.5' }}>
-              You start by filling out a short questionnaire or connecting directly  with our specialists, who will carefully review your needs, medical history, and goals. Based on this, we recommend a clinic that best supports your path to balance. All bookings and communication is handled for you. Just sit back and relax. After your retreat, you are provided with ongoing support to help you maintain long-term results.
+            The goal of every Ayurvedic treatment is to recognise and address signs of imbalance as early as possible — before illness fully develops. For prevention, small adjustments in diet combined with individual Ayurvedic treatments over 10–14 days may be sufficient.
+            However, if the disease is in an advanced – chronic stage, Panchakarma treatment proves to be very effective. This is a special Ayurvedic cleansing treatment that is designed to rid the body of harmful deposits and restore balance in the body.
             </p>
           </div>
         </div>
@@ -436,9 +437,27 @@ export default function About() {
                 </svg>
               </button>
               {expandedSections['improved'] && (
-                <p className="text-base text-[#181818] leading-relaxed mt-4" style={{ fontFamily: 'Sentient, serif' }}>
-                  These are chronic or autoimmune conditions, but with regular Ayurvedic therapy, it is possible to improve quality of life and reduce the frequency and intensity of symptoms.
-                </p>
+                <div className="mt-4">
+                  <p className="text-base text-[#181818] leading-relaxed mb-4" style={{ fontFamily: 'Sentient, serif' }}>
+                    These are chronic or autoimmune conditions, but with regular Ayurvedic therapy, it is possible to improve quality of life, and reduce the frequency and intensity of symptoms:
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-1">
+                    <ul className="space-y-2 list-disc list-inside" style={{ fontFamily: 'Sentient, serif' }}>
+                      <li className="text-base text-[#181818]">Depression (depending on severity)</li>
+                      <li className="text-base text-[#181818]">Migraine</li>
+                      <li className="text-base text-[#181818]">Joint problems</li>
+                      <li className="text-base text-[#181818]">Diabetes type II (manageable, not curable)</li>
+                      <li className="text-base text-[#181818]">Atherosclerosis</li>
+                    </ul>
+                    <ul className="space-y-2 list-disc list-inside" style={{ fontFamily: 'Sentient, serif' }}>
+                      <li className="text-base text-[#181818]">Gynecological diseases (chronic issues such as endometriosis, PMS, menopause)</li>
+                      <li className="text-base text-[#181818]">Rheumatism</li>
+                      <li className="text-base text-[#181818]">Arthritis / Arthrosis</li>
+                      <li className="text-base text-[#181818]">Tinnitus (can be reduced, not eliminated)</li>
+                      <li className="text-base text-[#181818]">Neurological diseases (e.g. neuropathy, chronic pain, stress reduction)</li>
+                    </ul>
+                  </div>
+                </div>
               )}
             </div>
 
@@ -461,9 +480,22 @@ export default function About() {
                 </svg>
               </button>
               {expandedSections['symptomatic'] && (
-                <p className="text-base text-[#181818] leading-relaxed mt-4" style={{ fontFamily: 'Sentient, serif' }}>
-                  These illnesses are progressive or genetically determined – Ayurveda can help relieve symptoms, slow progression, and improve overall well-being:
-                </p>
+                <div className="mt-4">
+                  <p className="text-base text-[#181818] leading-relaxed mb-4" style={{ fontFamily: 'Sentient, serif' }}>
+                    These illnesses are progressive or genetically determined — Ayurveda can help relieve symptoms, slow progression, and improve overall well-being:
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-1">
+                    <ul className="space-y-2 list-disc list-inside" style={{ fontFamily: 'Sentient, serif' }}>
+                      <li className="text-base text-[#181818]">Multiple sclerosis</li>
+                      <li className="text-base text-[#181818]">Parkinson&apos;s disease</li>
+                      <li className="text-base text-[#181818]">Severe diabetes (advanced stage)</li>
+                    </ul>
+                    <ul className="space-y-2 list-disc list-inside" style={{ fontFamily: 'Sentient, serif' }}>
+                      <li className="text-base text-[#181818]">Epilepsy (requires combination with Western medicine)</li>
+                      <li className="text-base text-[#181818]">Chronic advanced liver disease (cirrhosis)</li>
+                    </ul>
+                  </div>
+                </div>
               )}
             </div>
 
@@ -499,7 +531,7 @@ export default function About() {
                 letterSpacing: '0.1em',
                 textAlign: 'center',
                 textTransform: 'uppercase'
-              }}>Ayurveda as a medical system</h2>
+              }}>Ayurvedic Procedures</h2>
 
             </div>
           </div>
@@ -508,11 +540,12 @@ export default function About() {
           {/* Top Section: Heading with vertical separator and description */}
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start p-4 sm:p-8 lg:p-12">
             <div className="flex w-full lg:w-1/2 gap-4 lg:gap-6 lg:pl-[30%] items-center justify-between">
-              <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#181818] mr-0 font-serif" style={{ fontFamily: 'Sentient Bold, serif' }}>Ayurveda</h3>
+              <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#181818] mr-0 font-serif" style={{ fontFamily: 'Sentient Bold, serif' }}>Proven healing</h3>
               <div className="hidden lg:block w-0 h-24 border-l-2 border-dotted border-[#181818] mr-0 self-center"></div>
             </div>
             <div className="flex w-full lg:w-1/2 items-center gap-4 lg:gap-6 lg:gap-8">
-              <p className="text-[16px] sm:text-lg text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato, sans-serif' }}>Ayurveda is the world's oldest complete system of medicine, a science that views each person as a whole.</p>
+              <p className="text-[16px] sm:text-lg text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato, sans-serif' }}>Our Ayurvedic procedures follow time-tested methods passed down through
+              generations.</p>
             </div>
           </div>
 
@@ -562,18 +595,14 @@ export default function About() {
                   letterSpacing: '0%',
                 }}
               >
-                A medical system that heals the root cause, not just the symptoms.
+                Time-tested methods guided by certified practitioners.
               </h4>
 
               <p
                 className="text-[#181818] leading-relaxed text-sm sm:text-base lg:text-[16px]"
                 style={{ fontFamily: 'Lato, sans-serif', lineHeight: '1.5' }}
               >
-                Ayurveda seeks to understand and address the underlying causes of imbalance
-                in both body and mind, rather than treating isolated issues. At RAYA
-                LongLife, we bring this time-proven medical approach into modern practice,
-                making it clear, effective, and safe for anyone seeking deep, lasting
-                wellbeing.
+                From gentle detoxification to intensive rejuvenation programs, each procedure is guided by certified practitioners. Popular therapies such as Panchakarma cleanse toxins from the body, while nourishing therapies strengthen tissues and balance energy. These treatments are safe, natural, and deeply rejuvenating — offering a path toward complete wellness and inner balance.
               </p>
             </div>
 
@@ -671,10 +700,16 @@ export default function About() {
               lineHeight: '100%',
               letterSpacing: '0%'
             }}>
-              A truly ayurvedic journey from the very beginning.
+              Our dedicated Raya Longlife mobile app is your personal wellness companion. 
+
             </h4>
             <p className="text-[#181818] leading-relaxed text-sm sm:text-base lg:text-[16px]" style={{ fontFamily: 'Lato, sans-serif', lineHeight: '1.5' }}>
-              You start by filling out a short questionnaire or connecting directly  with our specialists, who will carefully review your needs, medical history, and goals. Based on this, we recommend a clinic that best supports your path to balance. All bookings and communication is handled for you. Just sit back and relax. After your retreat, you are provided with ongoing support to help you maintain long-term results.
+            Guests can: 
+View their real-time health stats during the stay
+Access personalized wellness recommendations from Ayurvedic experts
+Access therapies, meal plans or consultations directly from the app
+Continue tracking and maintaining healthy habits even after leaving the resort 
+With the app, your Ayurvedic journey doesn’t end at the resort — it becomes a lifestyle you can carry anywhere.
             </p>
           </div>
         </div>
