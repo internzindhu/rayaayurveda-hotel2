@@ -357,26 +357,21 @@ export default function Blogs() {
       {/* ── Blog grid ── */}
       <section className="bg-[#FFFBF7] pb-20 px-4 sm:px-8">
         <div className="max-w-6xl mx-auto">
-          <div className="relative mb-24">
-            {/* Vertical separator */}
-            <div className="hidden md:block absolute left-1/2 top-0 bottom-10 w-px bg-gray-900 transform -translate-x-1/2" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
+            {gridPosts.map((post, i) => (
+              <BlogCard key={post.title} post={post} index={i} />
+            ))}
+          </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12">
-              {gridPosts.map((post, i) => (
-                <BlogCard key={post.title} post={post} index={i} />
-              ))}
-            </div>
-
-            {/* CTA */}
-            <div className="text-center mt-24 sm:mt-32">
-              <button
-                type="button"
-                className="text-[#5E17EB] text-lg hover:underline inline-block"
-                style={{ fontFamily: "Poppins, sans-serif" }}
-              >
-                DISCOVER ALL POSTS →
-              </button>
-            </div>
+          {/* CTA */}
+          <div className="mt-16 text-center">
+            <button
+              type="button"
+              className="text-sm text-[#5E17EB] tracking-[0.18em] uppercase hover:underline"
+              style={{ fontFamily: "Lato, sans-serif" }}
+            >
+              Discover all posts →
+            </button>
           </div>
         </div>
       </section>

@@ -105,7 +105,7 @@ export default function IndividualStays() {
         <div
           className="absolute top-0 left-0 w-full h-full bg-cover bg-center"
           style={{
-            backgroundImage: 'url(/aboutUs.jpg)',
+            backgroundImage: 'url(/individualStay.jpg)',
             zIndex: 1,
           }}
         ></div>
@@ -126,24 +126,30 @@ export default function IndividualStays() {
             <div className="relative z-20 flex flex-col items-center text-center px-4 sm:px-8 lg:px-12 w-full max-w-7xl mx-auto space-y-6">
               <div className="text-white w-full space-y-2">
                 <TextGenerateEffect
-                  words="MORE THAN TREATMENT"
+                  words="WHERE YOUR HEALING"
                   className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight"
                   style={{ fontFamily: "Sentient, serif", fontStyle: 'normal', fontWeight: '300' }}
                 />
                 <TextGenerateEffect
-                  words="A return to balance."
+                  words="Begins."
                   className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight"
                   style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
                 />
+                <p
+                  className="text-white/90 text-sm sm:text-base max-w-lg mx-auto pt-4 leading-relaxed"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  Personalised Ayurvedic stays where you choose the resort, the dates, and the pace of your healing guided by ancient wisdom and modern care.
+                </p>
               </div>
             </div>
           </section>
         </div>
       </div>
-      <section className="py-16 px-4 sm:px-8 bg-[#FFFBF7]">
+      <section className="py-16 px-4 mb-4 sm:px-8 bg-[#EAE9E3]">
         <div className="max-w-4xl mx-auto">
           <p className="text-base sm:text-lg text-[#181818] leading-relaxed text-center" style={{ fontFamily: 'poppins' }}>
-            Tucked away in the heart of nature, RAYA Longlife honors Ayurvedic wisdom & Ayurveda by pairing each guest-owned holistic retreat, authentic spiritual & wellbeing through transformative healing experiences.
+          For individual stays, you can select your preferred resort and decide the dates of your stay.
           </p>
         </div>
       </section>
@@ -156,16 +162,16 @@ export default function IndividualStays() {
         letterSpacing: '0.1em',
         textAlign: 'center',
         textTransform: 'uppercase'
-      }}>What to expect</h2>
+      }}>A journey back to balance</h2>
       {/* Top Section: Heading with vertical separator and description */}
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start p-4 sm:p-8 lg:p-12">
 
         <div className="flex w-full lg:w-1/2 gap-4 lg:gap-6 lg:pl-[20%] items-center justify-between">
-          <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#181818] font-serif" style={{ fontFamily: 'Sentient Bold, serif' }}>The benefits</h3>
+          <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#181818] font-serif" style={{ fontFamily: 'Sentient Bold, serif' }}>Individual Stay</h3>
           <div className="hidden lg:block w-0 h-24 border-l-2 border-dotted border-[#181818] mr-0 self-center"></div>
         </div>
         <div className="flex w-full lg:w-1/2 items-center gap-4 lg:gap-6 lg:gap-8">
-          <p className="text-[16px] sm:text-lg text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato, sans-serif' }}>An Ayurvedic retreat offers deep regeneration, restoring balance, vitality, and long-term wellbeing through a uniquely holistic and medically grounded approach.</p>
+          <p className="text-[16px] sm:text-lg text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato, sans-serif' }}>Step into a world of natural harmony and deep restoration. Across our handpicked Ayurvedic resorts in Sri Lanka and beyond, you’ll experience personalised wellness journeys designed to heal the body, calm the mind, and nourish the spirit.</p>
         </div>
       </div>
 

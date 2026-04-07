@@ -396,11 +396,10 @@ export default function HotelDetails() {
             <button
               type="button"
               onClick={() => setActiveTab("reviews")}
-              className={`px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors ${
-                activeTab === "reviews"
+              className={`px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors ${activeTab === "reviews"
                   ? "text-[#5E17EB] border-b-2 border-[#5E17EB] -mb-px"
                   : "text-[#8C8C8C] hover:text-[#181818]"
-              }`}
+                }`}
               style={{ fontFamily: "Lato, sans-serif" }}
             >
               Reviews
@@ -408,11 +407,10 @@ export default function HotelDetails() {
             <button
               type="button"
               onClick={() => setActiveTab("gallery")}
-              className={`px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors ${
-                activeTab === "gallery"
+              className={`px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors ${activeTab === "gallery"
                   ? "text-[#5E17EB] border-b-2 border-[#5E17EB] -mb-px"
                   : "text-[#8C8C8C] hover:text-[#181818]"
-              }`}
+                }`}
               style={{ fontFamily: "Lato, sans-serif" }}
             >
               Gallery
@@ -437,42 +435,42 @@ export default function HotelDetails() {
                 </h3>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[
-                {
-                  text:
-                    "After years of stress and exhaustion, this retreat gave me back my energy. The care, the food, and the treatments were beyond anything I expected.",
-                  name: "M., Katarina R.",
-                },
-                {
-                  text:
-                    "My chronic back pain has significantly improved. I finally understand how to care for my body and mind in a sustainable way.",
-                  name: "Mindy, Katarina R.",
-                },
-                {
-                  text:
-                    "The most restorative 10 days of my life. I left feeling lighter, calmer, and deeply supported by the entire team.",
-                  name: "Branislav R.",
-                },
-              ].map((review, index) => (
-                <article
-                  key={index}
-                  className="bg-white rounded-xl shadow-sm p-6 flex flex-col h-full"
-                >
-                  <div className="text-[#5E17EB] mb-2">★★★★★</div>
-                  <p
-                    className="text-sm text-[#181818] leading-relaxed mb-4 flex-1"
-                    style={{ fontFamily: "Lato, sans-serif" }}
+                {[
+                  {
+                    text:
+                      "After years of stress and exhaustion, this retreat gave me back my energy. The care, the food, and the treatments were beyond anything I expected.",
+                    name: "M., Katarina R.",
+                  },
+                  {
+                    text:
+                      "My chronic back pain has significantly improved. I finally understand how to care for my body and mind in a sustainable way.",
+                    name: "Mindy, Katarina R.",
+                  },
+                  {
+                    text:
+                      "The most restorative 10 days of my life. I left feeling lighter, calmer, and deeply supported by the entire team.",
+                    name: "Branislav R.",
+                  },
+                ].map((review, index) => (
+                  <article
+                    key={index}
+                    className="bg-white rounded-xl shadow-sm p-6 flex flex-col h-full"
                   >
-                    {review.text}
-                  </p>
-                  <p
-                    className="text-xs text-[#555555]"
-                    style={{ fontFamily: "Lato, sans-serif" }}
-                  >
-                    {review.name}
-                  </p>
-                </article>
-              ))}
+                    <div className="text-[#5E17EB] mb-2">★★★★★</div>
+                    <p
+                      className="text-sm text-[#181818] leading-relaxed mb-4 flex-1"
+                      style={{ fontFamily: "Lato, sans-serif" }}
+                    >
+                      {review.text}
+                    </p>
+                    <p
+                      className="text-xs text-[#555555]"
+                      style={{ fontFamily: "Lato, sans-serif" }}
+                    >
+                      {review.name}
+                    </p>
+                  </article>
+                ))}
               </div>
             </div>
           )}

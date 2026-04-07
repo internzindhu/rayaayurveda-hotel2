@@ -305,14 +305,14 @@ export default function Home() {
         {/* Introductory Paragraph Section */}
         <section
           ref={(el) => (sectionRefs.current[0] = el)}
-          className={`py-12 px-4 sm:px-8 bg-[#FFFBF7] transition-all duration-1000 ease-out ${visibleSections.has(0)
+          className={`py-12 px-4 sm:px-8 bg-[#EAE9E3] transition-all duration-1000 ease-out ${visibleSections.has(0)
             ? 'opacity-100 translate-y-0'
             : 'opacity-0 translate-y-8'
             }`}
         >
           <div className="max-w-4xl mx-auto">
             <p className="text-base sm:text-lg text-[#181818] leading-relaxed text-center" style={{ fontFamily: 'poppins' }}>
-              Tucked away in the heart of nature, RAYA Longlife honors Ayurvedic wisdom & Ayurveda by pairing each guest-owned holistic retreat, authentic spiritual & wellbeing through transformative healing experiences.
+            Personalised Ayurvedic healing retreats designed for your long-term wellbeing.
             </p>
           </div>
         </section>
@@ -818,18 +818,12 @@ export default function Home() {
               <div className="lg:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <p className="text-base sm:text-lg text-[#181818] mb-4 leading-relaxed" style={{ fontFamily: 'Lato' }}>
-                    Each retreat is carefully curated to address your unique health needs, combining traditional Ayurvedic wisdom with modern wellness practices.
-                  </p>
-                  <p className="text-base sm:text-lg text-[#181818] mb-4 leading-relaxed" style={{ fontFamily: 'Lato' }}>
-                    Our expert team works closely with you to create a personalized healing journey that aligns with your goals and lifestyle.
+                    It is an intensive therapeutic programme led by an experienced team of Ayurvedic doctors and therapists. Each retreat combines medical assessment, herbal treatments, therapeutic procedures, specialised massages, tailored nutrition and guided mind-body practices.
                   </p>
                 </div>
                 <div>
-                  <p className="text-base sm:text-lg text-[#181818] mb-4 leading-relaxed" style={{ fontFamily: 'Lato' }}>
-                    From initial consultation to post-retreat support, we ensure every aspect of your experience is tailored to your individual needs.
-                  </p>
                   <p className="text-base sm:text-lg text-[#181818] mb-6 leading-relaxed" style={{ fontFamily: 'Lato' }}>
-                    Discover how our holistic approach can transform your health and restore balance to your body, mind, and spirit.
+                    Throughout the stay, we focus on restoring your natural balance - detoxifying the body, calming and strengthening the nervous system, and re-energising your entire being. Every therapeutic step is personalised according to your health needs and goals.
                   </p>
                   <Link to="/individual-stays" className="text-[#5E17EB] font-semibold hover:underline" style={{ fontFamily: 'Lato' }}>
                     Read More →
@@ -1144,7 +1138,7 @@ export default function Home() {
               {/* Right Side - Two Columns of Text */}
               <div className="lg:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <p className="text-base sm:text-lg text-[#181818] mb-4 leading-relaxed" style={{ fontFamily: 'Lato' }}>
+                  <p className="text-2xl sm:text-3xl text-[#181818] mb-2 leading-snug italic" style={{ fontFamily: 'Sentient, serif' }}>
                     Healing is a gentle return to your natural balance.
                   </p>
                   <p className="text-base sm:text-lg text-[#181818] mb-4 leading-relaxed" style={{ fontFamily: 'Lato' }}>

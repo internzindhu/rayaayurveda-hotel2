@@ -193,7 +193,7 @@ export default function Navbar() {
                   }`}
                 style={{ fontFamily: 'Lato, sans-serif' }}
               >
-                BOOKING & CONTACT
+                CONTACT US
               </Link>
             </div>
 
