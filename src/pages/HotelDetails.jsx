@@ -23,6 +23,7 @@ export default function HotelDetails() {
   const [dateTo, setDateTo] = useState("");
   const [roomType, setRoomType] = useState("Double");
   const [people, setPeople] = useState(2);
+  const [transportMode, setTransportMode] = useState("");
   const [flightIncluded, setFlightIncluded] = useState("Not included");
   const [extras, setExtras] = useState("Insurance 300€");
   const [activeTab, setActiveTab] = useState("reviews"); // "reviews" | "gallery"
@@ -78,8 +79,12 @@ export default function HotelDetails() {
       errors.dateTo = "End date must be after the start date.";
     }
 
-    if (flightIncluded === "Select") {
-      errors.flightIncluded = "Please choose a flight option.";
+    if (!roomType) {
+      errors.roomType = "Please select a room type.";
+    }
+
+    if (!people || people < 1) {
+      errors.people = "Please select number of people.";
     }
 
     return errors;
@@ -99,6 +104,7 @@ export default function HotelDetails() {
         dateTo,
         roomType,
         people,
+        transportMode,
         flightIncluded,
         extras,
         totalPrice: totalDisplay,
@@ -252,12 +258,18 @@ export default function HotelDetails() {
                     </label>
                     <select
                       value={roomType}
-                      onChange={(e) => setRoomType(e.target.value)}
-                      className="w-full border border-[#E0D4C8] rounded-md px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]"
+                      onChange={(e) => {
+                        setRoomType(e.target.value);
+                        setFormErrors((prev) => ({ ...prev, roomType: undefined }));
+                      }}
+                      className={`w-full border rounded-md px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.roomType ? "border-red-400" : "border-[#E0D4C8]"}`}
                     >
                       <option>Single</option>
                       <option>Double</option>
                     </select>
+                    {formErrors.roomType && (
+                      <p className="text-red-500 text-[10px] mt-1">{formErrors.roomType}</p>
+                    )}
                   </div>
 
                   {/* Flight ticket */}
@@ -267,16 +279,29 @@ export default function HotelDetails() {
                     </label>
                     <select
                       value={flightIncluded}
-                      onChange={(e) => { setFlightIncluded(e.target.value); setFormErrors((prev) => ({ ...prev, flightIncluded: undefined })); }}
-                      className={`w-full border rounded-md px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.flightIncluded ? "border-red-400" : "border-[#E0D4C8]"}`}
+                      onChange={(e) => setFlightIncluded(e.target.value)}
+                      className="w-full border border-[#E0D4C8] rounded-md px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]"
                     >
                       <option>Select</option>
                       <option>Included</option>
                       <option>Not included</option>
                     </select>
-                    {formErrors.flightIncluded && (
-                      <p className="text-red-500 text-[10px] mt-1">{formErrors.flightIncluded}</p>
-                    )}
+                  </div>
+
+                  {/* Mode of transport */}
+                  <div>
+                    <label className="block text-xs text-[#555] mb-1">
+                      Mode of transport
+                    </label>
+                    <select
+                      value={transportMode}
+                      onChange={(e) => setTransportMode(e.target.value)}
+                      className="w-full border border-[#E0D4C8] rounded-md px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]"
+                    >
+                      <option value="">Select</option>
+                      <option>Car</option>
+                      <option>Van</option>
+                    </select>
                   </div>
 
                   {/* People */}
@@ -287,7 +312,10 @@ export default function HotelDetails() {
                     <div className="inline-flex items-center border border-[#E0D4C8] rounded-md">
                       <button
                         type="button"
-                        onClick={() => setPeople((p) => Math.max(1, p - 1))}
+                        onClick={() => {
+                          setPeople((p) => Math.max(1, p - 1));
+                          setFormErrors((prev) => ({ ...prev, people: undefined }));
+                        }}
                         className="px-3 py-1 text-sm hover:bg-[#E0D4C8]/30 rounded-l"
                       >
                         -
@@ -297,12 +325,18 @@ export default function HotelDetails() {
                       </span>
                       <button
                         type="button"
-                        onClick={() => setPeople((p) => p + 1)}
+                        onClick={() => {
+                          setPeople((p) => p + 1);
+                          setFormErrors((prev) => ({ ...prev, people: undefined }));
+                        }}
                         className="px-3 py-1 text-sm hover:bg-[#E0D4C8]/30 rounded-r"
                       >
                         +
                       </button>
                     </div>
+                    {formErrors.people && (
+                      <p className="text-red-500 text-[10px] mt-1">{formErrors.people}</p>
+                    )}
                   </div>
 
                   {/* Extra */}
@@ -336,7 +370,7 @@ export default function HotelDetails() {
                   onClick={handleBookNow}
                   className="px-6 py-2 rounded-md bg-[#5E17EB] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#4B12BD] transition-colors"
                 >
-                  Book now
+                  Inquire Now
                 </button>
               </div>
             </aside>

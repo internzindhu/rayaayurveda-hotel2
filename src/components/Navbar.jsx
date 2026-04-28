@@ -2,14 +2,16 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 export default function Navbar() {
-  const [isCompanyOpen, setIsCompanyOpen] = useState(false);
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const [isWellnessOpen, setIsWellnessOpen] = useState(false);
   const [isRetreatsOpen, setIsRetreatsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isAtTop, setIsAtTop] = useState(true);
-  const companyDropdownRef = useRef(null);
+  const servicesDropdownRef = useRef(null);
+  const wellnessDropdownRef = useRef(null);
   const retreatsDropdownRef = useRef(null);
   const location = useLocation();
 
@@ -18,8 +20,11 @@ export default function Navbar() {
     setIsLoaded(true);
 
     function handleClickOutside(event) {
-      if (companyDropdownRef.current && !companyDropdownRef.current.contains(event.target)) {
-        setIsCompanyOpen(false);
+      if (servicesDropdownRef.current && !servicesDropdownRef.current.contains(event.target)) {
+        setIsServicesOpen(false);
+      }
+      if (wellnessDropdownRef.current && !wellnessDropdownRef.current.contains(event.target)) {
+        setIsWellnessOpen(false);
       }
       if (retreatsDropdownRef.current && !retreatsDropdownRef.current.contains(event.target)) {
         setIsRetreatsOpen(false);
@@ -44,6 +49,8 @@ export default function Navbar() {
       } else if (currentScrollY > lastScrollY) {
         // Scrolling down - hide navbar and close dropdowns
         setIsVisible(false);
+        setIsServicesOpen(false);
+        setIsWellnessOpen(false);
         setIsRetreatsOpen(false);
       } else {
         // Scrolling up - show navbar
@@ -59,7 +66,9 @@ export default function Navbar() {
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
-    setIsCompanyOpen(false);
+    setIsServicesOpen(false);
+    setIsWellnessOpen(false);
+    setIsRetreatsOpen(false);
   };
 
   const isActive = (path) => {
@@ -68,8 +77,16 @@ export default function Navbar() {
     return false;
   };
 
+  const isServicesActive = isActive("/vouchers") || isActive("/contact");
   const isRetreatsActive =
-    isActive("/individual-stays") || isActive("/group-stays");
+    isActive("/retreats") ||
+    isActive("/individual-stays") ||
+    isActive("/group-stays");
+  const isWellnessActive =
+    isActive("/wellness") ||
+    isActive("/sri-lanka") ||
+    isActive("/india") ||
+    isActive("/thailand");
 
   return (
     <nav className={`w-full bg-[#5E17EB] fixed top-0 left-0 right-0 transition-all duration-500 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'
@@ -77,15 +94,15 @@ export default function Navbar() {
       <div className="relative">
         <div className="relative z-10 h-16 sm:h-20 md:h-[93px] px-4 sm:px-6  pt-8 flex items-center">
 
-          {/* Desktop Navigation - Nine Column Grid */}
-          <div className={`hidden lg:grid lg:grid-cols-7 w-full items-center gap-4 lg:gap-8 max-w-[1600px] mx-auto transition-all duration-700 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'
+          {/* Desktop Navigation */}
+          <div className={`hidden lg:grid lg:grid-cols-9 w-full items-center gap-6 lg:gap-12 max-w-[1600px] mx-auto transition-all duration-700 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'
             }`} style={{ fontFamily: 'Lato, sans-serif' }}>
 
             {/* Column 1 - ABOUT */}
             <div className="flex items-center justify-center">
               <Link
                 to="/about"
-                className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white whitespace-nowrap uppercase text-sm ${isActive("/about")
+                className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white uppercase text-sm text-center leading-tight ${isActive("/about")
                   ? "opacity-90"
                   : "hover:opacity-80"
                   }`}
@@ -95,7 +112,21 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {/* Column 2 - RETREATS (Dropdown) */}
+            {/* Column 2 - AYURVEDA GUIDE */}
+            <div className="flex items-center justify-center">
+              <Link
+                to="/"
+                className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white uppercase text-sm text-center leading-tight ${isActive("/guide")
+                  ? "opacity-90"
+                  : "hover:opacity-80"
+                  }`}
+                style={{ fontFamily: 'Lato, sans-serif' }}
+              >
+                AYURVEDA<br />GUIDE
+              </Link>
+            </div>
+
+            {/* Column 3 - AYURVEDA RETREATS */}
             <div className="flex items-center justify-center">
               <div
                 className="relative z-[60]"
@@ -103,28 +134,28 @@ export default function Navbar() {
               >
                 <button
                   type="button"
-                  className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white whitespace-nowrap uppercase text-sm flex items-center gap-1 cursor-pointer ${isRetreatsActive
+                  className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white uppercase text-sm text-center leading-tight flex items-center gap-1 cursor-pointer ${isRetreatsActive
                     ? "opacity-90"
                     : "hover:opacity-80"
                     }`}
                   style={{ fontFamily: 'Lato, sans-serif' }}
                   onClick={() => setIsRetreatsOpen((prev) => !prev)}
                 >
-                  RETREATS
+                  <span>AYURVEDA<br />RETREATS</span>
                   <span className="text-xs">
                     {isRetreatsOpen ? "▲" : "▼"}
                   </span>
                 </button>
 
                 {isRetreatsOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-48 rounded-lg bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60]">
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60]">
                     <Link
                       to="/individual-stays"
                       className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer"
                       style={{ fontFamily: 'Lato, sans-serif' }}
                       onClick={() => setIsRetreatsOpen(false)}
                     >
-                      INDIVIDUAL STAY
+                      INDIVIDUAL STAYS
                     </Link>
                     <Link
                       to="/group-stays"
@@ -132,30 +163,64 @@ export default function Navbar() {
                       style={{ fontFamily: 'Lato, sans-serif' }}
                       onClick={() => setIsRetreatsOpen(false)}
                     >
-                      GROUP STAY
+                      GROUP STAYS
                     </Link>
                   </div>
                 )}
               </div>
             </div>
-            {/* <div></div> */}
 
-            {/* Column 3 - DOCTORS & THERAPISTS */}
+            {/* Column 4 - WELLNESS & SPIRITUALITY */}
             <div className="flex items-center justify-center">
-              <Link
-                to="/consultation"
-                className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white whitespace-nowrap uppercase text-sm ${isActive("/consultation")
-                  ? "opacity-90"
-                  : "hover:opacity-80"
-                  }`}
-                style={{ fontFamily: 'Lato, sans-serif' }}
+              <div
+                className="relative z-[60]"
+                ref={wellnessDropdownRef}
               >
-                DOCTORS & THERAPISTS
-              </Link>
-            </div>
+                <button
+                  type="button"
+                  className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white uppercase text-sm text-center leading-tight flex items-center gap-1 cursor-pointer ${isWellnessActive
+                    ? "opacity-90"
+                    : "hover:opacity-80"
+                    }`}
+                  style={{ fontFamily: 'Lato, sans-serif' }}
+                  onClick={() => setIsWellnessOpen((prev) => !prev)}
+                >
+                  <span>WELLNESS &<br />SPIRITUALITY</span>
+                  <span className="text-xs">
+                    {isWellnessOpen ? "▲" : "▼"}
+                  </span>
+                </button>
 
-            {/* Column 4 - Spacing */}
-            {/* <div></div> */}
+                {isWellnessOpen && (
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-48 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60]">
+                    <Link
+                      to="/sri-lanka"
+                      className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer"
+                      style={{ fontFamily: 'Lato, sans-serif' }}
+                      onClick={() => setIsWellnessOpen(false)}
+                    >
+                      SRI LANKA
+                    </Link>
+                    <Link
+                      to="/india"
+                      className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer"
+                      style={{ fontFamily: 'Lato, sans-serif' }}
+                      onClick={() => setIsWellnessOpen(false)}
+                    >
+                      INDIA
+                    </Link>
+                    <Link
+                      to="/thailand"
+                      className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer"
+                      style={{ fontFamily: 'Lato, sans-serif' }}
+                      onClick={() => setIsWellnessOpen(false)}
+                    >
+                      THAILAND
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
 
             {/* Column 5 - Centered Logo */}
             <div className={`flex items-center justify-center transition-all duration-700 ease-out ${isLoaded ? 'scale-100' : 'scale-95'
@@ -169,50 +234,63 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {/* Column 6 - Spacing */}
-            <div>
-              <Link
-                to="/vouchers"
-                className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white whitespace-nowrap uppercase text-sm ${isActive("/")
-                  ? "opacity-90"
-                  : "hover:opacity-80"
-                  }`}
-                style={{ fontFamily: 'Lato, sans-serif' }}
+            {/* Column 6 - SERVICES (Dropdown) */}
+            <div className="flex items-center justify-center">
+              <div
+                className="relative z-[60]"
+                ref={servicesDropdownRef}
               >
-                Vouchers
-              </Link>
+                <button
+                  type="button"
+                  className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white uppercase text-sm text-center leading-tight flex items-center gap-1 cursor-pointer ${isServicesActive
+                    ? "opacity-90"
+                    : "hover:opacity-80"
+                    }`}
+                  style={{ fontFamily: 'Lato, sans-serif' }}
+                  onClick={() => setIsServicesOpen((prev) => !prev)}
+                >
+                  SERVICES
+                  <span className="text-xs">
+                    {isServicesOpen ? "▲" : "▼"}
+                  </span>
+                </button>
+
+                {isServicesOpen && (
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60]">
+                    <Link
+                      to="/vouchers"
+                      className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer"
+                      style={{ fontFamily: 'Lato, sans-serif' }}
+                      onClick={() => setIsServicesOpen(false)}
+                    >
+                      VOUCHERS
+                    </Link>
+                    <Link
+                      to="/contact"
+                      className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer"
+                      style={{ fontFamily: 'Lato, sans-serif' }}
+                      onClick={() => setIsServicesOpen(false)}
+                    >
+                      BOOKING AND CONTACT
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Column 7 - BOOKING & CONTACT */}
+            {/* Column 7 - BLOG & INSIGHTS */}
             <div className="flex items-center justify-center">
               <Link
-                to="/contact"
-                className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white whitespace-nowrap uppercase text-sm ${isActive("/contact")
+                to="/"
+                className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white uppercase text-sm text-center leading-tight ${isActive("/insights")
                   ? "opacity-90"
                   : "hover:opacity-80"
                   }`}
                 style={{ fontFamily: 'Lato, sans-serif' }}
               >
-                CONTACT US
+                BLOG &<br />INSIGHTS
               </Link>
             </div>
-
-            {/* Column 8 - BLOG */}
-            <div className="flex items-center justify-center">
-              <Link
-                to="/blogs"
-                className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white whitespace-nowrap uppercase text-sm ${isActive("/blogs")
-                  ? "opacity-90"
-                  : "hover:opacity-80"
-                  }`}
-                style={{ fontFamily: 'Lato, sans-serif' }}
-              >
-                BLOG
-              </Link>
-            </div>
-
-            {/* Column 9 - Spacing */}
-            <div></div>
           </div>
 
           {/* Mobile Layout */}
@@ -279,9 +357,55 @@ export default function Navbar() {
               <button
                 type="button"
                 className="flex w-full items-center justify-between py-3 px-1 text-white font-medium transition-colors duration-200 uppercase text-sm cursor-pointer touch-manipulation"
+                onClick={() => setIsServicesOpen((prev) => !prev)}
+              >
+                <span>SERVICES</span>
+                <span className="text-xs">
+                  {isServicesOpen ? "▲" : "▼"}
+                </span>
+              </button>
+              {isServicesOpen && (
+                <div className="ml-4 mt-1 space-y-0">
+                  <Link
+                    to="/vouchers"
+                    className={`block py-3 px-1 text-white/90 text-sm cursor-pointer touch-manipulation ${isActive("/vouchers") ? "opacity-90" : "hover:opacity-80"
+                      }`}
+                    onClick={() => {
+                      setIsServicesOpen(false);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    VOUCHERS
+                  </Link>
+                  <Link
+                    to="/contact"
+                    className={`block py-3 px-1 text-white/90 text-sm cursor-pointer touch-manipulation ${isActive("/contact") ? "opacity-90" : "hover:opacity-80"
+                      }`}
+                    onClick={() => {
+                      setIsServicesOpen(false);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    BOOKING AND CONTACT
+                  </Link>
+                </div>
+              )}
+            </div>
+            <Link
+              to="/"
+              className={`block py-3 px-1 text-white font-medium transition-colors duration-200 uppercase text-sm cursor-pointer touch-manipulation ${isActive("/guide") ? "opacity-90" : "hover:opacity-80"
+                }`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              AYURVEDA GUIDE
+            </Link>
+            <div>
+              <button
+                type="button"
+                className="flex w-full items-center justify-between py-3 px-1 text-white font-medium transition-colors duration-200 uppercase text-sm cursor-pointer touch-manipulation"
                 onClick={() => setIsRetreatsOpen((prev) => !prev)}
               >
-                <span>RETREATS</span>
+                <span>AYURVEDA RETREATS</span>
                 <span className="text-xs">
                   {isRetreatsOpen ? "▲" : "▼"}
                 </span>
@@ -297,7 +421,7 @@ export default function Navbar() {
                       setIsMobileMenuOpen(false);
                     }}
                   >
-                    INDIVIDUAL STAY
+                    INDIVIDUAL STAYS
                   </Link>
                   <Link
                     to="/group-stays"
@@ -308,42 +432,67 @@ export default function Navbar() {
                       setIsMobileMenuOpen(false);
                     }}
                   >
-                    GROUP STAY
+                    GROUP STAYS
+                  </Link>
+                </div>
+              )}
+            </div>
+            <div>
+              <button
+                type="button"
+                className="flex w-full items-center justify-between py-3 px-1 text-white font-medium transition-colors duration-200 uppercase text-sm cursor-pointer touch-manipulation"
+                onClick={() => setIsWellnessOpen((prev) => !prev)}
+              >
+                <span>WELLNESS & SPIRITUALITY</span>
+                <span className="text-xs">
+                  {isWellnessOpen ? "▲" : "▼"}
+                </span>
+              </button>
+              {isWellnessOpen && (
+                <div className="ml-4 mt-1 space-y-0">
+                  <Link
+                    to="/sri-lanka"
+                    className={`block py-3 px-1 text-white/90 text-sm cursor-pointer touch-manipulation ${isActive("/sri-lanka") ? "opacity-90" : "hover:opacity-80"
+                      }`}
+                    onClick={() => {
+                      setIsWellnessOpen(false);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    SRI LANKA
+                  </Link>
+                  <Link
+                    to="/india"
+                    className={`block py-3 px-1 text-white/90 text-sm cursor-pointer touch-manipulation ${isActive("/india") ? "opacity-90" : "hover:opacity-80"
+                      }`}
+                    onClick={() => {
+                      setIsWellnessOpen(false);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    INDIA
+                  </Link>
+                  <Link
+                    to="/thailand"
+                    className={`block py-3 px-1 text-white/90 text-sm cursor-pointer touch-manipulation ${isActive("/thailand") ? "opacity-90" : "hover:opacity-80"
+                      }`}
+                    onClick={() => {
+                      setIsWellnessOpen(false);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    THAILAND
                   </Link>
                 </div>
               )}
             </div>
             <Link
-              to="/consultation"
-              className={`block py-3 px-1 text-white font-medium transition-colors duration-200 uppercase text-sm cursor-pointer touch-manipulation ${isActive("/consultation") ? "opacity-90" : "hover:opacity-80"
+              to="/"
+              className={`block py-3 px-1 text-white font-medium transition-colors duration-200 uppercase text-sm cursor-pointer touch-manipulation ${isActive("/insights") ? "opacity-90" : "hover:opacity-80"
                 }`}
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              DOCTORS & THERAPISTS
-            </Link>
-            <Link
-              to="/vouchers"
-              className={`block py-3 px-1 text-white font-medium transition-colors duration-200 uppercase text-sm cursor-pointer touch-manipulation ${isActive("/vouchers") ? "opacity-90" : "hover:opacity-80"
-                }`}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              VOUCHERS
-            </Link>
-            <Link
-              to="/contact"
-              className={`block py-3 px-1 text-white font-medium transition-colors duration-200 uppercase text-sm cursor-pointer touch-manipulation ${isActive("/contact") ? "opacity-90" : "hover:opacity-80"
-                }`}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              BOOKING & CONTACT
-            </Link>
-            <Link
-              to="/blogs"
-              className={`block py-3 px-1 text-white font-medium transition-colors duration-200 uppercase text-sm cursor-pointer touch-manipulation ${isActive("/blogs") ? "opacity-90" : "hover:opacity-80"
-                }`}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              BLOG
+              BLOG & INSIGHTS
             </Link>
           </div>
         </div>

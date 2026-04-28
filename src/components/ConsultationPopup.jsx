@@ -49,7 +49,7 @@ export default function ConsultationPopup({ isOpen, onClose }) {
             {/* Doctor Image */}
             <div className="relative w-full h-48 sm:h-56 bg-gray-200 rounded-lg overflow-hidden">
               <img
-                src="/consutation.jpg"
+                src="/docs3.png"
                 alt="Ayurvedic Doctor"
                 className="w-full h-full object-cover object-center"
               />
