@@ -6,6 +6,15 @@ import { supabase } from "@/lib/supabase";
 
 const INITIAL_DISPLAY = 4;
 const DROPDOWN_MAX = 8;
+const TRAVEL_THEME_OPTIONS = [
+  "Yoga",
+  "Ayurveda",
+  "Panchakarma",
+  "Detox",
+  "Stress Relief",
+  "Weight Management",
+  "Rejuvenation",
+];
 
 function matchHotel(hotel, query) {
   if (!query || !query.trim()) return true;
@@ -16,15 +25,24 @@ function matchHotel(hotel, query) {
   return name.includes(q) || location.includes(q) || desc.includes(q);
 }
 
-export default function IndividualStays() {
+export default function IndividualStays({ heroConfig = {} }) {
+  const {
+    countryLabel = "",
+    heroLine1 = "WHERE YOUR HEALING",
+    heroLine2 = "Begins.",
+    heroDescription = "Personalised Ayurvedic stays where you choose the resort, the dates, and the pace of your healing guided by ancient wisdom and modern care.",
+    heroBackgroundImage = "/individualStay.jpg",
+  } = heroConfig;
+
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY);
   const [searchInput, setSearchInput] = useState("");
   const [appliedSearch, setAppliedSearch] = useState("");
-  const [priceFilter, setPriceFilter] = useState("");
-  const [periodFilter, setPeriodFilter] = useState("");
+  const [travelTheme, setTravelTheme] = useState("");
+  const [travelMonth, setTravelMonth] = useState("");
+  const [startingPrice, setStartingPrice] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const searchRef = useRef(null);
   const dropdownCloseTimer = useRef(null);
@@ -33,8 +51,7 @@ export default function IndividualStays() {
   const filteredHotels = hotels.filter(
     (h) =>
       matchHotel(h, textFilter) &&
-      matchHotel(h, priceFilter) &&
-      matchHotel(h, periodFilter)
+      matchHotel(h, travelTheme)
   );
   const dropdownHotels = hotels
     .filter((h) => matchHotel(h, searchInput))
@@ -105,7 +122,7 @@ export default function IndividualStays() {
         <div
           className="absolute top-0 left-0 w-full h-full bg-cover bg-center"
           style={{
-            backgroundImage: 'url(/individualStay.jpg)',
+            backgroundImage: `url(${heroBackgroundImage})`,
             zIndex: 1,
           }}
         ></div>
@@ -125,13 +142,21 @@ export default function IndividualStays() {
           <section className="relative min-h-[100svh] lg:h-[80vh] flex flex-col justify-center items-center text-center px-4">
             <div className="relative z-20 flex flex-col items-center text-center px-4 sm:px-8 lg:px-12 w-full max-w-7xl mx-auto space-y-6">
               <div className="text-white w-full space-y-2">
+                {countryLabel && (
+                  <p
+                    className="text-xs sm:text-sm tracking-[0.24em] uppercase text-white/85 mb-2"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                  >
+                    {countryLabel}
+                  </p>
+                )}
                 <TextGenerateEffect
-                  words="WHERE YOUR HEALING"
+                  words={heroLine1}
                   className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight"
                   style={{ fontFamily: "Sentient, serif", fontStyle: 'normal', fontWeight: '300' }}
                 />
                 <TextGenerateEffect
-                  words="Begins."
+                  words={heroLine2}
                   className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight"
                   style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
                 />
@@ -139,7 +164,7 @@ export default function IndividualStays() {
                   className="text-white/90 text-sm sm:text-base max-w-lg mx-auto pt-4 leading-relaxed"
                   style={{ fontFamily: "Lato, sans-serif" }}
                 >
-                  Personalised Ayurvedic stays where you choose the resort, the dates, and the pace of your healing guided by ancient wisdom and modern care.
+                  {heroDescription}
                 </p>
               </div>
             </div>
@@ -149,7 +174,7 @@ export default function IndividualStays() {
       <section className="py-16 px-4 mb-4 sm:px-8 bg-[#EAE9E3]">
         <div className="max-w-4xl mx-auto">
           <p className="text-base sm:text-lg text-[#181818] leading-relaxed text-center" style={{ fontFamily: 'poppins' }}>
-          For individual stays, you can select your preferred resort and decide the dates of your stay.
+            For individual stays, you can select your preferred resort and decide the dates of your stay.
           </p>
         </div>
       </section>
@@ -233,21 +258,48 @@ export default function IndividualStays() {
           {/* Divider */}
           <div className="hidden md:block w-px self-stretch bg-[#E0D4C8]" />
 
-          {/* Price Range - simple text filter */}
+          {/* Travel Theme or Indications */}
           <div className="flex-1 flex flex-col">
             <label
-              htmlFor="price-range"
+              htmlFor="travel-theme"
               className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
               style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
             >
-              Price Range
+              Travel Theme or Indications
+            </label>
+            <select
+              id="travel-theme"
+              value={travelTheme}
+              onChange={(e) => setTravelTheme(e.target.value)}
+              className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] placeholder:text-[#8C8C8C]"
+              style={{ fontFamily: "Lato, sans-serif" }}
+            >
+              {/* <option value="">Select theme</option> */}
+              {TRAVEL_THEME_OPTIONS.map((theme) => (
+                <option key={theme} value={theme}>
+                  {theme}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Divider */}
+          <div className="hidden md:block w-px self-stretch bg-[#E0D4C8]" />
+
+          {/* Month */}
+          <div className="flex-1 flex flex-col">
+            <label
+              htmlFor="travel-month"
+              className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
+              style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
+            >
+              Month
             </label>
             <input
-              id="price-range"
-              type="text"
-              value={priceFilter}
-              onChange={(e) => setPriceFilter(e.target.value)}
-              placeholder="e.g. budget, luxury"
+              id="travel-month"
+              type="month"
+              value={travelMonth}
+              onChange={(e) => setTravelMonth(e.target.value)}
               className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] placeholder:text-[#8C8C8C]"
               style={{ fontFamily: "Lato, sans-serif" }}
             />
@@ -256,21 +308,21 @@ export default function IndividualStays() {
           {/* Divider */}
           <div className="hidden md:block w-px self-stretch bg-[#E0D4C8]" />
 
-          {/* Period - simple text filter */}
+          {/* Starting Price */}
           <div className="flex-1 flex flex-col">
             <label
-              htmlFor="period-filter"
+              htmlFor="starting-price"
               className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
               style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
             >
-              Period
+              Starting Price
             </label>
             <input
-              id="period-filter"
+              id="starting-price"
               type="text"
-              value={periodFilter}
-              onChange={(e) => setPeriodFilter(e.target.value)}
-              placeholder="e.g. 7 nights, weekend"
+              value={startingPrice}
+              onChange={(e) => setStartingPrice(e.target.value)}
+              placeholder="e.g. EUR 3000"
               className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] placeholder:text-[#8C8C8C]"
               style={{ fontFamily: "Lato, sans-serif" }}
             />
@@ -310,51 +362,51 @@ export default function IndividualStays() {
           )}
           {!loading && !error && hotels.length > 0 && filteredHotels.length > 0 && (
             <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 items-start">
-              {hotelsToShow.map((hotel, index) => (
-                <div key={hotel.id} className="flex flex-col">
-                  <div className={`mb-4 ${index === 1 ? 'lg:mt-[60px]' : index === 2 ? 'lg:mt-[100px]' : ''}`}>
-                    <img
-                      src={hotel.images || "/hotel.png"}
-                      alt={hotel.hotel_name}
-                      className="w-full aspect-[4/3] object-cover rounded-lg"
-                    />
-                  </div>
-                  <h3 className="text-xl sm:text-2xl md:text-2xl text-[#181818] mb-3" style={{ fontFamily: 'Sentient, serif', fontStyle: 'italic' }}>
-                    {hotel.hotel_name}
-                  </h3>
-                  {hotel.slogan_line && (
-                    <p className="text-sm text-[#5E17EB] mb-1" style={{ fontFamily: 'Lato, sans-serif' }}>{hotel.slogan_line}</p>
-                  )}
-                  <p className="text-sm text-[#8C8C8C] mb-2" style={{ fontFamily: 'Lato, sans-serif' }}>{hotel.hotel_location}</p>
-                  {/* <p className="text-sm text-[#181818] mb-4 leading-relaxed" style={{ fontFamily: 'poppins' }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 items-start">
+                {hotelsToShow.map((hotel, index) => (
+                  <div key={hotel.id} className="flex flex-col">
+                    <div className={`mb-4 ${index === 1 ? 'lg:mt-[60px]' : index === 2 ? 'lg:mt-[100px]' : ''}`}>
+                      <img
+                        src={hotel.images || "/hotel.png"}
+                        alt={hotel.hotel_name}
+                        className="w-full aspect-[4/3] object-cover rounded-lg"
+                      />
+                    </div>
+                    <h3 className="text-xl sm:text-2xl md:text-2xl text-[#181818] mb-3" style={{ fontFamily: 'Sentient, serif', fontStyle: 'italic' }}>
+                      {hotel.hotel_name}
+                    </h3>
+                    {hotel.slogan_line && (
+                      <p className="text-sm text-[#5E17EB] mb-1" style={{ fontFamily: 'Lato, sans-serif' }}>{hotel.slogan_line}</p>
+                    )}
+                    <p className="text-sm text-[#8C8C8C] mb-2" style={{ fontFamily: 'Lato, sans-serif' }}>{hotel.hotel_location}</p>
+                    {/* <p className="text-sm text-[#181818] mb-4 leading-relaxed" style={{ fontFamily: 'poppins' }}>
                     {hotel.description}
                   </p> */}
-                  {hotel.facilities && Array.isArray(hotel.facilities) && hotel.facilities.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {hotel.facilities.map((f, i) => (
-                        <span key={i} className="text-xs px-2 py-1 bg-[#FFF0E0] rounded" style={{ fontFamily: 'Lato, sans-serif' }}>{f}</span>
-                      ))}
-                    </div>
-                  )}
-                  <Link to={`/book-hotel/${hotel.id}`} className="text-[#5E17EB] hover:underline inline-block uppercase mt-6" style={{ fontFamily: 'Lato', fontWeight: '500', fontStyle: 'normal', fontSize: '14px', lineHeight: '100%', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                    VIEW RETREAT →
-                  </Link>
-                </div>
-              ))}
-            </div>
-            {displayCount < filteredHotels.length && (
-              <div className="text-center mt-24">
-                <button
-                  type="button"
-                  onClick={() => setDisplayCount((prev) => Math.min(prev + INITIAL_DISPLAY, filteredHotels.length))}
-                  className="text-[#5E17EB] text-sm sm:text-base tracking-[0.1em] uppercase hover:underline px-6 py-6  rounded-lg transition-colors "
-                  style={{ fontFamily: 'Lato, sans-serif' }}
-                >
-                  Show more hotels
-                </button>
+                    {hotel.facilities && Array.isArray(hotel.facilities) && hotel.facilities.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {hotel.facilities.map((f, i) => (
+                          <span key={i} className="text-xs px-2 py-1 bg-[#FFF0E0] rounded" style={{ fontFamily: 'Lato, sans-serif' }}>{f}</span>
+                        ))}
+                      </div>
+                    )}
+                    <Link to={`/book-hotel/${hotel.id}`} className="text-[#5E17EB] hover:underline inline-block uppercase mt-6" style={{ fontFamily: 'Lato', fontWeight: '500', fontStyle: 'normal', fontSize: '14px', lineHeight: '100%', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                      VIEW RETREAT →
+                    </Link>
+                  </div>
+                ))}
               </div>
-            )}
+              {displayCount < filteredHotels.length && (
+                <div className="text-center mt-24">
+                  <button
+                    type="button"
+                    onClick={() => setDisplayCount((prev) => Math.min(prev + INITIAL_DISPLAY, filteredHotels.length))}
+                    className="text-[#5E17EB] text-sm sm:text-base tracking-[0.1em] uppercase hover:underline px-6 py-6  rounded-lg transition-colors "
+                    style={{ fontFamily: 'Lato, sans-serif' }}
+                  >
+                    Show more hotels
+                  </button>
+                </div>
+              )}
             </>
           )}
         </div>

@@ -3,26 +3,34 @@ import Navbar from "../components/Navbar";
 
 export default function Consultation() {
   const [formData, setFormData] = useState({
+    gender: "",
     name: "",
-    email: "",
     country: "",
+    email: "",
     mobile: "",
+    preferredContact: "",
+    travelMonth: "",
+    travelBudget: "",
+    numberOfNights: "",
     scheduleDateTime: "",
-    comment: "",
-    gender: "female"
+    comment: ""
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     alert("Form submitted! (This is a demo - no backend connected)");
     setFormData({
+      gender: "",
       name: "",
-      email: "",
       country: "",
+      email: "",
       mobile: "",
+      preferredContact: "",
+      travelMonth: "",
+      travelBudget: "",
+      numberOfNights: "",
       scheduleDateTime: "",
-      comment: "",
-      gender: "female"
+      comment: ""
     });
   };
 
@@ -54,60 +62,52 @@ export default function Consultation() {
               </div>
             </div>
 
-            {/* Personal Data Section */}
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold text-[#181818] mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                Personal Data
-              </h2>
-              <div className="flex gap-6">
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="female"
-                    checked={formData.gender === "female"}
-                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                    className="w-5 h-5 text-[#5E17EB] focus:ring-[#5E17EB] focus:ring-2"
-                  />
-                  <span className="ml-2 text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>Female</span>
-                </label>
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="male"
-                    checked={formData.gender === "male"}
-                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                    className="w-5 h-5 text-[#5E17EB] focus:ring-[#5E17EB] focus:ring-2"
-                  />
-                  <span className="ml-2 text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>Male</span>
-                </label>
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="prefer-not-to-say"
-                    checked={formData.gender === "prefer-not-to-say"}
-                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                    className="w-5 h-5 text-[#5E17EB] focus:ring-[#5E17EB] focus:ring-2"
-                  />
-                  <span className="ml-2 text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>Prefer not to say</span>
-                </label>
-              </div>
-            </div>
-
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Full Name */}
+              {/* Gender */}
               <div>
                 <label className="block text-gray-700 font-medium mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Full Name<span className="text-red-500">*</span>
+                  Gender
+                </label>
+                <select
+                  value={formData.gender}
+                  onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent transition-all bg-white"
+                  style={{ fontFamily: 'Poppins, sans-serif' }}
+                >
+                  <option value="">Select</option>
+                  <option value="female">Female</option>
+                  <option value="male">Male</option>
+                  <option value="prefer-not-to-say">Prefer not to say</option>
+                </select>
+              </div>
+
+              {/* Name */}
+              <div>
+                <label className="block text-gray-700 font-medium mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Name<span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Enter full name"
+                  placeholder="Enter name"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent transition-all"
+                  required
+                  style={{ fontFamily: 'Poppins, sans-serif' }}
+                />
+              </div>
+
+              {/* Country */}
+              <div>
+                <label className="block text-gray-700 font-medium mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Country<span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.country}
+                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                  placeholder="Enter country"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent transition-all"
                   required
                   style={{ fontFamily: 'Poppins, sans-serif' }}
@@ -130,28 +130,6 @@ export default function Consultation() {
                 />
               </div>
 
-              {/* Country */}
-              <div>
-                <label className="block text-gray-700 font-medium mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Country<span className="text-red-500">*</span>
-                </label>
-                <select
-                  value={formData.country}
-                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent transition-all bg-white"
-                  required
-                  style={{ fontFamily: 'Poppins, sans-serif' }}
-                >
-                  <option value="">Select</option>
-                  <option value="slovakia">Slovakia</option>
-                  <option value="czech">Czech Republic</option>
-                  <option value="poland">Poland</option>
-                  <option value="germany">Germany</option>
-                  <option value="austria">Austria</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-
               {/* Mobile Number */}
               <div>
                 <label className="block text-gray-700 font-medium mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
@@ -168,8 +146,74 @@ export default function Consultation() {
                 />
               </div>
 
-              {/* Schedule Date & Time */}
+              {/* Preferred Mode of Contact */}
               <div>
+                <label className="block text-gray-700 font-medium mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Preferred Mode of Contact<span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={formData.preferredContact}
+                  onChange={(e) => setFormData({ ...formData, preferredContact: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent transition-all bg-white"
+                  required
+                  style={{ fontFamily: 'Poppins, sans-serif' }}
+                >
+                  <option value="">Select</option>
+                  <option value="call">Call</option>
+                  <option value="whatsapp">WhatsApp</option>
+                  <option value="email">Email</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Travel Month */}
+                <div>
+                  <label className="block text-gray-700 font-medium mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    Travel Month
+                  </label>
+                  <input
+                    type="month"
+                    value={formData.travelMonth}
+                    onChange={(e) => setFormData({ ...formData, travelMonth: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent transition-all"
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                  />
+                </div>
+
+                {/* Total Travel Budget */}
+                <div>
+                  <label className="block text-gray-700 font-medium mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    Total Travel Budget
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.travelBudget}
+                    onChange={(e) => setFormData({ ...formData, travelBudget: e.target.value })}
+                    placeholder="Enter budget"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent transition-all"
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                  />
+                </div>
+
+                {/* Number of Nights */}
+                <div>
+                  <label className="block text-gray-700 font-medium mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    Number of Nights
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={formData.numberOfNights}
+                    onChange={(e) => setFormData({ ...formData, numberOfNights: e.target.value })}
+                    placeholder="Nights"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent transition-all"
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                  />
+                </div>
+              </div>
+
+              {/* Schedule Date & Time */}
+              {/* <div>
                 <label className="block text-gray-700 font-medium mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
                   Schedule Date & Time<span className="text-red-500">*</span>
                 </label>
@@ -181,7 +225,7 @@ export default function Consultation() {
                   required
                   style={{ fontFamily: 'Poppins, sans-serif' }}
                 />
-              </div>
+              </div> */}
 
               {/* Comment */}
               <div>
@@ -191,7 +235,7 @@ export default function Consultation() {
                 <textarea
                   value={formData.comment}
                   onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
-                  placeholder="Enter comment..."
+                  placeholder="You can mention the reason you want to travel and any other comments"
                   rows={5}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent transition-all resize-none"
                   style={{ fontFamily: 'Poppins, sans-serif' }}

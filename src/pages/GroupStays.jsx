@@ -2,7 +2,24 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 
-export default function GroupStays() {
+const TRAVEL_THEME_OPTIONS = [
+  "Yoga",
+  "Ayurveda",
+  "Panchakarma",
+  "Detox",
+  "Stress Relief",
+  "Weight Management",
+  "Rejuvenation",
+];
+
+export default function GroupStays({ heroConfig = {} }) {
+  const {
+    countryLabel = "",
+    heroLine1 = "HEAL TOGETHER",
+    heroLine2 = "A shared return to balance.",
+    heroBackgroundImage = "/aboutUs.jpg",
+  } = heroConfig;
+
   const groupRetreats = [
     {
       id: 1,
@@ -43,7 +60,7 @@ export default function GroupStays() {
         <div
           className="absolute top-0 left-0 w-full h-full bg-cover bg-center"
           style={{
-            backgroundImage: "url(/aboutUs.jpg)",
+            backgroundImage: `url(${heroBackgroundImage})`,
             zIndex: 1,
           }}
         ></div>
@@ -56,13 +73,21 @@ export default function GroupStays() {
           <section className="relative min-h-[100svh] lg:h-[80vh] flex flex-col justify-center items-center text-center px-4">
             <div className="relative z-20 flex flex-col items-center text-center px-4 sm:px-8 lg:px-12 w-full max-w-7xl mx-auto space-y-6">
               <div className="text-white w-full space-y-2">
+                {countryLabel && (
+                  <p
+                    className="text-xs sm:text-sm tracking-[0.24em] uppercase text-white/85 mb-2"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                  >
+                    {countryLabel}
+                  </p>
+                )}
                 <TextGenerateEffect
-                  words="HEAL TOGETHER"
+                  words={heroLine1}
                   className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight"
                   style={{ fontFamily: "Sentient, serif", fontStyle: "normal", fontWeight: "300" }}
                 />
                 <TextGenerateEffect
-                  words="A shared return to balance."
+                  words={heroLine2}
                   className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight"
                   style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
                 />
@@ -141,33 +166,58 @@ export default function GroupStays() {
           </div>
           <div className="hidden md:block w-px self-stretch bg-[#E0D4C8]" />
           <div className="flex-1 flex flex-col">
-            <span
+            <label
+              htmlFor="group-travel-theme"
               className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
               style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
             >
-              Price Range
-            </span>
-            <span
-              className="text-sm sm:text-base text-[#8C8C8C]"
+              Travel Theme or Indications
+            </label>
+            <select
+              id="group-travel-theme"
+              className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB]"
               style={{ fontFamily: "Lato, sans-serif" }}
             >
-              What are you looking for?
-            </span>
+              <option value="">Select theme</option>
+              {TRAVEL_THEME_OPTIONS.map((theme) => (
+                <option key={theme} value={theme}>
+                  {theme}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="hidden md:block w-px self-stretch bg-[#E0D4C8]" />
           <div className="flex-1 flex flex-col">
-            <span
+            <label
+              htmlFor="group-travel-month"
               className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
               style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
             >
-              Period
-            </span>
-            <span
-              className="text-sm sm:text-base text-[#8C8C8C]"
+              Month
+            </label>
+            <input
+              id="group-travel-month"
+              type="month"
+              className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB]"
               style={{ fontFamily: "Lato, sans-serif" }}
+            />
+          </div>
+          <div className="hidden md:block w-px self-stretch bg-[#E0D4C8]" />
+          <div className="flex-1 flex flex-col">
+            <label
+              htmlFor="group-starting-price"
+              className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
+              style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
             >
-              When &amp; for how long
-            </span>
+              Starting Price
+            </label>
+            <input
+              id="group-starting-price"
+              type="text"
+              placeholder="e.g. EUR 3000"
+              className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] placeholder:text-[#8C8C8C]"
+              style={{ fontFamily: "Lato, sans-serif" }}
+            />
           </div>
           <button
             type="button"
