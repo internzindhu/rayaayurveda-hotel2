@@ -244,17 +244,22 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {/* Column 5 - SERVICES */}
+            {/* Column 5 - AYURVEDA GUIDE */}
             <div className="flex items-center justify-center">
-              <div className="relative z-[60]" ref={servicesDropdownRef} onMouseEnter={() => openDesktopDropdown("services")} onMouseLeave={closeDesktopDropdowns}>
-                <button type="button" className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white uppercase text-sm text-center leading-tight flex items-center gap-1 cursor-pointer ${isServicesActive ? "opacity-90" : "hover:opacity-80"}`} style={{ fontFamily: "Lato, sans-serif" }}>
-                  SERVICES
-                  <span className="text-xs">{isServicesOpen ? "▲" : "▼"}</span>
+              <div className="relative z-[60]" ref={guideDropdownRef} onMouseEnter={() => openDesktopDropdown("guide")} onMouseLeave={closeDesktopDropdowns}>
+                <button type="button" className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white uppercase text-sm text-center leading-tight flex items-center gap-1 cursor-pointer ${isGuideActive ? "opacity-90" : "hover:opacity-80"}`} style={{ fontFamily: "Lato, sans-serif" }}>
+                  <span>AYURVEDA<br />GUIDE</span>
+                  <span className="text-xs">{isGuideOpen ? "▲" : "▼"}</span>
                 </button>
-                {isServicesOpen && (
+                {isGuideOpen && (
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60]">
-                    <Link to="/vouchers" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsServicesOpen(false)}>VOUCHERS</Link>
-                    <Link to="/contact" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsServicesOpen(false)}>BOOKING AND CONTACT</Link>
+                    <Link to="/ayurveda-guide#what-is-ayurveda" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>WHAT IS AYURVEDA</Link>
+                    <Link to="/ayurveda-guide#doshas" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>VATA, PITTA & KAPHA</Link>
+                    <Link to="/ayurveda-guide#preventive-curative" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>PREVENTIVE & CURATIVE</Link>
+                    <Link to="/ayurveda-guide#panchakarma" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>WHAT IS PANCHAKARMA</Link>
+                    <Link to="/ayurveda-guide#conditions" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>CONDITIONS & CURES</Link>
+                    <Link to="/ayurveda-guide#myths" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>MYTHS ABOUT AYURVEDA</Link>
+                    <Link to="/ayurveda-guide#ayurveda-vs-wellness" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>AYURVEDA VS WELLNESS</Link>
                   </div>
                 )}
               </div>
@@ -267,22 +272,17 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {/* Column 7 - AYURVEDA GUIDE */}
+            {/* Column 7 - SERVICES */}
             <div className="flex items-center justify-center">
-              <div className="relative z-[60]" ref={guideDropdownRef} onMouseEnter={() => openDesktopDropdown("guide")} onMouseLeave={closeDesktopDropdowns}>
-                <button type="button" className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white uppercase text-sm text-center leading-tight flex items-center gap-1 cursor-pointer ${isGuideActive ? "opacity-90" : "hover:opacity-80"}`} style={{ fontFamily: "Lato, sans-serif" }}>
-                  <span>AYURVEDA<br />GUIDE</span>
-                  <span className="text-xs">{isGuideOpen ? "▲" : "▼"}</span>
+              <div className="relative z-[60]" ref={servicesDropdownRef} onMouseEnter={() => openDesktopDropdown("services")} onMouseLeave={closeDesktopDropdowns}>
+                <button type="button" className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white uppercase text-sm text-center leading-tight flex items-center gap-1 cursor-pointer ${isServicesActive ? "opacity-90" : "hover:opacity-80"}`} style={{ fontFamily: "Lato, sans-serif" }}>
+                  SERVICES
+                  <span className="text-xs">{isServicesOpen ? "▲" : "▼"}</span>
                 </button>
-                {isGuideOpen && (
+                {isServicesOpen && (
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60]">
-                    <Link to="/ayurveda-guide/what-is-ayurveda" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>WHAT IS AYURVEDA</Link>
-                    <Link to="/ayurveda-guide/principles-vata-pitta-kapha" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>PRINCIPLES (VATA, PITTA, KAPHA)</Link>
-                    <Link to="/ayurveda-guide/preventive-vs-curative" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>PREVENTIVE VS CURATIVE APPROACH</Link>
-                    <Link to="/ayurveda-guide/what-is-panchakarma" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>WHAT IS PANCHAKARMA</Link>
-                    <Link to="/ayurveda-guide/what-ayurveda-can-and-cannot-cure" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer leading-snug" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>WHAT AYURVEDA CAN CURE AND CANNOT CURE</Link>
-                    <Link to="/ayurveda-guide/myths-about-ayurveda" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>MYTHS ABOUT AYURVEDA</Link>
-                    <Link to="/ayurveda-guide/ayurveda-vs-wellness" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>AYURVEDA VS WELLNESS</Link>
+                    <Link to="/vouchers" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsServicesOpen(false)}>VOUCHERS</Link>
+                    <Link to="/contact" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsServicesOpen(false)}>BOOKING AND CONTACT</Link>
                   </div>
                 )}
               </div>
@@ -416,6 +416,38 @@ export default function Navbar() {
               )}
             </div>
 
+            {/* AYURVEDA GUIDE */}
+            <div>
+              <button
+                type="button"
+                className="flex w-full items-center justify-between py-5 cursor-pointer touch-manipulation"
+                onClick={() => setIsGuideOpen((prev) => !prev)}
+              >
+                <span
+                  className={`transition-colors duration-200 ${isGuideOpen ? "text-[#fdbb3a]" : "text-white"}`}
+                  style={{ fontFamily: "Sentient, serif", fontStyle: "italic", fontWeight: 400, fontSize: "22px" }}
+                >
+                  Ayurveda Guide
+                </span>
+                <Chevron open={isGuideOpen} />
+              </button>
+              {isGuideOpen && (
+                <div className="pb-4 animate-mobile-dropdown">
+                  {[
+                    { to: "/ayurveda-guide#what-is-ayurveda", label: "WHAT IS AYURVEDA" },
+                    { to: "/ayurveda-guide#doshas", label: "VATA, PITTA & KAPHA" },
+                    { to: "/ayurveda-guide#preventive-curative", label: "PREVENTIVE & CURATIVE" },
+                    { to: "/ayurveda-guide#panchakarma", label: "WHAT IS PANCHAKARMA" },
+                    { to: "/ayurveda-guide#conditions", label: "CONDITIONS & CURES" },
+                    { to: "/ayurveda-guide#myths", label: "MYTHS ABOUT AYURVEDA" },
+                    { to: "/ayurveda-guide#ayurveda-vs-wellness", label: "AYURVEDA VS WELLNESS" },
+                  ].map(({ to, label }) => (
+                    <MobileLink key={to} to={to} onClose={() => { setIsGuideOpen(false); setIsMobileMenuOpen(false); }}>{label}</MobileLink>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* SERVICES */}
             <div>
               <button
@@ -435,38 +467,6 @@ export default function Navbar() {
                 <div className="pb-4 animate-mobile-dropdown">
                   <MobileLink to="/vouchers" onClose={() => { setIsServicesOpen(false); setIsMobileMenuOpen(false); }}>VOUCHERS</MobileLink>
                   <MobileLink to="/contact" onClose={() => { setIsServicesOpen(false); setIsMobileMenuOpen(false); }}>BOOKING AND CONTACT</MobileLink>
-                </div>
-              )}
-            </div>
-
-            {/* AYURVEDA GUIDE */}
-            <div>
-              <button
-                type="button"
-                className="flex w-full items-center justify-between py-5 cursor-pointer touch-manipulation"
-                onClick={() => setIsGuideOpen((prev) => !prev)}
-              >
-                <span
-                  className={`transition-colors duration-200 ${isGuideOpen ? "text-[#fdbb3a]" : "text-white"}`}
-                  style={{ fontFamily: "Sentient, serif", fontStyle: "italic", fontWeight: 400, fontSize: "22px" }}
-                >
-                  Ayurveda Guide
-                </span>
-                <Chevron open={isGuideOpen} />
-              </button>
-              {isGuideOpen && (
-                <div className="pb-4 animate-mobile-dropdown">
-                  {[
-                    { to: "/ayurveda-guide/what-is-ayurveda", label: "WHAT IS AYURVEDA" },
-                    { to: "/ayurveda-guide/principles-vata-pitta-kapha", label: "PRINCIPLES (VATA, PITTA, KAPHA)" },
-                    { to: "/ayurveda-guide/preventive-vs-curative", label: "PREVENTIVE VS CURATIVE APPROACH" },
-                    { to: "/ayurveda-guide/what-is-panchakarma", label: "WHAT IS PANCHAKARMA" },
-                    { to: "/ayurveda-guide/what-ayurveda-can-and-cannot-cure", label: "WHAT AYURVEDA CAN AND CANNOT CURE" },
-                    { to: "/ayurveda-guide/myths-about-ayurveda", label: "MYTHS ABOUT AYURVEDA" },
-                    { to: "/ayurveda-guide/ayurveda-vs-wellness", label: "AYURVEDA VS WELLNESS" },
-                  ].map(({ to, label }) => (
-                    <MobileLink key={to} to={to} onClose={() => { setIsGuideOpen(false); setIsMobileMenuOpen(false); }}>{label}</MobileLink>
-                  ))}
                 </div>
               )}
             </div>

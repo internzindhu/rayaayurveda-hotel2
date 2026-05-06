@@ -32,6 +32,7 @@ import HowItWorks from './pages/HowItWorks'
 import BeforeYourStay from './pages/BeforeYourStay'
 import DuringYourStay from './pages/DuringYourStay'
 import AfterYourStay from './pages/AfterYourStay'
+import AyurvedaGuide from './pages/AyurvedaGuide'
 import WhatIsAyurveda from './pages/WhatIsAyurveda'
 import AyurvedaDoshas from './pages/AyurvedaDoshas'
 import PreventiveVsCurative from './pages/PreventiveVsCurative'
@@ -53,6 +54,7 @@ function App() {
         <Route path="/about/before-your-stay" element={<BeforeYourStay />} />
         <Route path="/about/during-your-stay" element={<DuringYourStay />} />
         <Route path="/about/after-your-stay" element={<AfterYourStay />} />
+        <Route path="/ayurveda-guide" element={<AyurvedaGuide />} />
         <Route path="/ayurveda-guide/what-is-ayurveda" element={<WhatIsAyurveda />} />
         <Route path="/ayurveda-guide/principles-vata-pitta-kapha" element={<AyurvedaDoshas />} />
         <Route path="/ayurveda-guide/preventive-vs-curative" element={<PreventiveVsCurative />} />
