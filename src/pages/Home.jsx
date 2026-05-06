@@ -219,7 +219,7 @@ export default function Home() {
   const overlayParallax = scrollY * 0.4; // Overlay moves at medium speed
 
   return (
-    <div className="landing-theme overflow-x-hidden">
+    <div className="landing-theme overflow-x-hidden pb-[56px] md:pb-0">
       {/* Absolute Fullscreen Background Video - Only for Hero Section */}
       <div className="absolute top-0 left-0 right-0 w-full min-h-[100svh] lg:h-screen overflow-hidden">
         <video
