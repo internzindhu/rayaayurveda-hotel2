@@ -11,27 +11,71 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 items-start">
 
           {/* LEFT – Navigation */}
-          <div className="space-y-3">
-            <nav className="flex flex-col space-y-2">
-              {[
-                { label: "ABOUT", to: "/about" },
-                { label: "RETREATS", to: "/book-hotel" },
-                { label: "DOCTORS & THERAPIST", to: "/consultation" },
-                { label: "BOOKING & CONTACT", to: "/contact" },
-                { label: "BLOG", to: "/blogs" },
-                { label: "FAQ", to: "/faq" },
-                { label: "POLICY", to: "/policy" },
-              ].map(({ label, to }) => (
-                <Link
-                  key={label}
-                  to={to}
-                  className="text-white hover:text-white/70 transition-colors duration-200 text-xs tracking-widest font-light"
-                  style={{ fontFamily: "Poppins, sans-serif", letterSpacing: "0.12em" }}
+          <div className="space-y-5">
+            {[
+              {
+                heading: "About",
+                links: [
+                  { label: "About Us", to: "/about" },
+                  { label: "Mission", to: "/about/mission" },
+                  { label: "Why Travel With Us", to: "/about/why-travel-with-us" },
+                  { label: "How It Works", to: "/about/how-it-works" },
+                ],
+              },
+              {
+                heading: "Retreats",
+                links: [
+                  { label: "Individual Stays", to: "/individual-stays" },
+                  { label: "Group Stays", to: "/group-stays" },
+                ],
+              },
+              {
+                heading: "Ayurveda Guide",
+                links: [
+                  { label: "What Is Ayurveda", to: "/ayurveda-guide#what-is-ayurveda" },
+                  { label: "Vata, Pitta & Kapha", to: "/ayurveda-guide#doshas" },
+                  { label: "What Is Panchakarma", to: "/ayurveda-guide#panchakarma" },
+                ],
+              },
+              {
+                heading: "Blog & Insights",
+                links: [
+                  { label: "Blog", to: "/blogs" },
+                  { label: "Guest Testimonies", to: "/guest-testimonies" },
+                  { label: "Newsletter", to: "/newsletter" },
+                  { label: "FAQ", to: "/faq" },
+                ],
+              },
+              {
+                heading: "Services",
+                links: [
+                  { label: "Vouchers", to: "/vouchers" },
+                  { label: "Booking & Contact", to: "/contact" },
+                  { label: "Policy", to: "/policy" },
+                ],
+              },
+            ].map(({ heading, links }) => (
+              <div key={heading}>
+                <p
+                  className="text-white/40 text-[9px] uppercase tracking-[0.2em] mb-1.5"
+                  style={{ fontFamily: "Poppins, sans-serif" }}
                 >
-                  {label}
-                </Link>
-              ))}
-            </nav>
+                  {heading}
+                </p>
+                <nav className="flex flex-col space-y-1">
+                  {links.map(({ label, to }) => (
+                    <Link
+                      key={label}
+                      to={to}
+                      className="text-white hover:text-white/70 transition-colors duration-200 text-xs tracking-widest font-light"
+                      style={{ fontFamily: "Poppins, sans-serif", letterSpacing: "0.1em" }}
+                    >
+                      {label}
+                    </Link>
+                  ))}
+                </nav>
+              </div>
+            ))}
 
             {/* Follow Us */}
             <div className="pt-4 flex items-center gap-3">
