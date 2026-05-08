@@ -12,6 +12,7 @@ export default function Navbar() {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isWellnessOpen, setIsWellnessOpen] = useState(false);
   const [isRetreatsOpen, setIsRetreatsOpen] = useState(false);
+  const [isBlogOpen, setIsBlogOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -22,6 +23,7 @@ export default function Navbar() {
   const servicesDropdownRef = useRef(null);
   const wellnessDropdownRef = useRef(null);
   const retreatsDropdownRef = useRef(null);
+  const blogDropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
   const location = useLocation();
 
@@ -48,6 +50,9 @@ export default function Navbar() {
       if (retreatsDropdownRef.current && !retreatsDropdownRef.current.contains(event.target)) {
         setIsRetreatsOpen(false);
       }
+      if (blogDropdownRef.current && !blogDropdownRef.current.contains(event.target)) {
+        setIsBlogOpen(false);
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -70,6 +75,7 @@ export default function Navbar() {
         setIsServicesOpen(false);
         setIsWellnessOpen(false);
         setIsRetreatsOpen(false);
+        setIsBlogOpen(false);
       } else {
         setIsVisible(true);
       }
@@ -88,6 +94,7 @@ export default function Navbar() {
     setIsServicesOpen(false);
     setIsWellnessOpen(false);
     setIsRetreatsOpen(false);
+    setIsBlogOpen(false);
   };
 
   const openDesktopDropdown = (dropdown) => {
@@ -96,6 +103,7 @@ export default function Navbar() {
     setIsServicesOpen(dropdown === "services");
     setIsWellnessOpen(dropdown === "wellness");
     setIsRetreatsOpen(dropdown === "retreats");
+    setIsBlogOpen(dropdown === "blog");
   };
 
   const closeDesktopDropdowns = () => {
@@ -104,6 +112,7 @@ export default function Navbar() {
     setIsServicesOpen(false);
     setIsWellnessOpen(false);
     setIsRetreatsOpen(false);
+    setIsBlogOpen(false);
   };
 
   const isActive = (path) => {
@@ -115,6 +124,7 @@ export default function Navbar() {
   const isAboutActive = isActive("/about");
   const isGuideActive = location.pathname.startsWith("/ayurveda-guide");
   const isServicesActive = isActive("/vouchers") || isActive("/contact");
+  const isBlogActive = isActive("/blogs") || isActive("/faq") || isActive("/guest-testimonies") || isActive("/newsletter");
   const isRetreatsActive =
     isActive("/retreats") ||
     isActive("/individual-stays") ||
@@ -185,7 +195,7 @@ export default function Navbar() {
                     <Link to="/about" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>ABOUT US</Link>
                     <Link to="/about/mission" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>
                       <span className="font-semibold block">MISSION</span>
-                      <span className="block text-xs text-white/75 font-normal mt-0.5 leading-snug normal-case">Guided healing, wherever you are in the world.</span>
+                      {/* <span className="block text-xs text-white/75 font-normal mt-0.5 leading-snug normal-case">Guided healing, wherever you are in the world.</span> */}
                     </Link>
                     <Link to="/about/why-travel-with-us" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>WHY TRAVEL WITH US</Link>
                     <Link to="/about/how-it-works" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>HOW IT WORKS</Link>
@@ -207,14 +217,8 @@ export default function Navbar() {
                 </button>
                 {isRetreatsOpen && (
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60]">
-                    <div className="px-4 py-2.5 text-sm text-white font-semibold">INDIVIDUAL STAYS</div>
-                    {stayCountries.map((country) => (
-                      <Link key={`desktop-individual-${country.slug}`} to={`/individual-stays/${country.slug}`} className="block pl-8 pr-4 py-2 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsRetreatsOpen(false)}>{country.label}</Link>
-                    ))}
-                    <div className="px-4 pt-3 pb-2 text-sm text-white font-semibold border-t border-white/10 mt-1">GROUP STAYS</div>
-                    {stayCountries.map((country) => (
-                      <Link key={`desktop-group-${country.slug}`} to={`/group-stays/${country.slug}`} className="block pl-8 pr-4 py-2 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsRetreatsOpen(false)}>{country.label}</Link>
-                    ))}
+                    <Link to="/individual-stays" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsRetreatsOpen(false)}>INDIVIDUAL STAYS</Link>
+                    <Link to="/group-stays" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsRetreatsOpen(false)}>GROUP STAYS</Link>
                   </div>
                 )}
               </div>
@@ -228,10 +232,15 @@ export default function Navbar() {
                   <span className="text-xs">{isWellnessOpen ? "▲" : "▼"}</span>
                 </button>
                 {isWellnessOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-48 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60]">
-                    <Link to="/sri-lanka" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsWellnessOpen(false)}>SRI LANKA</Link>
-                    <Link to="/india" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsWellnessOpen(false)}>INDIA</Link>
-                    <Link to="/thailand" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsWellnessOpen(false)}>THAILAND</Link>
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60]">
+                    <div className="px-4 py-2.5 text-sm text-white font-semibold">INDIVIDUAL STAYS</div>
+                    {stayCountries.map((country) => (
+                      <Link key={`desktop-wellness-individual-${country.slug}`} to={`/individual-stays/${country.slug}`} className="block pl-8 pr-4 py-2 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsWellnessOpen(false)}>{country.label}</Link>
+                    ))}
+                    <div className="px-4 pt-3 pb-2 text-sm text-white font-semibold border-t border-white/10 mt-1">GROUP STAYS</div>
+                    {stayCountries.map((country) => (
+                      <Link key={`desktop-wellness-group-${country.slug}`} to={`/group-stays/${country.slug}`} className="block pl-8 pr-4 py-2 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsWellnessOpen(false)}>{country.label}</Link>
+                    ))}
                   </div>
                 )}
               </div>
@@ -267,9 +276,20 @@ export default function Navbar() {
 
             {/* Column 6 - BLOG & INSIGHTS */}
             <div className="flex items-center justify-center">
-              <Link to="/" className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white uppercase text-sm text-center leading-tight ${isActive("/insights") ? "opacity-90" : "hover:opacity-80"}`} style={{ fontFamily: "Lato, sans-serif" }}>
-                BLOG &<br />INSIGHTS
-              </Link>
+              <div className="relative z-[60]" ref={blogDropdownRef} onMouseEnter={() => openDesktopDropdown("blog")} onMouseLeave={closeDesktopDropdowns}>
+                <button type="button" className={`font-medium tracking-wide transition-all duration-300 ease-in-out text-white uppercase text-sm text-center leading-tight flex items-center gap-1 cursor-pointer ${isBlogActive ? "opacity-90" : "hover:opacity-80"}`} style={{ fontFamily: "Lato, sans-serif" }}>
+                  <span>BLOG &<br />INSIGHTS</span>
+                  <span className="text-xs">{isBlogOpen ? "▲" : "▼"}</span>
+                </button>
+                {isBlogOpen && (
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60]">
+                    <Link to="/faq" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsBlogOpen(false)}>FAQ</Link>
+                    <Link to="/guest-testimonies" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsBlogOpen(false)}>GUEST TESTIMONIES</Link>
+                    <Link to="/blogs" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsBlogOpen(false)}>BLOG</Link>
+                    <Link to="/newsletter" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsBlogOpen(false)}>NEWSLETTER</Link>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Column 7 - SERVICES */}
@@ -376,18 +396,8 @@ export default function Navbar() {
               </button>
               {isRetreatsOpen && (
                 <div className="pb-4 animate-mobile-dropdown">
-                  <CategoryLabel>Individual Stays</CategoryLabel>
-                  {stayCountries.map((country) => (
-                    <MobileLink key={`mobile-individual-${country.slug}`} to={`/individual-stays/${country.slug}`} indent onClose={() => { setIsRetreatsOpen(false); setIsMobileMenuOpen(false); }}>
-                      {country.label}
-                    </MobileLink>
-                  ))}
-                  <CategoryLabel>Group Stays</CategoryLabel>
-                  {stayCountries.map((country) => (
-                    <MobileLink key={`mobile-group-${country.slug}`} to={`/group-stays/${country.slug}`} indent onClose={() => { setIsRetreatsOpen(false); setIsMobileMenuOpen(false); }}>
-                      {country.label}
-                    </MobileLink>
-                  ))}
+                  <MobileLink to="/individual-stays" onClose={() => { setIsRetreatsOpen(false); setIsMobileMenuOpen(false); }}>INDIVIDUAL STAYS</MobileLink>
+                  <MobileLink to="/group-stays" onClose={() => { setIsRetreatsOpen(false); setIsMobileMenuOpen(false); }}>GROUP STAYS</MobileLink>
                 </div>
               )}
             </div>
@@ -409,9 +419,18 @@ export default function Navbar() {
               </button>
               {isWellnessOpen && (
                 <div className="pb-4 animate-mobile-dropdown">
-                  <MobileLink to="/sri-lanka" onClose={() => { setIsWellnessOpen(false); setIsMobileMenuOpen(false); }}>SRI LANKA</MobileLink>
-                  <MobileLink to="/india" onClose={() => { setIsWellnessOpen(false); setIsMobileMenuOpen(false); }}>INDIA</MobileLink>
-                  <MobileLink to="/thailand" onClose={() => { setIsWellnessOpen(false); setIsMobileMenuOpen(false); }}>THAILAND</MobileLink>
+                  <CategoryLabel>Individual Stays</CategoryLabel>
+                  {stayCountries.map((country) => (
+                    <MobileLink key={`mobile-wellness-individual-${country.slug}`} to={`/individual-stays/${country.slug}`} indent onClose={() => { setIsWellnessOpen(false); setIsMobileMenuOpen(false); }}>
+                      {country.label}
+                    </MobileLink>
+                  ))}
+                  <CategoryLabel>Group Stays</CategoryLabel>
+                  {stayCountries.map((country) => (
+                    <MobileLink key={`mobile-wellness-group-${country.slug}`} to={`/group-stays/${country.slug}`} indent onClose={() => { setIsWellnessOpen(false); setIsMobileMenuOpen(false); }}>
+                      {country.label}
+                    </MobileLink>
+                  ))}
                 </div>
               )}
             </div>
@@ -471,23 +490,29 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* BLOG & INSIGHTS — no dropdown */}
+            {/* BLOG & INSIGHTS */}
             <div>
-              <Link
-                to="/"
-                className="flex w-full items-center justify-between py-5 cursor-pointer touch-manipulation group"
-                onClick={() => setIsMobileMenuOpen(false)}
+              <button
+                type="button"
+                className="flex w-full items-center justify-between py-5 cursor-pointer touch-manipulation"
+                onClick={() => setIsBlogOpen((prev) => !prev)}
               >
                 <span
-                  className="text-white group-hover:text-white/80 transition-colors duration-200"
+                  className={`transition-colors duration-200 ${isBlogOpen ? "text-[#fdbb3a]" : "text-white"}`}
                   style={{ fontFamily: "Sentient, serif", fontStyle: "italic", fontWeight: 400, fontSize: "22px" }}
                 >
                   Blog &amp; Insights
                 </span>
-                <svg className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
+                <Chevron open={isBlogOpen} />
+              </button>
+              {isBlogOpen && (
+                <div className="pb-4 animate-mobile-dropdown">
+                  <MobileLink to="/faq" onClose={() => { setIsBlogOpen(false); setIsMobileMenuOpen(false); }}>FAQ</MobileLink>
+                  <MobileLink to="/guest-testimonies" onClose={() => { setIsBlogOpen(false); setIsMobileMenuOpen(false); }}>GUEST TESTIMONIES</MobileLink>
+                  <MobileLink to="/blogs" onClose={() => { setIsBlogOpen(false); setIsMobileMenuOpen(false); }}>BLOG</MobileLink>
+                  <MobileLink to="/newsletter" onClose={() => { setIsBlogOpen(false); setIsMobileMenuOpen(false); }}>NEWSLETTER</MobileLink>
+                </div>
+              )}
             </div>
 
           </div>

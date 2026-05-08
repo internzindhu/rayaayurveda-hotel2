@@ -21,6 +21,8 @@ import GroupStaysIndia from './pages/GroupStaysIndia'
 import GroupStaysThailand from './pages/GroupStaysThailand'
 import Treatments from './pages/Treatments'
 import Blogs from './pages/Blogs'
+import GuestTestimonials from './pages/GuestTestimonials'
+import Newsletter from './pages/Newsletter'
 import Shop from './pages/Shop'
 import Vouchers from './pages/Vouchers'
 import Policy from './pages/Policy'
@@ -80,6 +82,8 @@ function App() {
         <Route path="/group-stays/thailand" element={<GroupStaysThailand />} />
         <Route path="/treatments" element={<Treatments />} />
         <Route path="/blogs" element={<Blogs />} />
+        <Route path="/guest-testimonies" element={<GuestTestimonials />} />
+        <Route path="/newsletter" element={<Newsletter />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/vouchers" element={<Vouchers />} />
         <Route path="/policy" element={<Policy />} />
