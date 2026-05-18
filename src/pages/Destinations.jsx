@@ -1,4 +1,5 @@
 import Navbar from "../components/Navbar";
+import RevealOnScroll from "../components/RevealOnScroll";
 
 export default function Destinations() {
   const destinations = [
@@ -38,7 +39,7 @@ export default function Destinations() {
         <img
           src="/home1.jpg"
           alt="Destinations"
-          className="w-full h-[360px] sm:h-[440px] md:h-[520px] object-cover"
+          className="w-full h-[280px] sm:h-[360px] md:h-[440px] lg:h-[520px] object-cover"
         />
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center">
           <h1
@@ -58,6 +59,7 @@ export default function Destinations() {
 
       {/* Destinations Grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-16 sm:py-20">
+        <RevealOnScroll>
         <div className="text-center mb-12">
           <p
             className="text-[#5E17EB] uppercase tracking-[0.15em] text-sm sm:text-base mb-2"
@@ -72,11 +74,16 @@ export default function Destinations() {
             Crafted for healing
           </h2>
         </div>
+        </RevealOnScroll>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
           {destinations.map((dest, index) => (
-            <div
+            <RevealOnScroll
               key={index}
+              delay={index * 120}
+              direction={index % 2 === 0 ? 'left' : 'right'}
+            >
+            <div
               className="bg-white/80 border border-[#EAE9E3] rounded-2xl shadow-[0_20px_50px_-25px_rgba(0,0,0,0.35)] overflow-hidden hover:shadow-[0_25px_60px_-25px_rgba(0,0,0,0.45)] transition-all duration-500"
             >
               <div className="relative h-64 sm:h-72">
@@ -131,6 +138,7 @@ export default function Destinations() {
                 </button>
               </div>
             </div>
+            </RevealOnScroll>
           ))}
         </div>
       </section>

@@ -17,7 +17,7 @@ export default function ConsultationPopup({ isOpen, onClose }) {
 
   return (
     <div
-      className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-50 max-w-sm w-[320px] sm:w-[380px] transition-all duration-500 ease-out"
+      className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-50 max-w-sm w-[calc(100%-32px)] sm:w-[320px] md:w-[380px] transition-all duration-500 ease-out"
       style={{
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.95)',
@@ -47,7 +47,7 @@ export default function ConsultationPopup({ isOpen, onClose }) {
           {/* Main Image and Overlay Box */}
           <div className="relative px-4 pb-4">
             {/* Doctor Image */}
-            <div className="relative w-full h-48 sm:h-56 bg-gray-200 rounded-lg overflow-hidden">
+            <div className="relative w-full h-40 sm:h-48 md:h-56 bg-gray-200 rounded-lg overflow-hidden">
               <img
                 src="/docs3.png"
                 alt="Ayurvedic Doctor"

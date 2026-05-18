@@ -193,9 +193,9 @@ export default function Questionnaire() {
       {/* <div className="absolute inset-0 bg-black/50"></div> */}
       <div className="relative z-10">
         <Navbar />
-        <div className="max-w-3xl mx-auto px-4 py-48">
+        <div className="max-w-3xl mx-auto px-4 py-16 sm:py-32 md:py-48">
           <div className="text-center mb-12">
-            <h1 className="text-5xl font-bold text-black mb-4" style={{ fontFamily: 'Sentient, sans-serif', fontWeight: 700 }}>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-black mb-4" style={{ fontFamily: 'Sentient, sans-serif', fontWeight: 700 }}>
               Is Ayurveda For Me?
             </h1>
             <p className="text-xl text-grey/90">Let's find out together</p>

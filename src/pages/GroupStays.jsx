@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import RevealOnScroll from "../components/RevealOnScroll";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import AdvancedFilters from "../components/AdvancedFilters";
 
 const TRAVEL_THEME_OPTIONS = [
   "Yoga",
@@ -134,7 +136,7 @@ export default function GroupStays({ heroConfig = {} }) {
           </h3>
           <div className="hidden lg:block w-0 h-24 border-l-2 border-dotted border-[#181818] mr-0 self-center"></div>
         </div>
-        <div className="flex w-full lg:w-1/2 items-center gap-4 lg:gap-6 lg:gap-8">
+        <div className="flex w-full lg:w-1/2 items-center gap-4 lg:gap-8">
           <p
             className="text-[16px] sm:text-lg text-[#181818] leading-relaxed"
             style={{ fontFamily: "Lato, sans-serif" }}
@@ -228,7 +230,11 @@ export default function GroupStays({ heroConfig = {} }) {
           </button>
         </div>
 
+        {/* Advanced Filters */}
+        <AdvancedFilters />
+
         {/* Group retreat cards (same style as IndividualStays hotel cards) */}
+        <RevealOnScroll>
         <div className="text-center mb-12">
           <h1
             className="text-4xl md:text-5xl font-light text-[#181818] mb-4"
@@ -243,13 +249,14 @@ export default function GroupStays({ heroConfig = {} }) {
             Shared wellness journeys for friends, family, and teams.
           </p>
         </div>
+        </RevealOnScroll>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {groupRetreats.map((retreat) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {groupRetreats.map((retreat, index) => (
+            <RevealOnScroll key={retreat.id} delay={(index % 3) * 90}>
             <Link
               to={`/book-hotel/${retreat.id}`}
-              key={retreat.id}
-              className="group"
+              className="group block"
             >
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105">
                 <div className="relative h-64">
@@ -297,6 +304,7 @@ export default function GroupStays({ heroConfig = {} }) {
                 </div>
               </div>
             </Link>
+            </RevealOnScroll>
           ))}
         </div>
 

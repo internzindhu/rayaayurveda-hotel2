@@ -158,7 +158,7 @@ export default function HotelDetails() {
               <img
                 src={displayImage}
                 alt={na(hotel.hotel_name)}
-                className="w-full h-[340px] sm:h-[420px] lg:h-[460px] object-cover"
+                className="w-full h-[240px] sm:h-[340px] md:h-[420px] lg:h-[460px] object-cover"
               />
 
               <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur-sm shadow-lg rounded-lg p-5 max-w-xs">
@@ -203,7 +203,7 @@ export default function HotelDetails() {
             </div>
 
             {/* Booking panel */}
-            <aside className="bg-[#FBF7F3] px-6 py-6 sm:px-8 sm:py-8 flex flex-col justify-between">
+            <aside className="bg-[#FBF7F3] px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 flex flex-col justify-between">
               <div>
                 <h2
                   className="text-lg font-semibold text-[#181818] mb-4"

@@ -8,7 +8,7 @@ export default function Footer() {
     <footer style={{ backgroundColor: "#5E17EB" }} className="text-white">
       {/* Main footer grid */}
       <div className="max-w-7xl mx-auto px-6 sm:px-10 py-12 sm:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-start">
 
           {/* LEFT – Navigation */}
           <div className="space-y-5">
@@ -57,7 +57,7 @@ export default function Footer() {
             ].map(({ heading, links }) => (
               <div key={heading}>
                 <p
-                  className="text-white/40 text-[9px] uppercase tracking-[0.2em] mb-1.5"
+                  className="text-white/40 text-[10px] uppercase tracking-[0.15em] mb-1.5"
                   style={{ fontFamily: "Poppins, sans-serif" }}
                 >
                   {heading}
@@ -67,8 +67,8 @@ export default function Footer() {
                     <Link
                       key={label}
                       to={to}
-                      className="text-white hover:text-white/70 transition-colors duration-200 text-xs tracking-widest font-light"
-                      style={{ fontFamily: "Poppins, sans-serif", letterSpacing: "0.1em" }}
+                      className="text-white hover:text-white/70 transition-colors duration-200 text-xs tracking-wide sm:tracking-widest font-light"
+                      style={{ fontFamily: "Poppins, sans-serif" }}
                     >
                       {label}
                     </Link>
@@ -116,7 +116,7 @@ export default function Footer() {
               <img
                 src="/Raya_logo_new.png"
                 alt="Raya Longlife Logo"
-                className="h-auto w-36 sm:w-44 hover:opacity-80 transition-opacity duration-300"
+                className="h-auto w-32 sm:w-40 md:w-44 hover:opacity-80 transition-opacity duration-300"
                 style={{ filter: "brightness(0) invert(1)" }}
               />
             </Link>

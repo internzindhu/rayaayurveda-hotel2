@@ -42,9 +42,9 @@ export default function FAQ() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F4F4F4] to-[#EAE9E3]">
       <Navbar />
-      <div className="max-w-4xl mx-auto px-4 py-32">
+      <div className="max-w-4xl mx-auto px-4 py-16 sm:py-24 md:py-32">
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-[#181818] mb-4">Frequently Asked Questions</h1>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#181818] mb-4">Frequently Asked Questions</h1>
           <p className="text-xl text-gray-700">Everything you need to know about Ayurvedic retreats</p>
         </div>
         

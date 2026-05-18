@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__claude_ai_Supabase__list_organizations",
+      "mcp__claude_ai_Supabase__list_projects",
+      "Bash(find \"C:/raya2/backend- raya\" -type f | head -80)",
+      "Read(//c/raya2/backend- raya/**)"
+    ]
+  }
+}

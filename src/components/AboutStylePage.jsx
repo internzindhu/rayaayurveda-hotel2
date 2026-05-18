@@ -165,8 +165,8 @@ export default function AboutStylePage({ content = {} }) {
                 />
                 <TextGenerateEffect
                   words={c.heroLine3}
-                  className="text-white text-[20px] sm:text-[22px] md:text-[24px] leading-tight"
-                  style={{ fontFamily: "Lato, sans-serif", fontStyle: "normal", width: '75%', margin: '0 auto' }}
+                  className="text-white text-[20px] sm:text-[22px] md:text-[24px] leading-tight w-3/4 mx-auto"
+                  style={{ fontFamily: "Lato, sans-serif", fontStyle: "normal" }}
                 />
               </div>
             </div>
@@ -318,7 +318,7 @@ export default function AboutStylePage({ content = {} }) {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
             {c.treatIcons.map((label, i) => (
               <div key={i} className="flex flex-col items-center text-center">
                 <div className="w-24 h-24 rounded-full flex items-center justify-center mb-4">

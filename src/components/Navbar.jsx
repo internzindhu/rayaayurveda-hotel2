@@ -249,7 +249,7 @@ export default function Navbar() {
             {/* Column 4 - Logo */}
             <div className={`flex items-center justify-center transition-all duration-700 ease-out ${isLoaded ? "scale-100" : "scale-95"}`}>
               <Link to="/">
-                <img src="/logo.png" alt="RAYA Logo" className="w-40 md:w-[140px] lg:w-[150px] h-auto hover:scale-110 transition-transform duration-300 ease-in-out" />
+                <img src="/logo.png" alt="RAYA Logo" className="w-32 sm:w-[140px] lg:w-[150px] h-auto hover:scale-110 transition-transform duration-300 ease-in-out" />
               </Link>
             </div>
 

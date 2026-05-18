@@ -40,7 +40,7 @@ export default function Contact() {
           </div>
 
           {/* Two columns: contact info (left) + form (right) */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-start">
             {/* Left column - Contact information */}
             <div className="space-y-8">
               {/* Working Hours */}

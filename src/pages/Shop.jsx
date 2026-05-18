@@ -1,4 +1,5 @@
 import Navbar from "../components/Navbar";
+import RevealOnScroll from "../components/RevealOnScroll";
 
 export default function Shop() {
   const products = [
@@ -11,16 +12,19 @@ export default function Shop() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 py-32">
+      <div className="max-w-7xl mx-auto px-4 py-16 sm:py-24 md:py-32">
+        <RevealOnScroll>
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-orange-800 mb-4">Ayurvedic Shop</h1>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-orange-800 mb-4">Ayurvedic Shop</h1>
           <p className="text-xl text-gray-700">Authentic products for your wellness journey</p>
         </div>
-        
+        </RevealOnScroll>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <div key={product.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-              <div className="h-48 overflow-hidden">
+          {products.map((product, index) => (
+            <RevealOnScroll key={product.id} delay={index * 80}>
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+              <div className="aspect-[4/3] overflow-hidden">
                 <img
                   src={product.image}
                   alt={product.name}
@@ -35,6 +39,7 @@ export default function Shop() {
                 </button>
               </div>
             </div>
+            </RevealOnScroll>
           ))}
         </div>
 

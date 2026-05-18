@@ -289,7 +289,7 @@ export default function Blogs() {
               <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#181818] font-serif" style={{ fontFamily: 'Sentient Bold, serif' }}>Featured Posts</h3>
               <div className="hidden lg:block w-0 h-24 border-l-2 border-dotted border-[#181818] mr-0 self-center"></div>
             </div>
-            <div className="flex w-full lg:w-2/3 items-center gap-4 lg:gap-6 lg:gap-8">
+            <div className="flex w-full lg:w-2/3 items-center gap-4 lg:gap-8">
               <p className="text-[16px] sm:text-lg text-[#181818] leading-relaxed" style={{ fontFamily: 'Lato, sans-serif' }}>Short reads designed to guide, inspire, and deepen your understanding of Ayurveda healing, and mindful living  before, during, and beyond your retreat.</p>
             </div>
           </div>
@@ -357,7 +357,7 @@ export default function Blogs() {
       {/* ── Blog grid ── */}
       <section className="bg-[#FFFBF7] pb-20 px-4 sm:px-8">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-12">
             {gridPosts.map((post, i) => (
               <BlogCard key={post.title} post={post} index={i} />
             ))}

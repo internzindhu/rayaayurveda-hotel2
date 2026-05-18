@@ -156,7 +156,7 @@ export default function QuestionnaireResults() {
       style={{ backgroundImage: 'url(/bg6.jpg)' }}
     >
       <Navbar />
-      <div className="max-w-4xl mx-auto ml-20 px-4 py-32">
+      <div className="max-w-4xl mx-auto px-4 py-16 sm:py-24 md:py-32">
         <div
           className="rounded-2xl p-8 md:p-12 text-left"
           style={{ fontFamily: 'Sentient, sans-serif' }}

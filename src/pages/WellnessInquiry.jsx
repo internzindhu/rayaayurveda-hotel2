@@ -97,7 +97,7 @@ export default function WellnessInquiry() {
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-[10%] pb-20">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr,1px,1fr] gap-10 lg:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr,1px,1fr] gap-6 md:gap-8 lg:gap-12">
           {/* Left – Wellness inquiry form */}
           <div className="bg-[#FFFBF7] rounded-xl p-6 sm:p-8 shadow-sm">
             {/* Intro box (matches reference) */}

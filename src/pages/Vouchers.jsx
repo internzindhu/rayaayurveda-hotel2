@@ -66,7 +66,7 @@ export default function Vouchers() {
         </div>
 
         {/* Image + numbered steps */}
-        <section className="grid grid-cols-1 lg:grid-cols-[1fr,1.2fr] gap-10 lg:gap-14 mb-20">
+        <section className="grid grid-cols-1 lg:grid-cols-[1fr,1.2fr] gap-6 lg:gap-14 mb-20">
           <div className="relative">
             <img
               src="/leaves.jpg"
@@ -237,7 +237,7 @@ export default function Vouchers() {
               >
                 Receiver Details
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 <div>
                   <label className="text-xs text-[#555] mb-1 block" style={{ fontFamily: "Lato, sans-serif" }}>
                     First name*

@@ -1,4 +1,5 @@
 import Navbar from "../components/Navbar";
+import RevealOnScroll from "../components/RevealOnScroll";
 
 export default function Treatments() {
   const retreats = [
@@ -106,20 +107,23 @@ export default function Treatments() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F4F4F4] to-[#EAE9E3]">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 py-32">
+      <div className="max-w-7xl mx-auto px-4 py-16 sm:py-24 md:py-32">
+        <RevealOnScroll>
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-[#181818] mb-4" style={{ fontFamily: 'Sentient, serif' }}>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#181818] mb-4" style={{ fontFamily: 'Sentient, serif' }}>
             Ayurvedic Retreats
           </h1>
           <p className="text-xl text-gray-700 max-w-3xl mx-auto" style={{ fontFamily: 'Poppins, sans-serif' }}>
-            If you want to invest in yourself and your health, an Ayurvedic healing retreat is the perfect place for you. 
+            If you want to invest in yourself and your health, an Ayurvedic healing retreat is the perfect place for you.
             A great combination of therapeutic stay with an excellent therapeutic team and Ayurvedic cuisine will provide you with a complete Ayurveda experience.
           </p>
         </div>
+        </RevealOnScroll>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {retreats.map((retreat, index) => (
-            <div key={index} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+            <RevealOnScroll key={index} delay={(index % 3) * 90}>
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
               <div className="relative h-48 overflow-hidden">
                 <img
                   src={retreat.image}
@@ -164,6 +168,7 @@ export default function Treatments() {
                 </div>
               </div>
             </div>
+            </RevealOnScroll>
           ))}
         </div>
 

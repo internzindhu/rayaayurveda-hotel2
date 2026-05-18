@@ -4,7 +4,7 @@ export default function Policy() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="max-w-4xl mx-auto px-4 py-32 space-y-12">
+      <div className="max-w-4xl mx-auto px-4 py-16 sm:py-24 md:py-32 space-y-8 md:space-y-12">
 
         {/* Complaint Handling Policy */}
         <div>
@@ -14,7 +14,7 @@ export default function Policy() {
             issue during booking, payment, or your travel service, we are here to help.
           </p>
 
-          <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">
+          <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 space-y-6 md:space-y-8">
 
             <section>
               <h2 className="text-2xl font-bold text-gray-800 mb-4">1. How to Submit a Complaint</h2>
@@ -83,7 +83,7 @@ export default function Policy() {
             and does not control supplier rules.
           </p>
 
-          <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">
+          <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 space-y-6 md:space-y-8">
 
             <section>
               <h2 className="text-2xl font-bold text-gray-800 mb-4">1. Cancellation Terms</h2>
