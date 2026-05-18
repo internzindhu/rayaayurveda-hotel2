@@ -29,7 +29,6 @@ export default function IndividualStaysSriLanka() {
       setError(null);
       const params = {
         ownership_type: "Individual",
-        location: "Sri Lanka",
         ...extraParams,
       };
       const result = await fetchWellnessHotels(params);

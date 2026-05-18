@@ -1,22 +1,39 @@
-const BASE = import.meta.env.VITE_WELLNESS_API_URL ?? "http://localhost:3005";
-
-function buildQuery(params = {}) {
-  const q = new URLSearchParams();
-  for (const [k, v] of Object.entries(params)) {
-    if (v !== undefined && v !== null && v !== "") q.set(k, String(v));
-  }
-  return q.toString();
-}
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3005";
 
 export async function fetchWellnessHotels(params = {}) {
-  const qs = buildQuery(params);
-  const res = await fetch(`${BASE}/api/hotels${qs ? `?${qs}` : ""}`);
-  if (!res.ok) throw new Error(`Hotels API error ${res.status}`);
-  return res.json(); // { success, data: Hotel[], meta }
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || value === null || value === "") continue;
+    if (Array.isArray(value)) {
+      if (value.length === 0) continue;
+      search.set(key, value.join(","));
+    } else {
+      search.set(key, String(value));
+    }
+  }
+  const url = `${API_BASE}/api/hotels${search.toString() ? `?${search}` : ""}`;
+  const res = await fetch(url, { headers: { Accept: "application/json" } });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Hotel fetch failed (${res.status}): ${text || res.statusText}`);
+  }
+  return res.json();
+}
+
+export async function fetchHotelById(id) {
+  const res = await fetch(`${API_BASE}/api/hotels/${id}`);
+  if (!res.ok) throw new Error(`Hotel ${id} fetch failed: ${res.status}`);
+  return res.json();
+}
+
+export async function fetchRelatedHotels(id) {
+  const res = await fetch(`${API_BASE}/api/hotels/${id}/related`);
+  if (!res.ok) throw new Error(`Related hotels fetch failed: ${res.status}`);
+  return res.json();
 }
 
 export async function fetchLookups() {
-  const res = await fetch(`${BASE}/api/lookups`);
-  if (!res.ok) throw new Error(`Lookups API error ${res.status}`);
-  return res.json(); // { facilities: [{id,name}], activities: [...], ... }
+  const res = await fetch(`${API_BASE}/api/lookups`);
+  if (!res.ok) throw new Error(`Lookups fetch failed: ${res.status}`);
+  return res.json();
 }
