@@ -1,13 +1,12 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import RevealOnScroll from "../components/RevealOnScroll";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import { fetchWellnessHotels } from "../lib/wellnessApi";
 import AdvancedFilters from "../components/AdvancedFilters";
 
-const INITIAL_DISPLAY = 4;
-const DROPDOWN_MAX = 8;
+const INITIAL_DISPLAY = 8;
 
 export default function IndividualStaysSriLanka() {
   const [hotels, setHotels] = useState([]);
@@ -15,11 +14,12 @@ export default function IndividualStaysSriLanka() {
   const [error, setError] = useState(null);
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY);
   const [searchInput, setSearchInput] = useState("");
-  const [travelMonth, setTravelMonth] = useState("");
+  const [travelTheme, setTravelTheme] = useState("");
   const [startingPrice, setStartingPrice] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeFilterParams, setActiveFilterParams] = useState({});
 
+  const navigate = useNavigate();
   const searchRef = useRef(null);
   const dropdownCloseTimer = useRef(null);
 
@@ -55,10 +55,15 @@ export default function IndividualStaysSriLanka() {
   }, []);
 
   const handleSelectHotel = (hotel) => {
-    setSearchInput(hotel.name);
+    setShowDropdown(false);
+    navigate(`/book-hotel/${hotel.id}`);
+  };
+
+  const handleSelectCity = (city) => {
+    setSearchInput(city);
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
-    loadHotels({ ...activeFilterParams, location: hotel.name });
+    loadHotels({ ...activeFilterParams, location: city });
   };
 
   const handleSearchClick = () => {
@@ -66,6 +71,7 @@ export default function IndividualStaysSriLanka() {
     setShowDropdown(false);
     const params = { ...activeFilterParams };
     if (searchInput.trim()) params.location = searchInput.trim();
+    if (travelTheme) params.property_type = travelTheme;
     loadHotels(params);
   };
 
@@ -92,16 +98,14 @@ export default function IndividualStaysSriLanka() {
     loadHotels(params);
   };
 
-  const dropdownHotels = hotels
-    .filter((h) => {
-      if (!searchInput.trim()) return true;
-      const q = searchInput.trim().toLowerCase();
-      return (
-        (h.name ?? "").toLowerCase().includes(q) ||
-        (h.location ?? "").toLowerCase().includes(q)
-      );
-    })
-    .slice(0, DROPDOWN_MAX);
+  const q = searchInput.trim().toLowerCase();
+  const allCities = [...new Set(hotels.map((h) => h.location).filter(Boolean))].sort();
+  const matchingCities = q
+    ? allCities.filter((c) => c.toLowerCase().includes(q))
+    : allCities;
+  const matchingHotels = q
+    ? hotels.filter((h) => (h.name ?? "").toLowerCase().includes(q)).slice(0, 5)
+    : [];
 
   const hotelsToShow = hotels.slice(0, displayCount);
 
@@ -200,35 +204,50 @@ export default function IndividualStaysSriLanka() {
               onChange={(e) => handleSearchInputChange(e.target.value)}
               onFocus={handleInputFocus}
               onBlur={handleInputBlur}
-              placeholder="Country, region, hotel"
+              placeholder="City or hotel name"
               className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] placeholder:text-[#8C8C8C]"
               style={{ fontFamily: "Lato, sans-serif" }}
             />
-            {showDropdown && (
+            {showDropdown && (matchingCities.length > 0 || matchingHotels.length > 0) && (
               <ul
-                className="absolute left-0 right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-[#FFF0E0] py-2 max-h-48 sm:max-h-60 overflow-y-auto z-50"
+                className="absolute left-0 right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-[#FFF0E0] py-2 max-h-60 overflow-y-auto z-50"
                 style={{ fontFamily: "Lato, sans-serif" }}
                 onMouseDown={cancelBlur}
               >
-                {searchInput.trim() === "" ? (
-                  <li className="px-4 py-2 text-sm text-[#8C8C8C]">Type to search hotels</li>
-                ) : dropdownHotels.length === 0 ? (
-                  <li className="px-4 py-2 text-sm text-[#8C8C8C]">No hotels match</li>
-                ) : (
-                  dropdownHotels.map((hotel) => (
-                    <li key={hotel.id}>
-                      <button
-                        type="button"
-                        className="w-full text-left px-4 py-2.5 text-sm text-[#181818] hover:bg-[#FFF0E0] transition-colors"
-                        onClick={() => handleSelectHotel(hotel)}
-                      >
-                        <span className="font-medium">{hotel.name}</span>
-                        {hotel.location && (
-                          <span className="block text-[#8C8C8C] text-xs mt-0.5 truncate">{hotel.location}</span>
-                        )}
-                      </button>
-                    </li>
-                  ))
+                {matchingCities.length > 0 && (
+                  <>
+                    <li className="px-4 pt-1 pb-0.5 text-[10px] tracking-widest uppercase text-[#8C8C8C]">Cities</li>
+                    {matchingCities.map((city) => (
+                      <li key={city}>
+                        <button
+                          type="button"
+                          className="w-full text-left px-4 py-2 text-sm text-[#181818] hover:bg-[#FFF0E0] transition-colors"
+                          onClick={() => handleSelectCity(city)}
+                        >
+                          {city}
+                        </button>
+                      </li>
+                    ))}
+                  </>
+                )}
+                {matchingHotels.length > 0 && (
+                  <>
+                    <li className="px-4 pt-2 pb-0.5 text-[10px] tracking-widest uppercase text-[#8C8C8C]">Hotels</li>
+                    {matchingHotels.map((hotel) => (
+                      <li key={hotel.id}>
+                        <button
+                          type="button"
+                          className="w-full text-left px-4 py-2.5 text-sm text-[#181818] hover:bg-[#FFF0E0] transition-colors"
+                          onClick={() => handleSelectHotel(hotel)}
+                        >
+                          <span className="font-medium">{hotel.name}</span>
+                          {hotel.location && (
+                            <span className="block text-[#8C8C8C] text-xs mt-0.5 truncate">{hotel.location}</span>
+                          )}
+                        </button>
+                      </li>
+                    ))}
+                  </>
                 )}
               </ul>
             )}
@@ -236,23 +255,27 @@ export default function IndividualStaysSriLanka() {
 
           <div className="hidden md:block w-px self-stretch bg-[#E0D4C8]" />
 
-          {/* Month */}
+          {/* Travel Theme */}
           <div className="flex-1 flex flex-col">
             <label
-              htmlFor="travel-month"
+              htmlFor="travel-theme"
               className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
               style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
             >
-              Month
+              Travel Theme
             </label>
-            <input
-              id="travel-month"
-              type="month"
-              value={travelMonth}
-              onChange={(e) => setTravelMonth(e.target.value)}
-              className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB]"
+            <select
+              id="travel-theme"
+              value={travelTheme}
+              onChange={(e) => setTravelTheme(e.target.value)}
+              className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] appearance-none cursor-pointer"
               style={{ fontFamily: "Lato, sans-serif" }}
-            />
+            >
+              <option value="">All themes</option>
+              <option value="Ayurveda Only">Ayurveda Only</option>
+              <option value="Wellness">Wellness</option>
+              <option value="Leisure">Leisure</option>
+            </select>
           </div>
 
           <div className="hidden md:block w-px self-stretch bg-[#E0D4C8]" />
