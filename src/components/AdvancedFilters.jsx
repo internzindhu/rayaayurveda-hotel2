@@ -299,7 +299,7 @@ const STATIC_ACTIVITIES = [
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export default function AdvancedFilters({ onApply }) {
+export default function AdvancedFilters({ onApply, className = "mb-8" }) {
   const [open, setOpen] = useState(false);
   const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [lookups, setLookups] = useState(null);
@@ -360,7 +360,7 @@ export default function AdvancedFilters({ onApply }) {
   const activities = lk.activities?.length ? lk.activities : STATIC_ACTIVITIES;
 
   return (
-    <div className="w-full mb-8">
+    <div className={`w-full ${className}`}>
       {/* Toggle row */}
       <div className="flex items-center justify-between">
         <button

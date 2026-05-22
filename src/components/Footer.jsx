@@ -16,10 +16,10 @@ export default function Footer() {
               {
                 heading: "About",
                 links: [
-                  { label: "About Us", to: "/about" },
-                  { label: "Mission", to: "/about/mission" },
-                  { label: "Why Travel With Us", to: "/about/why-travel-with-us" },
-                  { label: "How It Works", to: "/about/how-it-works" },
+                  { label: "", to: "/about" },
+                  { label: "", to: "/about/mission" },
+                  // { label: "Why Travel With Us", to: "/about/why-travel-with-us" },
+                  // { label: "How It Works", to: "/about/how-it-works" },
                 ],
               },
               {
@@ -32,9 +32,9 @@ export default function Footer() {
               {
                 heading: "Ayurveda Guide",
                 links: [
-                  { label: "What Is Ayurveda", to: "/ayurveda-guide#what-is-ayurveda" },
-                  { label: "Vata, Pitta & Kapha", to: "/ayurveda-guide#doshas" },
-                  { label: "What Is Panchakarma", to: "/ayurveda-guide#panchakarma" },
+                  // { label: "What Is Ayurveda", to: "/ayurveda-guide#what-is-ayurveda" },
+                  { label: "", to: "/ayurveda-guide#doshas" },
+                  { label: "", to: "/ayurveda-guide#panchakarma" },
                 ],
               },
               {

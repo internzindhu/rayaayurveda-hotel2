@@ -14,7 +14,7 @@ export default function IndividualStaysSriLanka() {
   const [error, setError] = useState(null);
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY);
   const [searchInput, setSearchInput] = useState("");
-  const [travelTheme, setTravelTheme] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
   const [startingPrice, setStartingPrice] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeFilterParams, setActiveFilterParams] = useState({});
@@ -71,7 +71,7 @@ export default function IndividualStaysSriLanka() {
     setShowDropdown(false);
     const params = { ...activeFilterParams };
     if (searchInput.trim()) params.location = searchInput.trim();
-    if (travelTheme) params.property_type = travelTheme;
+    if (selectedMonth) params.month = selectedMonth;
     loadHotels(params);
   };
 
@@ -186,7 +186,8 @@ export default function IndividualStaysSriLanka() {
       <div className="max-w-7xl mx-auto px-4 py-16">
 
         {/* Search Bar */}
-        <div className="w-full bg-[#FFF8F2] rounded-xl shadow-sm border border-[#FFF0E0] px-6 sm:px-10 py-6 sm:py-8 mb-6 flex flex-col md:flex-row items-stretch md:items-center gap-6 md:gap-8">
+        <div className="w-full bg-[#FFF8F2] rounded-xl shadow-sm border border-[#FFF0E0] px-6 sm:px-10 py-6 sm:py-8 mb-6 flex flex-col gap-6">
+          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-6 md:gap-8">
 
           {/* Destination or Hotel */}
           <div className="flex-1 flex flex-col relative" ref={searchRef}>
@@ -255,26 +256,35 @@ export default function IndividualStaysSriLanka() {
 
           <div className="hidden md:block w-px self-stretch bg-[#E0D4C8]" />
 
-          {/* Travel Theme */}
+          {/* Month */}
           <div className="flex-1 flex flex-col">
             <label
-              htmlFor="travel-theme"
+              htmlFor="travel-month"
               className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
               style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
             >
-              Travel Theme
+              Month
             </label>
             <select
-              id="travel-theme"
-              value={travelTheme}
-              onChange={(e) => setTravelTheme(e.target.value)}
+              id="travel-month"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
               className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] appearance-none cursor-pointer"
               style={{ fontFamily: "Lato, sans-serif" }}
             >
-              <option value="">All themes</option>
-              <option value="Ayurveda Only">Ayurveda Only</option>
-              <option value="Wellness">Wellness</option>
-              <option value="Leisure">Leisure</option>
+              <option value="">Any month</option>
+              <option value="January">January</option>
+              <option value="February">February</option>
+              <option value="March">March</option>
+              <option value="April">April</option>
+              <option value="May">May</option>
+              <option value="June">June</option>
+              <option value="July">July</option>
+              <option value="August">August</option>
+              <option value="September">September</option>
+              <option value="October">October</option>
+              <option value="November">November</option>
+              <option value="December">December</option>
             </select>
           </div>
 
@@ -308,10 +318,12 @@ export default function IndividualStaysSriLanka() {
           >
             Search &rarr;
           </button>
-        </div>
+          </div>
 
-        {/* Advanced Filters */}
-        <AdvancedFilters onApply={handleAdvancedFiltersApply} />
+          <div className="border-t border-[#E0D4C8] pt-4">
+            <AdvancedFilters onApply={handleAdvancedFiltersApply} className="mb-0" />
+          </div>
+        </div>
 
         {/* Hotels Grid */}
         <div className="relative mb-24 sm:mb-24">
