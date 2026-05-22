@@ -192,17 +192,12 @@ export default function Navbar() {
                 </button>
                 {isAboutOpen && (
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60]">
-                    <Link to="/about" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>ABOUT US</Link>
-                    <Link to="/about/mission" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>
-                      <span className="font-semibold block">MISSION</span>
-                      {/* <span className="block text-xs text-white/75 font-normal mt-0.5 leading-snug normal-case">Guided healing, wherever you are in the world.</span> */}
-                    </Link>
-                    <Link to="/about/why-travel-with-us" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>WHY TRAVEL WITH US</Link>
-                    <Link to="/about/how-it-works" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>HOW IT WORKS</Link>
-                    <div className="px-4 pt-3 pb-2 text-sm text-white font-semibold border-t border-white/10 mt-1">YOUR STAY</div>
-                    <Link to="/about/before-your-stay" className="block pl-8 pr-4 py-2 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>BEFORE</Link>
-                    <Link to="/about/during-your-stay" className="block pl-8 pr-4 py-2 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>DURING</Link>
-                    <Link to="/about/after-your-stay" className="block pl-8 pr-4 py-2 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>AFTER YOUR STAY</Link>
+                    <Link to="/about#our-story" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>OUR STORY</Link>
+                    <Link to="/about#why-travel-with-us" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>WHY TRAVEL WITH US</Link>
+                    <Link to="/about#how-it-works" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>HOW IT WORKS</Link>
+                    <Link to="/about#before" className="block pl-8 pr-4 py-2 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>BEFORE</Link>
+                    <Link to="/about#during" className="block pl-8 pr-4 py-2 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>DURING</Link>
+                    <Link to="/about#after" className="block pl-8 pr-4 py-2 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>AFTER YOUR STAY</Link>
                   </div>
                 )}
               </div>
@@ -302,7 +297,7 @@ export default function Navbar() {
                 {isServicesOpen && (
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60]">
                     <Link to="/vouchers" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsServicesOpen(false)}>VOUCHERS</Link>
-                    <Link to="/contact" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsServicesOpen(false)}>BOOKING AND CONTACT</Link>
+                    <Link to="/consultation" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsServicesOpen(false)}>BOOKING AND CONTACT</Link>
                   </div>
                 )}
               </div>
@@ -364,17 +359,12 @@ export default function Navbar() {
               </button>
               {isAboutOpen && (
                 <div className="pb-4 animate-mobile-dropdown">
-                  <MobileLink to="/about" onClose={() => { setIsAboutOpen(false); setIsMobileMenuOpen(false); }}>ABOUT US</MobileLink>
-                  <MobileLink to="/about/mission" onClose={() => { setIsAboutOpen(false); setIsMobileMenuOpen(false); }}>MISSION</MobileLink>
-                  <p className="pl-7 pb-2 text-white/35 text-xs italic leading-snug" style={{ fontFamily: "Sentient, serif" }}>
-                    Guided healing, wherever you are in the world.
-                  </p>
-                  <MobileLink to="/about/why-travel-with-us" onClose={() => { setIsAboutOpen(false); setIsMobileMenuOpen(false); }}>WHY TRAVEL WITH US</MobileLink>
-                  <MobileLink to="/about/how-it-works" onClose={() => { setIsAboutOpen(false); setIsMobileMenuOpen(false); }}>HOW IT WORKS</MobileLink>
-                  <CategoryLabel>Your Stay</CategoryLabel>
-                  <MobileLink to="/about/before-your-stay" indent onClose={() => { setIsAboutOpen(false); setIsMobileMenuOpen(false); }}>BEFORE</MobileLink>
-                  <MobileLink to="/about/during-your-stay" indent onClose={() => { setIsAboutOpen(false); setIsMobileMenuOpen(false); }}>DURING</MobileLink>
-                  <MobileLink to="/about/after-your-stay" indent onClose={() => { setIsAboutOpen(false); setIsMobileMenuOpen(false); }}>AFTER YOUR STAY</MobileLink>
+                  <MobileLink to="/about#our-story" onClose={() => { setIsAboutOpen(false); setIsMobileMenuOpen(false); }}>OUR STORY</MobileLink>
+                  <MobileLink to="/about#why-travel-with-us" onClose={() => { setIsAboutOpen(false); setIsMobileMenuOpen(false); }}>WHY TRAVEL WITH US</MobileLink>
+                  <MobileLink to="/about#how-it-works" onClose={() => { setIsAboutOpen(false); setIsMobileMenuOpen(false); }}>HOW IT WORKS</MobileLink>
+                  <MobileLink to="/about#before" indent onClose={() => { setIsAboutOpen(false); setIsMobileMenuOpen(false); }}>BEFORE</MobileLink>
+                  <MobileLink to="/about#during" indent onClose={() => { setIsAboutOpen(false); setIsMobileMenuOpen(false); }}>DURING</MobileLink>
+                  <MobileLink to="/about#after" indent onClose={() => { setIsAboutOpen(false); setIsMobileMenuOpen(false); }}>AFTER YOUR STAY</MobileLink>
                 </div>
               )}
             </div>
@@ -508,7 +498,7 @@ export default function Navbar() {
               {isBlogOpen && (
                 <div className="pb-4 animate-mobile-dropdown">
                   <MobileLink to="/faq" onClose={() => { setIsBlogOpen(false); setIsMobileMenuOpen(false); }}>FAQ</MobileLink>
-                  <MobileLink to="/guest-testimonies" onClose={() => { setIsBlogOpen(false); setIsMobileMenuOpen(false); }}>GUEST TESTIMONIES</MobileLink>
+                  {/* <MobileLink to="/guest-testimonies" onClose={() => { setIsBlogOpen(false); setIsMobileMenuOpen(false); }}>GUEST TESTIMONIES</MobileLink> */}
                   <MobileLink to="/blogs" onClose={() => { setIsBlogOpen(false); setIsMobileMenuOpen(false); }}>BLOG</MobileLink>
                   <MobileLink to="/newsletter" onClose={() => { setIsBlogOpen(false); setIsMobileMenuOpen(false); }}>NEWSLETTER</MobileLink>
                 </div>

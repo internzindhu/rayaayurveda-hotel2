@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Link, useLocation } from 'react-router-dom'
 import ScrollToTop from './components/ScrollToTop'
 import Footer from './components/Footer'
 import Home from './pages/Home'
@@ -28,12 +28,6 @@ import Vouchers from './pages/Vouchers'
 import Policy from './pages/Policy'
 import Destinations from './pages/Destinations'
 import Login from './pages/Login'
-import Mission from './pages/Mission'
-import WhyTravelWithUs from './pages/WhyTravelWithUs'
-import HowItWorks from './pages/HowItWorks'
-import BeforeYourStay from './pages/BeforeYourStay'
-import DuringYourStay from './pages/DuringYourStay'
-import AfterYourStay from './pages/AfterYourStay'
 import AyurvedaGuide from './pages/AyurvedaGuide'
 import WhatIsAyurveda from './pages/WhatIsAyurveda'
 import AyurvedaDoshas from './pages/AyurvedaDoshas'
@@ -44,18 +38,26 @@ import MythsAboutAyurveda from './pages/MythsAboutAyurveda'
 import AyurvedaVsWellness from './pages/AyurvedaVsWellness'
 
 function App() {
+  const location = useLocation();
+  const hideIcon = location.pathname === '/consultation';
+
   return (
     <div className="App">
       <ScrollToTop />
+      {!hideIcon && (
+        <Link
+          to="/consultation"
+          className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 bg-[#5E17EB] hover:bg-[#4B12BD] text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-40 flex items-center justify-center"
+          aria-label="Talk to an expert"
+        >
+          <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+        </Link>
+      )}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
-        <Route path="/about/mission" element={<Mission />} />
-        <Route path="/about/why-travel-with-us" element={<WhyTravelWithUs />} />
-        <Route path="/about/how-it-works" element={<HowItWorks />} />
-        <Route path="/about/before-your-stay" element={<BeforeYourStay />} />
-        <Route path="/about/during-your-stay" element={<DuringYourStay />} />
-        <Route path="/about/after-your-stay" element={<AfterYourStay />} />
         <Route path="/ayurveda-guide" element={<AyurvedaGuide />} />
         <Route path="/ayurveda-guide/what-is-ayurveda" element={<WhatIsAyurveda />} />
         <Route path="/ayurveda-guide/principles-vata-pitta-kapha" element={<AyurvedaDoshas />} />

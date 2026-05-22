@@ -2,11 +2,11 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import Navbar from "../components/Navbar";
 
 const BUDGET_STEPS = [
-  { label: "€0",    display: "€0" },
-  { label: "€2k",   display: "€2k" },
-  { label: "€5k",   display: "€5k" },
-  { label: "€10k",  display: "€10k" },
-  { label: "€15k+", display: "€15k+" },
+  { label: "$0",    display: "$0" },
+  { label: "$2k",   display: "$2k" },
+  { label: "$5k",   display: "$5k" },
+  { label: "$10k",  display: "$10k" },
+  { label: "$15k+", display: "$15k+" },
 ];
 const LAST = BUDGET_STEPS.length - 1;
 
@@ -133,7 +133,7 @@ export default function Consultation() {
     country: "",
     email: "",
     mobile: "",
-    preferredContact: "",
+    preferredContact: [],
     travelMonth: "",
     budgetMinIdx: 0,
     budgetMaxIdx: 4,
@@ -151,7 +151,7 @@ export default function Consultation() {
       country: "",
       email: "",
       mobile: "",
-      preferredContact: "",
+      preferredContact: [],
       travelMonth: "",
       budgetMinIdx: 0,
       budgetMaxIdx: 4,
@@ -275,21 +275,47 @@ export default function Consultation() {
 
               {/* Preferred Mode of Contact */}
               <div>
-                <label className="block text-gray-700 font-medium mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <label className="block text-gray-700 font-medium mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
                   Preferred Mode of Contact<span className="text-red-500">*</span>
                 </label>
-                <select
-                  value={formData.preferredContact}
-                  onChange={(e) => setFormData({ ...formData, preferredContact: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent transition-all bg-white"
-                  required
-                  style={{ fontFamily: 'Poppins, sans-serif' }}
-                >
-                  <option value="">Select</option>
-                  <option value="call">Call</option>
-                  <option value="whatsapp">WhatsApp</option>
-                  <option value="email">Email</option>
-                </select>
+                <div className="flex flex-wrap gap-3">
+                  {["Call", "WhatsApp", "Email"].map((option) => {
+                    const value = option.toLowerCase();
+                    const selected = formData.preferredContact.includes(value);
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => {
+                          const current = formData.preferredContact;
+                          setFormData({
+                            ...formData,
+                            preferredContact: selected
+                              ? current.filter((v) => v !== value)
+                              : [...current, value],
+                          });
+                        }}
+                        className={`px-5 py-2.5 rounded-lg border-2 font-medium text-sm transition-all duration-200 ${
+                          selected
+                            ? "bg-[#5E17EB] border-[#5E17EB] text-white"
+                            : "bg-white border-gray-300 text-gray-700 hover:border-[#5E17EB] hover:text-[#5E17EB]"
+                        }`}
+                        style={{ fontFamily: 'Poppins, sans-serif' }}
+                      >
+                        {option}
+                      </button>
+                    );
+                  })}
+                </div>
+                {formData.preferredContact.length === 0 && (
+                  <input
+                    type="text"
+                    required
+                    className="sr-only"
+                    aria-hidden="true"
+                    tabIndex={-1}
+                  />
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -327,7 +353,7 @@ export default function Consultation() {
               {/* Total Travel Budget — dual-handle range slider */}
               <div>
                 <label className="block text-gray-700 font-medium mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Total Travel Budget
+                  Per Night Travel Budget
                 </label>
                 <div className="relative">
                   <BudgetRangeSlider
@@ -425,6 +451,71 @@ export default function Consultation() {
             </div>
           </div>
         </div>
+
+        {/* Contact Info Section */}
+        <div className="mt-20 border-t border-gray-200 pt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+          {/* General Enquiries */}
+          <div>
+            <h3 className="text-base font-bold text-[#181818] mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              General Enquiries
+            </h3>
+            <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>rayalonglife@gmail.com</p>
+            <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>+94 71 366 7946</p>
+          </div>
+
+          {/* Customer Support */}
+          <div>
+            <h3 className="text-base font-bold text-[#181818] mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              Customer support
+            </h3>
+            <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>rayalonglife@gmail.com</p>
+            <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>+94 71 366 7946</p>
+          </div>
+
+          {/* Address */}
+          <div>
+            <h3 className="text-base font-bold text-[#181818] mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              Address
+            </h3>
+            <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              Raya Longlife, Suite 5, Enterprise House, Moorgate Point, Moorgate Rd, Sri Lanka.
+            </p>
+          </div>
+
+          {/* Follow Us */}
+          <div>
+            <h3 className="text-base font-bold text-[#181818] mb-4" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.08em' }}>
+              FOLLOW US
+            </h3>
+            <div className="flex gap-3">
+              {/* Instagram */}
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 border-2 border-[#5E17EB] rounded-xl flex items-center justify-center text-[#5E17EB] hover:bg-[#5E17EB] hover:text-white transition-colors duration-200"
+                aria-label="Instagram"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+              </a>
+              {/* Facebook */}
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 border-2 border-[#5E17EB] rounded-xl flex items-center justify-center text-[#5E17EB] hover:bg-[#5E17EB] hover:text-white transition-colors duration-200"
+                aria-label="Facebook"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );
