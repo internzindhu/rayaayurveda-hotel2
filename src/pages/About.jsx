@@ -249,7 +249,7 @@ Sri Lanka and beyond. </p>
           </div>
         </section>
       </div>
-
+      <section id="why-travel-with-us">
       <div className="bg-[#FFFBF7] w-full pb-10 pt-[7%]">
         <h2 className="text-[#5E17EB] mb-4 uppercase" style={{
           fontFamily: "Lato, sans-serif",
@@ -276,6 +276,7 @@ Sri Lanka and beyond. </p>
           </div>
         </div>
       </div>
+      </section>
 
 
       {/* 8-item staggered card grid */}
