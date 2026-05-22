@@ -15,6 +15,7 @@ export default function Footer() {
             {[
               {
                 heading: "About",
+                headingTo: "/about",
                 links: [
                   { label: "", to: "/about" },
                   { label: "", to: "/about/mission" },
@@ -31,6 +32,7 @@ export default function Footer() {
               },
               {
                 heading: "Ayurveda Guide",
+                headingTo: "/ayurveda-guide",
                 links: [
                   // { label: "What Is Ayurveda", to: "/ayurveda-guide#what-is-ayurveda" },
                   { label: "", to: "/ayurveda-guide#doshas" },
@@ -54,14 +56,24 @@ export default function Footer() {
                   { label: "Policy", to: "/policy" },
                 ],
               },
-            ].map(({ heading, links }) => (
+            ].map(({ heading, links, headingTo }) => (
               <div key={heading}>
-                <p
-                  className="text-white/40 text-[10px] uppercase tracking-[0.15em] mb-1.5"
-                  style={{ fontFamily: "Poppins, sans-serif" }}
-                >
-                  {heading}
-                </p>
+                {headingTo ? (
+                  <Link
+                    to={headingTo}
+                    className="text-white hover:text-white/70 transition-colors duration-200 text-[10px] uppercase tracking-[0.15em] mb-1.5 block"
+                    style={{ fontFamily: "Poppins, sans-serif" }}
+                  >
+                    {heading}
+                  </Link>
+                ) : (
+                  <p
+                    className="text-white/70 text-[10px] uppercase tracking-[0.15em] mb-1.5"
+                    style={{ fontFamily: "Poppins, sans-serif" }}
+                  >
+                    {heading}
+                  </p>
+                )}
                 <nav className="flex flex-col space-y-1">
                   {links.map(({ label, to }) => (
                     <Link
@@ -206,16 +218,7 @@ export default function Footer() {
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-white/20">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 py-4">
-          <p
-            className="text-white/70 text-xs text-center"
-            style={{ fontFamily: "Poppins, sans-serif" }}
-          >
-            Raya Longlife | All Rights Reserved © {new Date().getFullYear()} | Designed by Brandevous studio
-          </p>
-        </div>
-      </div>
+      
     </footer>
   );
 }
