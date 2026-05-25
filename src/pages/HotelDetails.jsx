@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { supabase } from "@/lib/supabase";
+import { fetchHotelById, fetchRelatedHotels } from "../lib/wellnessApi";
 
 function na(value) {
   if (value == null || value === "") return "Not available";
@@ -12,7 +12,6 @@ function na(value) {
 export default function HotelDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const hotelId = Number(id);
 
   const [hotel, setHotel] = useState(null);
   const [otherHotels, setOtherHotels] = useState([]);
@@ -26,30 +25,18 @@ export default function HotelDetails() {
   const [transportMode, setTransportMode] = useState("");
   const [flightIncluded, setFlightIncluded] = useState("Not included");
   const [extras, setExtras] = useState("Insurance 300€");
-  const [activeTab, setActiveTab] = useState("reviews"); // "reviews" | "gallery"
+  const [activeTab, setActiveTab] = useState("reviews");
   const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
     async function load() {
       try {
         setLoading(true);
-        const { data: single, error: errSingle } = await supabase
-          .from("hotels")
-          .select("*")
-          .eq("id", hotelId)
-          .eq("is_active", true)
-          .single();
-        if (errSingle) throw errSingle;
+        setError(null);
+        const single = await fetchHotelById(id);
         setHotel(single ?? null);
-
-        const { data: others, error: errOthers } = await supabase
-          .from("hotels")
-          .select("id, hotel_name, hotel_location, description, images")
-          .eq("is_active", true)
-          .neq("id", hotelId)
-          .order("id", { ascending: true })
-          .limit(4);
-        if (!errOthers) setOtherHotels(others ?? []);
+        const related = await fetchRelatedHotels(id).catch(() => []);
+        setOtherHotels(Array.isArray(related) ? related : []);
       } catch (e) {
         setError(e.message);
       } finally {
@@ -57,7 +44,7 @@ export default function HotelDetails() {
       }
     }
     load();
-  }, [hotelId]);
+  }, [id]);
 
   const totalDisplay = "Not available"; // API has no price
 
@@ -109,7 +96,7 @@ export default function HotelDetails() {
         extras,
         totalPrice: totalDisplay,
         hotelId: hotel.id,
-        hotelName: hotel.hotel_name,
+        hotelName: hotel.name,
       },
     });
   };
@@ -157,7 +144,7 @@ export default function HotelDetails() {
             <div className="relative">
               <img
                 src={displayImage}
-                alt={na(hotel.hotel_name)}
+                alt={na(hotel.name)}
                 className="w-full h-[240px] sm:h-[340px] md:h-[420px] lg:h-[460px] object-cover"
               />
 
@@ -166,7 +153,7 @@ export default function HotelDetails() {
                   className="text-lg sm:text-xl font-normal text-[#181818] mb-1"
                   style={{ fontFamily: "Sentient, serif" }}
                 >
-                  {na(hotel.hotel_name)}
+                  {na(hotel.name)}
                 </h1>
                 <p
                   className="text-sm text-[#181818] mb-3"
@@ -184,7 +171,7 @@ export default function HotelDetails() {
                   className="text-xs text-[#555555] mb-3"
                   style={{ fontFamily: "Lato, sans-serif" }}
                 >
-                  {na(hotel.hotel_location)}
+                  {na(hotel.location)}
                 </p>
                 <div className="flex items-center gap-2 text-xs text-[#181818] mb-3">
                   <span>Rating: {na(hotel.rating)}</span>
@@ -405,18 +392,18 @@ export default function HotelDetails() {
             </h4>
             <div className="flex flex-wrap gap-2">
               {hotel.facilities && Array.isArray(hotel.facilities) && hotel.facilities.length > 0 ? (
-                hotel.facilities.map((item, i) => (
+                hotel.facilities.map((item) => (
                   <span
-                    key={i}
+                    key={item.facility_id}
                     className="px-3 py-1 rounded-full bg-[#F3F0FF] text-xs text-[#5E17EB]"
                     style={{ fontFamily: "Lato, sans-serif" }}
                   >
-                    {item}
+                    {item.facility?.name}
                   </span>
                 ))
               ) : (
                 <span className="text-sm text-[#8C8C8C]" style={{ fontFamily: "Lato, sans-serif" }}>
-                  {na(hotel.facilities)}
+                  Not available
                 </span>
               )}
             </div>
@@ -531,7 +518,7 @@ export default function HotelDetails() {
                   <div key={index} className="aspect-[4/3] rounded-xl overflow-hidden shadow-sm bg-white">
                     <img
                       src={img}
-                      alt={`${na(hotel.hotel_name)} – image ${index + 1}`}
+                      alt={`${na(hotel.name)} – image ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -569,7 +556,7 @@ export default function HotelDetails() {
                     <div className={`mb-4 ${index === 1 ? "lg:mt-[60px]" : index === 2 ? "lg:mt-[100px]" : ""}`}>
                       <img
                         src={img || "/hotel.png"}
-                        alt={na(h.hotel_name)}
+                        alt={na(h.name)}
                         className="w-full aspect-[4/3] object-cover rounded-lg"
                       />
                     </div>
@@ -577,7 +564,7 @@ export default function HotelDetails() {
                       className="text-xl sm:text-2xl md:text-2xl text-[#181818] mb-3"
                       style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
                     >
-                      {na(h.hotel_name)}
+                      {na(h.name)}
                     </h3>
                     <p
                       className="text-sm text-[#181818] mb-4 leading-relaxed line-clamp-3"
