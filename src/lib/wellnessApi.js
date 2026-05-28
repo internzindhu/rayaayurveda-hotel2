@@ -23,13 +23,17 @@ export async function fetchWellnessHotels(params = {}) {
 export async function fetchHotelById(id) {
   const res = await fetch(`${API_BASE}/api/hotels/${id}`);
   if (!res.ok) throw new Error(`Hotel ${id} fetch failed: ${res.status}`);
-  return res.json();
+  const json = await res.json();
+  // API wraps single hotel in {success, data: {...}}
+  return json?.data ?? json;
 }
 
 export async function fetchRelatedHotels(id) {
   const res = await fetch(`${API_BASE}/api/hotels/${id}/related`);
   if (!res.ok) throw new Error(`Related hotels fetch failed: ${res.status}`);
-  return res.json();
+  const json = await res.json();
+  // API wraps related hotels in {success, data: [...]}
+  return json?.data ?? json;
 }
 
 export async function fetchLookups() {

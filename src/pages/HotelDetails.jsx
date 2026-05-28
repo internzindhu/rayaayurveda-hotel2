@@ -3,11 +3,195 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { fetchHotelById, fetchRelatedHotels } from "../lib/wellnessApi";
 
+/* ─── Helpers ──────────────────────────────────────────────────────────────── */
+
 function na(value) {
-  if (value == null || value === "") return "Not available";
-  if (Array.isArray(value) && value.length === 0) return "Not available";
+  if (value == null || value === "") return null;
+  if (Array.isArray(value) && value.length === 0) return null;
   return value;
 }
+
+// Extract [{name, description}] from a hotel relation array
+// e.g. hotel.activities → [{activity_id, activity: {name, description}}]
+function extractItems(arr, key) {
+  if (!Array.isArray(arr) || arr.length === 0) return [];
+  return arr
+    .map((row) => ({
+      name: row[key]?.name ?? null,
+      description: row[key]?.description ?? null,
+    }))
+    .filter((item) => item.name);
+}
+
+// Extract just the names
+function extractNames(arr, key) {
+  return extractItems(arr, key).map((i) => i.name);
+}
+
+// Parse a comma-separated raw string into an array of name-only items
+function parseRaw(str) {
+  if (!str || typeof str !== "string") return [];
+  return str.split(",").map((s) => s.trim()).filter(Boolean).map((name) => ({ name, description: null }));
+}
+
+// Use structured array if populated, otherwise parse the _raw fallback string
+function getItems(arr, key, rawStr) {
+  const structured = extractItems(arr, key);
+  return structured.length > 0 ? structured : parseRaw(rawStr);
+}
+
+function getNames(arr, key, rawStr) {
+  const structured = extractNames(arr, key);
+  return structured.length > 0 ? structured : parseRaw(rawStr).map((i) => i.name);
+}
+
+/* ─── Small UI pieces ──────────────────────────────────────────────────────── */
+
+function SectionHeading({ children }) {
+  return (
+    <h3
+      className="text-[10px] tracking-[0.22em] text-[#5E17EB] mb-5 uppercase"
+      style={{ fontFamily: "Lato, sans-serif" }}
+    >
+      {children}
+    </h3>
+  );
+}
+
+// Mock images used when the hotel has no images yet
+const MOCK_SLIDES = ["/hotel.png", "/hotel.png", "/hotel.png", "/hotel.png"];
+
+function StarRating({ rating }) {
+  if (!rating) return null;
+  const num = parseFloat(rating);
+  if (isNaN(num)) return null;
+  const full  = Math.floor(num);
+  const empty = 5 - full;
+  return (
+    <div className="flex items-center gap-1">
+      {[...Array(full)].map((_, i) => (
+        <span key={`f${i}`} className="text-[#5E17EB] text-base leading-none">★</span>
+      ))}
+      {[...Array(empty)].map((_, i) => (
+        <span key={`e${i}`} className="text-[#D5CFC9] text-base leading-none">★</span>
+      ))}
+      <span
+        className="ml-1.5 text-xs text-[#555]"
+        style={{ fontFamily: "Lato, sans-serif" }}
+      >
+        {num.toFixed(1)}
+      </span>
+    </div>
+  );
+}
+
+function Chip({ children }) {
+  return (
+    <span
+      className="px-3 py-1.5 rounded-full bg-[#F3F0FF] text-xs text-[#5E17EB] whitespace-nowrap"
+      style={{ fontFamily: "Lato, sans-serif" }}
+    >
+      {children}
+    </span>
+  );
+}
+
+function InfoRow({ label, value }) {
+  if (!value) return null;
+  return (
+    <div className="flex items-start gap-4 py-3 border-b border-[#F0EBE4] last:border-0">
+      <span
+        className="text-xs text-[#8C8C8C] min-w-[180px] shrink-0"
+        style={{ fontFamily: "Lato, sans-serif" }}
+      >
+        {label}
+      </span>
+      <span className="text-xs text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function ItemList({ items }) {
+  if (!items.length) return null;
+  return (
+    <div className="space-y-3">
+      {items.map((item, i) => (
+        <div key={i} className="border-b border-[#F0EBE4] pb-3 last:border-0 last:pb-0">
+          <p className="text-sm text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>
+            {item.name}
+          </p>
+          {item.description && (
+            <p
+              className="text-xs text-[#8C8C8C] mt-0.5 leading-relaxed"
+              style={{ fontFamily: "Lato, sans-serif" }}
+            >
+              {item.description}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ActivityGrid({ items }) {
+  if (!items.length) return null;
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {items.map((item, i) => (
+        <div key={i} className="border border-[#F0EBE4] rounded-lg p-3">
+          <p className="text-sm text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>
+            {item.name}
+          </p>
+          {item.description && (
+            <p
+              className="text-xs text-[#8C8C8C] mt-1 leading-relaxed"
+              style={{ fontFamily: "Lato, sans-serif" }}
+            >
+              {item.description}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function AccordionSection({ id, title, openAccordion, onToggle, children }) {
+  const isOpen = openAccordion === id;
+  return (
+    <div className="border-b border-[#181818]/10 last:border-0">
+      <button
+        type="button"
+        className="w-full flex items-center justify-between px-6 py-5 text-left cursor-pointer"
+        onClick={() => onToggle(id)}
+      >
+        <span className="text-sm text-[#181818] pr-6 leading-snug" style={{ fontFamily: "Lato, sans-serif" }}>
+          {title}
+        </span>
+        <span className="flex-shrink-0 text-[#5E17EB]">
+          <svg
+            className={`w-4 h-4 transition-transform duration-200 ${isOpen ? "" : "-rotate-90"}`}
+            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+          </svg>
+        </span>
+      </button>
+      {isOpen && (
+        <div className="px-6 pb-6 bg-[#F9F7FF] border-t border-[#EDE8FF]">
+          <div className="pt-4">
+            {children}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Main component ───────────────────────────────────────────────────────── */
 
 export default function HotelDetails() {
   const { id } = useParams();
@@ -17,16 +201,29 @@ export default function HotelDetails() {
   const [otherHotels, setOtherHotels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [lightboxImg, setLightboxImg] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [openAccordion, setOpenAccordion] = useState(null);
+  const toggleAccordion = (id) => setOpenAccordion((prev) => (prev === id ? null : id));
 
+  // Booking form
   const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
+  const [dateTo] = useState("");
   const [roomType, setRoomType] = useState("Double");
   const [people, setPeople] = useState(2);
   const [transportMode, setTransportMode] = useState("");
-  const [flightIncluded, setFlightIncluded] = useState("Not included");
-  const [extras, setExtras] = useState("Insurance 300€");
-  const [activeTab, setActiveTab] = useState("reviews");
+  const [flightIncluded, setFlightIncluded] = useState("");
   const [formErrors, setFormErrors] = useState({});
+
+  // Personal data
+  const [gender, setGender] = useState("female");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [country, setCountry] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [comment, setComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -46,563 +243,715 @@ export default function HotelDetails() {
     load();
   }, [id]);
 
-  const totalDisplay = "Not available"; // API has no price
-
-  const validateForm = () => {
+  const handleInquire = async () => {
+    if (!hotel) return;
     const errors = {};
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
-    if (!dateFrom) {
-      errors.dateFrom = "Please select a start date.";
-    } else {
-      const from = new Date(dateFrom);
-      if (from < today) errors.dateFrom = "Start date cannot be in the past.";
-    }
-
-    if (!dateTo) {
-      errors.dateTo = "Please select an end date.";
-    } else if (dateFrom && new Date(dateTo) <= new Date(dateFrom)) {
-      errors.dateTo = "End date must be after the start date.";
-    }
-
-    if (!roomType) {
-      errors.roomType = "Please select a room type.";
-    }
-
-    if (!people || people < 1) {
-      errors.people = "Please select number of people.";
-    }
-
-    return errors;
-  };
-
-  const handleBookNow = () => {
-    if (!hotel) return;
-    const errors = validateForm();
-    if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
-      return;
-    }
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    if (!dateFrom) errors.dateFrom = "Please select a travel month.";
+    else if (dateFrom < currentMonth) errors.dateFrom = "Travel month cannot be in the past.";
+    if (!fullName) errors.fullName = "Full name is required.";
+    if (!email) errors.email = "Email is required.";
+    if (!country) errors.country = "Country is required.";
+    if (!mobile) errors.mobile = "Mobile number is required.";
+    if (Object.keys(errors).length > 0) { setFormErrors(errors); return; }
     setFormErrors({});
-    navigate(`/book-hotel/${hotel.id}/inquiry`, {
-      state: {
-        dateFrom,
-        dateTo,
-        roomType,
-        people,
-        transportMode,
-        flightIncluded,
-        extras,
-        totalPrice: totalDisplay,
-        hotelId: hotel.id,
-        hotelName: hotel.name,
-      },
-    });
+    try {
+      setSubmitting(true);
+      const res = await fetch(
+        "https://akeroaymrygpdkasjzov.functions.supabase.co/send-wellness-inquiry",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            booking: { dateFrom, dateTo, roomType, people, transportMode, flightIncluded },
+            personal: { gender, fullName, email, country, mobile, comment },
+            hotelName: hotel.name,
+          }),
+        }
+      );
+      if (!res.ok) throw new Error("Failed to send inquiry");
+      setShowSuccessPopup(true);
+    } catch {
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
+  /* ── Loading / error states ── */
   if (loading) {
     return (
       <div className="min-h-screen bg-[#FFFBF7]">
         <Navbar />
-        <main className="max-w-6xl mx-auto px-4 pt-32 pb-20">
-          <p className="text-center text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>Loading retreat…</p>
+        <main className="max-w-6xl mx-auto px-4 pt-32 pb-20 text-center">
+          <p
+            className="text-[#181818] animate-pulse"
+            style={{ fontFamily: "Lato, sans-serif" }}
+          >
+            Loading retreat…
+          </p>
         </main>
       </div>
     );
   }
+
   if (error || !hotel) {
     return (
       <div className="min-h-screen bg-[#FFFBF7]">
         <Navbar />
-        <main className="max-w-6xl mx-auto px-4 pt-32 pb-20">
-          <p className="text-center text-red-600 mb-4" style={{ fontFamily: "Lato, sans-serif" }}>
+        <main className="max-w-6xl mx-auto px-4 pt-32 pb-20 text-center">
+          <p
+            className="text-red-600 mb-4"
+            style={{ fontFamily: "Lato, sans-serif" }}
+          >
             {error || "Retreat not found."}
           </p>
-          <p className="text-center">
-            <Link to="/individual-stays" className="text-[#5E17EB] hover:underline" style={{ fontFamily: "Lato, sans-serif" }}>
-              ← Back to retreats
-            </Link>
-          </p>
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="text-[#5E17EB] hover:underline text-sm"
+            style={{ fontFamily: "Lato, sans-serif" }}
+          >
+            ← Go back
+          </button>
         </main>
       </div>
     );
   }
 
-  const mainImage = hotel.images && (Array.isArray(hotel.images) ? hotel.images[0] : hotel.images);
-  const displayImage = mainImage || "/hotel.png";
+  /* ── Derived data ── */
+  const images = Array.isArray(hotel.images)
+    ? [...hotel.images]
+        .sort((a, b) => (b?.is_primary ? 1 : 0) - (a?.is_primary ? 1 : 0))
+        .map((img) => (typeof img === "string" ? img : img?.url))
+        .filter(Boolean)
+    : hotel.images
+    ? [typeof hotel.images === "string" ? hotel.images : hotel.images?.url]
+    : [];
+  const facilities     = getNames(hotel.facilities,          "facility",          hotel.facilities_raw);
+  const activities     = getItems(hotel.activities,          "activity",          hotel.activities_raw);
+  const mealPlans      = getItems(hotel.meal_plans,          "meal_plan",         hotel.meal_plan_raw);
+  const wellnessItems  = getItems(hotel.wellness_offerings,  "wellness_offering", null);
+  const cuisineTypes   = getItems(hotel.cuisine_types,       "cuisine_type",      hotel.cuisine_raw);
+  const diningFeatures = getItems(hotel.dining_features,     "dining_feature",    hotel.dining_features_raw);
+  const roomFeatures   = getNames(hotel.room_features,       "room_feature",      null);
+  const restrictions   = getNames(hotel.restrictions,        "restriction",       hotel.restrictions_raw);
 
+  // Property type: try structured array first, fall back to raw string
+  const propertyType =
+    hotel.property_types?.length > 0
+      ? hotel.property_types.map((pt) => pt?.name ?? pt).join(", ")
+      : na(hotel.property_type_raw) ?? na(hotel.property_type);
+
+  // Unique features / highlights (plain text string)
+  const uniqueFeatures = na(hotel.unique_features);
+
+  const doctorsValue =
+    hotel.doctors_available === "yes" || hotel.doctors_available === true
+      ? "Yes"
+      : hotel.doctors_available === "no" || hotel.doctors_available === false
+      ? "No"
+      : null;
+
+  const medicalValue =
+    hotel.medical_report_support === "yes" || hotel.medical_report_support === true
+      ? "Yes"
+      : hotel.medical_report_support === "no" || hotel.medical_report_support === false
+      ? "No"
+      : null;
+
+  const poolValue =
+    hotel.swimming_pool === true ? "Yes" : hotel.swimming_pool === false ? "No" : null;
+
+  /* ── Render ── */
   return (
     <div className="min-h-screen bg-[#FFFBF7]">
       <Navbar />
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-0 pt-32 pb-20">
-        {/* Hero / booking section */}
-        <section className="bg-white rounded-2xl shadow-md overflow-hidden mb-16">
-          <div className="grid grid-cols-1 lg:grid-cols-[2fr,1fr]">
-            {/* Image + overlay card */}
-            <div className="relative">
-              <img
-                src={displayImage}
-                alt={na(hotel.name)}
-                className="w-full h-[240px] sm:h-[340px] md:h-[420px] lg:h-[460px] object-cover"
-              />
+      {/* ── Hero Slider ── */}
+      {(() => {
+        const slides = images.length > 0 ? images : MOCK_SLIDES;
+        const n = slides.length;
+        const prev = () => setCurrentSlide((i) => (i - 1 + n) % n);
+        const next = () => setCurrentSlide((i) => (i + 1) % n);
+        const idx1 = (currentSlide + 1) % n;
+        const idx2 = (currentSlide + 2) % n;
 
-              <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur-sm shadow-lg rounded-lg p-5 max-w-xs">
+        return (
+          <div className="bg-[#F5F1EC] pt-28 pb-0 px-4 sm:px-8">
+            {/* Back link */}
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="mb-6 text-[10px] tracking-[0.22em] uppercase text-[#8C8C8C] hover:text-[#181818] transition-colors inline-flex items-center gap-1.5"
+              style={{ fontFamily: "Lato, sans-serif" }}
+            >
+              ← Back to retreats
+            </button>
+
+            <div className="relative mx-auto flex flex-col md:block w-full md:w-[70%] md:h-[420px]">
+
+              {/* ── Left info card ── */}
+              <div
+                className="order-2 bg-white flex flex-col justify-center px-6 py-8 z-10 w-full md:absolute md:w-[300px] md:left-0 md:top-1/2 md:-translate-y-1/2 md:px-8 md:py-10"
+                style={{ boxShadow: "4px 0 32px 0 rgba(0,0,0,0.10)" }}
+              >
                 <h1
-                  className="text-lg sm:text-xl font-normal text-[#181818] mb-1"
-                  style={{ fontFamily: "Sentient, serif" }}
+                  className="text-2xl sm:text-3xl text-[#181818] leading-snug mb-4"
+                  style={{ fontFamily: "Sentient, serif", fontStyle: "italic", fontWeight: 300 }}
                 >
-                  {na(hotel.name)}
+                  {hotel.name}
                 </h1>
-                <p
-                  className="text-sm text-[#181818] mb-3"
-                  style={{ fontFamily: "Lato, sans-serif" }}
-                >
-                  {na(hotel.slogan_line)}
-                </p>
-                <p
-                  className="text-sm text-[#5E17EB] mb-1"
-                  style={{ fontFamily: "Lato, sans-serif" }}
-                >
-                  {na(hotel.price)}
-                </p>
-                <p
-                  className="text-xs text-[#555555] mb-3"
-                  style={{ fontFamily: "Lato, sans-serif" }}
-                >
-                  {na(hotel.location)}
-                </p>
-                <div className="flex items-center gap-2 text-xs text-[#181818] mb-3">
-                  <span>Rating: {na(hotel.rating)}</span>
-                  <span>·</span>
-                  <span>Reviews: {na(hotel.reviews_count)}</span>
+
+                {na(hotel.price) && (
+                  <p
+                    className="text-xl text-[#5E17EB] mb-3"
+                    style={{ fontFamily: "Sentient, serif" }}
+                  >
+                    {hotel.price}
+                  </p>
+                )}
+
+                <div className="mb-3">
+                  <StarRating rating={hotel.rating} />
                 </div>
-                <div className="flex gap-3 text-xs">
-                  <button type="button" className="px-3 py-1 rounded-full border border-[#181818]/20 text-[#181818]">
-                    Website
-                  </button>
-                  <button type="button" className="px-3 py-1 rounded-full border border-[#181818]/20 text-[#181818]">
-                    View map
-                  </button>
+
+                {na(hotel.location) && (
+                  <p
+                    className="text-sm text-[#181818] mb-1"
+                    style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
+                  >
+                    {hotel.location}
+                  </p>
+                )}
+
+                {na(hotel.slogan_line) && (
+                  <p
+                    className="text-xs text-[#555] leading-relaxed mb-6"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                  >
+                    {hotel.slogan_line}
+                  </p>
+                )}
+
+                <div className="flex items-center gap-5 mt-auto">
+                  {/* <button
+                    type="button"
+                    className="flex items-center gap-1.5 text-xs text-[#181818] hover:text-[#5E17EB] transition-colors"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                    </svg>
+                    Wishlist
+                  </button> */}
+
+                  {na(hotel.google_maps_url) ? (
+                    <a
+                      href={hotel.google_maps_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-xs text-[#181818] hover:text-[#5E17EB] transition-colors"
+                      style={{ fontFamily: "Lato, sans-serif" }}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+                      </svg>
+                      View map
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      className="flex items-center gap-1.5 text-xs text-[#181818] hover:text-[#5E17EB] transition-colors"
+                      style={{ fontFamily: "Lato, sans-serif" }}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+                      </svg>
+                      View map
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* ── Center main image ── */}
+              <div className="order-1 w-full h-[260px] overflow-hidden md:absolute md:top-0 md:bottom-0 md:h-auto md:left-[200px] md:right-[230px] md:w-auto">
+                <img
+                  src={slides[currentSlide]}
+                  alt={`${hotel.name} – slide ${currentSlide + 1}`}
+                  className="w-full h-full object-cover transition-opacity duration-500"
+                />
+              </div>
+
+              {/* ── Right thumbnail strip ── */}
+              <div className="hidden md:flex flex-col gap-1 absolute top-0 bottom-0 right-0 overflow-hidden w-[230px]">
+                <div className="flex-1 overflow-hidden">
+                  <img
+                    src={slides[idx1]}
+                    alt={`${hotel.name} – preview ${idx1 + 1}`}
+                    className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => setCurrentSlide(idx1)}
+                  />
+                </div>
+                <div className="flex-1 overflow-hidden">
+                  <img
+                    src={slides[idx2]}
+                    alt={`${hotel.name} – preview ${idx2 + 1}`}
+                    className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => setCurrentSlide(idx2)}
+                  />
                 </div>
               </div>
             </div>
 
-            {/* Booking panel */}
-            <aside className="bg-[#FBF7F3] px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 flex flex-col justify-between">
-              <div>
-                <h2
-                  className="text-lg font-semibold text-[#181818] mb-4"
-                  style={{ fontFamily: "Sentient, serif" }}
-                >
-                  Book your ayurvedic plan
-                </h2>
+            {/* ── Navigation arrows ── */}
+            <div className="flex justify-center md:justify-end gap-3 pt-4 pb-6">
+              <button
+                type="button"
+                onClick={prev}
+                className="w-9 h-9 flex items-center justify-center border border-[#5E17EB] text-[#5E17EB] hover:bg-[#5E17EB] hover:text-white transition-colors rounded-none text-base"
+                aria-label="Previous image"
+              >
+                ←
+              </button>
+              <button
+                type="button"
+                onClick={next}
+                className="w-9 h-9 flex items-center justify-center border border-[#5E17EB] text-[#5E17EB] hover:bg-[#5E17EB] hover:text-white transition-colors rounded-none text-base"
+                aria-label="Next image"
+              >
+                →
+              </button>
+            </div>
+          </div>
+        );
+      })()}
 
-                <div className="space-y-4 text-sm">
-                  {/* Dates */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs text-[#555] mb-1">
-                        Date from
-                      </label>
-                      <input
-                        type="date"
-                        value={dateFrom}
-                        min={new Date().toISOString().split("T")[0]}
-                        onChange={(e) => {
-                          setDateFrom(e.target.value);
-                          if (dateTo && dateTo <= e.target.value) setDateTo("");
-                          setFormErrors((prev) => ({ ...prev, dateFrom: undefined, dateTo: undefined }));
-                        }}
-                        className={`w-full border rounded-md px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.dateFrom ? "border-red-400" : "border-[#E0D4C8]"}`}
-                      />
-                      {formErrors.dateFrom && (
-                        <p className="text-red-500 text-[10px] mt-1">{formErrors.dateFrom}</p>
-                      )}
-                    </div>
-                    <div>
-                      <label className="block text-xs text-[#555] mb-1">
-                        Date to
-                      </label>
-                      <input
-                        type="date"
-                        value={dateTo}
-                        min={dateFrom || new Date().toISOString().split("T")[0]}
-                        onChange={(e) => { setDateTo(e.target.value); setFormErrors((prev) => ({ ...prev, dateTo: undefined })); }}
-                        className={`w-full border rounded-md px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.dateTo ? "border-red-400" : "border-[#E0D4C8]"}`}
-                      />
-                      {formErrors.dateTo && (
-                        <p className="text-red-500 text-[10px] mt-1">{formErrors.dateTo}</p>
-                      )}
-                    </div>
-                  </div>
+      {/* ── Main content ── */}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+        <div className="flex flex-col lg:flex-row gap-10 items-start">
 
-                  {/* Room type */}
-                  <div>
-                    <label className="block text-xs text-[#555] mb-1">
-                      Room type
-                    </label>
-                    <select
-                      value={roomType}
-                      onChange={(e) => {
-                        setRoomType(e.target.value);
-                        setFormErrors((prev) => ({ ...prev, roomType: undefined }));
-                      }}
-                      className={`w-full border rounded-md px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.roomType ? "border-red-400" : "border-[#E0D4C8]"}`}
-                    >
-                      <option>Single</option>
-                      <option>Double</option>
-                    </select>
-                    {formErrors.roomType && (
-                      <p className="text-red-500 text-[10px] mt-1">{formErrors.roomType}</p>
-                    )}
-                  </div>
+          {/* ════ LEFT — all hotel details ════ */}
+          <div className="flex-1 space-y-8 min-w-0">
 
-                  {/* Flight ticket */}
-                  <div>
-                    <label className="block text-xs text-[#555] mb-1">
-                      Flight ticket
-                    </label>
-                    <select
-                      value={flightIncluded}
-                      onChange={(e) => setFlightIncluded(e.target.value)}
-                      className="w-full border border-[#E0D4C8] rounded-md px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]"
-                    >
-                      <option>Select</option>
-                      <option>Included</option>
-                      <option>Not included</option>
-                    </select>
-                  </div>
-
-                  {/* Mode of transport */}
-                  <div>
-                    <label className="block text-xs text-[#555] mb-1">
-                      Mode of transport
-                    </label>
-                    <select
-                      value={transportMode}
-                      onChange={(e) => setTransportMode(e.target.value)}
-                      className="w-full border border-[#E0D4C8] rounded-md px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]"
-                    >
-                      <option value="">Select</option>
-                      <option>Car</option>
-                      <option>Van</option>
-                    </select>
-                  </div>
-
-                  {/* People */}
-                  <div>
-                    <label className="block text-xs text-[#555] mb-1">
-                      People
-                    </label>
-                    <div className="inline-flex items-center border border-[#E0D4C8] rounded-md">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setPeople((p) => Math.max(1, p - 1));
-                          setFormErrors((prev) => ({ ...prev, people: undefined }));
-                        }}
-                        className="px-3 py-1 text-sm hover:bg-[#E0D4C8]/30 rounded-l"
-                      >
-                        -
-                      </button>
-                      <span className="px-4 py-1 text-sm border-l border-r border-[#E0D4C8]">
-                        {people}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setPeople((p) => p + 1);
-                          setFormErrors((prev) => ({ ...prev, people: undefined }));
-                        }}
-                        className="px-3 py-1 text-sm hover:bg-[#E0D4C8]/30 rounded-r"
-                      >
-                        +
-                      </button>
-                    </div>
-                    {formErrors.people && (
-                      <p className="text-red-500 text-[10px] mt-1">{formErrors.people}</p>
-                    )}
-                  </div>
-
-                  {/* Extra */}
-                  <div>
-                    <label className="block text-xs text-[#555] mb-1">
-                      Add extra
-                    </label>
-                    <input
-                      type="text"
-                      value={extras}
-                      onChange={(e) => setExtras(e.target.value)}
-                      className="w-full border border-[#E0D4C8] rounded-md px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB]"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Total & CTA */}
-              <div className="mt-6 pt-4 border-t border-[#E0D4C8] flex items-center justify-between">
-                <div>
-                  <p className="text-xs text-[#555] mb-1">Total</p>
+            {/* About */}
+            {(na(hotel.description) || uniqueFeatures) && (
+              <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
+                <SectionHeading>About this retreat</SectionHeading>
+                {na(hotel.description) && (
                   <p
-                    className="text-lg text-[#5E17EB]"
-                    style={{ fontFamily: "Sentient, serif" }}
-                  >
-                    {totalDisplay}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleBookNow}
-                  className="px-6 py-2 rounded-md bg-[#5E17EB] text-white text-xs tracking-[0.16em] uppercase hover:bg-[#4B12BD] transition-colors"
-                >
-                  Inquire Now
-                </button>
-              </div>
-            </aside>
-          </div>
-        </section>
-
-        {/* Description + included */}
-        <section className="grid grid-cols-1 lg:grid-cols-[3fr,2fr] gap-10 mb-16">
-          {/* Description */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h3
-              className="text-sm tracking-[0.16em] text-[#5E17EB] mb-4 uppercase"
-              style={{ fontFamily: "Lato, sans-serif" }}
-            >
-              About this retreat
-            </h3>
-            <p
-              className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap"
-              style={{ fontFamily: "Lato, sans-serif" }}
-            >
-              {na(hotel.description)}
-            </p>
-          </div>
-
-          {/* Facilities / What's included */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h4
-              className="text-sm tracking-[0.16em] text-[#5E17EB] mb-4 uppercase"
-              style={{ fontFamily: "Lato, sans-serif" }}
-            >
-              Facilities
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {hotel.facilities && Array.isArray(hotel.facilities) && hotel.facilities.length > 0 ? (
-                hotel.facilities.map((item) => (
-                  <span
-                    key={item.facility_id}
-                    className="px-3 py-1 rounded-full bg-[#F3F0FF] text-xs text-[#5E17EB]"
+                    className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap mb-4"
                     style={{ fontFamily: "Lato, sans-serif" }}
                   >
-                    {item.facility?.name}
-                  </span>
-                ))
-              ) : (
-                <span className="text-sm text-[#8C8C8C]" style={{ fontFamily: "Lato, sans-serif" }}>
-                  Not available
-                </span>
+                    {hotel.description}
+                  </p>
+                )}
+                {uniqueFeatures && (
+                  <p
+                    className="text-sm text-[#181818] leading-relaxed"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                  >
+                    {uniqueFeatures}
+                  </p>
+                )}
+              </section>
+            )}
+
+            
+            
+
+            {/* Wellness Offerings */}
+            {wellnessItems.length > 0 && (
+              <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
+                <SectionHeading>Wellness Offerings</SectionHeading>
+                <ItemList items={wellnessItems} />
+              </section>
+            )}
+
+            {/* Facilities */}
+            {facilities.length > 0 && (
+              <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
+                <SectionHeading>Facilities</SectionHeading>
+                <div className="flex flex-wrap gap-2">
+                  {facilities.map((name) => (
+                    <Chip key={name}>{name}</Chip>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Activities */}
+            {activities.length > 0 && (
+              <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
+                <SectionHeading>Activities &amp; Experiences</SectionHeading>
+                <ActivityGrid items={activities} />
+              </section>
+            )}
+
+           
+            
+
+            {/* Dining */}
+            {(cuisineTypes.length > 0 || diningFeatures.length > 0) && (
+              <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
+                <SectionHeading>Dining</SectionHeading>
+                {cuisineTypes.length > 0 && (
+                  <div className="mb-6">
+                    <p
+                      className="text-[10px] text-[#8C8C8C] uppercase tracking-[0.18em] mb-3"
+                      style={{ fontFamily: "Lato, sans-serif" }}
+                    >
+                      Cuisine Types
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {cuisineTypes.map((item) => (
+                        <Chip key={item.name}>{item.name}</Chip>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {diningFeatures.length > 0 && (
+                  <div>
+                    <p
+                      className="text-[10px] text-[#8C8C8C] uppercase tracking-[0.18em] mb-3"
+                      style={{ fontFamily: "Lato, sans-serif" }}
+                    >
+                      Dining Features
+                    </p>
+                    <ItemList items={diningFeatures} />
+                  </div>
+                )}
+              </section>
+            )}
+
+            {/* ── Accordion sections ── */}
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              {(propertyType || na(hotel.min_nights) || na(hotel.max_occupancy) || poolValue || doctorsValue || medicalValue) && (
+                <AccordionSection id="key-details" title="Key Details" openAccordion={openAccordion} onToggle={toggleAccordion}>
+                  <InfoRow label="Property Type"             value={propertyType} />
+                  <InfoRow label="Minimum Stay"              value={hotel.min_nights ? `${hotel.min_nights} nights` : null} />
+                  <InfoRow label="Max Occupancy Per Room"    value={hotel.max_occupancy ? `${hotel.max_occupancy} person(s)` : null} />
+                  <InfoRow label="Swimming Pool"             value={poolValue} />
+                  <InfoRow label="Doctors On-Site"           value={doctorsValue} />
+                  <InfoRow label="Medical Report Assistance" value={medicalValue} />
+                </AccordionSection>
+              )}
+              {mealPlans.length > 0 && (
+                <AccordionSection id="meal-plans" title="Meal Plans" openAccordion={openAccordion} onToggle={toggleAccordion}>
+                  <ItemList className="ml-12" items={mealPlans} />
+                </AccordionSection>
+              )}
+              {roomFeatures.length > 0 && (
+                <AccordionSection id="room-features" title="Room Features" openAccordion={openAccordion} onToggle={toggleAccordion}>
+                  <div className="flex flex-wrap gap-2">
+                    {roomFeatures.map((name) => <Chip key={name}>{name}</Chip>)}
+                  </div>
+                </AccordionSection>
+              )}
+              {restrictions.length > 0 && (
+                <AccordionSection id="restrictions" title="Restrictions & Policies" openAccordion={openAccordion} onToggle={toggleAccordion}>
+                  <div className="flex flex-wrap gap-2">
+                    {restrictions.map((name) => <Chip key={name}>{name}</Chip>)}
+                  </div>
+                </AccordionSection>
+              )}
+              {images.length > 0 && (
+                <AccordionSection id="gallery" title="Gallery" openAccordion={openAccordion} onToggle={toggleAccordion}>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {images.map((img, i) => (
+                      <button key={i} type="button" onClick={() => setLightboxImg(img)} className="aspect-[4/3] rounded-lg overflow-hidden focus:outline-none focus:ring-2 focus:ring-[#5E17EB]">
+                        <img src={img} alt={`${hotel.name} – photo ${i + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                      </button>
+                    ))}
+                  </div>
+                </AccordionSection>
               )}
             </div>
           </div>
-        </section>
 
-        {/* Reviews & Gallery – tabbed section */}
-        <section className="bg-[#ECE9E3] rounded-2xl px-6 sm:px-10 py-14">
-          {/* Tab bar */}
-          <div className="flex border-b border-[#181818]/15 mb-8">
-            <button
-              type="button"
-              onClick={() => setActiveTab("reviews")}
-              className={`px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors ${activeTab === "reviews"
-                  ? "text-[#5E17EB] border-b-2 border-[#5E17EB] -mb-px"
-                  : "text-[#8C8C8C] hover:text-[#181818]"
-                }`}
-              style={{ fontFamily: "Lato, sans-serif" }}
-            >
-              Reviews
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("gallery")}
-              className={`px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors ${activeTab === "gallery"
-                  ? "text-[#5E17EB] border-b-2 border-[#5E17EB] -mb-px"
-                  : "text-[#8C8C8C] hover:text-[#181818]"
-                }`}
-              style={{ fontFamily: "Lato, sans-serif" }}
-            >
-              Gallery
-            </button>
-          </div>
+          {/* ════ RIGHT — sticky booking form ════ */}
+          <div className="w-full lg:w-[340px] lg:sticky lg:top-8 lg:self-start shrink-0">
+            <aside className="bg-white border border-[#F0EBE4] rounded-xl p-6 shadow-sm">
+              <h2
+                className="text-lg text-[#181818] mb-1"
+                style={{ fontFamily: "Sentient, serif" }}
+              >
+                Inquire about this retreat
+              </h2>
+              <p
+                className="text-xs text-[#8C8C8C] mb-6"
+                style={{ fontFamily: "Lato, sans-serif" }}
+              >
+                Fill in your preferences and we'll get back to you.
+              </p>
 
-          {/* Reviews content */}
-          {activeTab === "reviews" && (
-            <div>
-              <div className="text-center mb-10">
-                <p
-                  className="text-xs tracking-[0.16em] text-[#5E17EB] mb-2 uppercase"
-                  style={{ fontFamily: "Lato, sans-serif" }}
-                >
-                  Customer reviews
-                </p>
-                <h3
-                  className="text-3xl sm:text-4xl text-[#181818]"
-                  style={{ fontFamily: "Sentient, serif" }}
-                >
-                  Stories of healing
-                </h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[
-                  {
-                    text:
-                      "After years of stress and exhaustion, this retreat gave me back my energy. The care, the food, and the treatments were beyond anything I expected.",
-                    name: "M., Katarina R.",
-                  },
-                  {
-                    text:
-                      "My chronic back pain has significantly improved. I finally understand how to care for my body and mind in a sustainable way.",
-                    name: "Mindy, Katarina R.",
-                  },
-                  {
-                    text:
-                      "The most restorative 10 days of my life. I left feeling lighter, calmer, and deeply supported by the entire team.",
-                    name: "Branislav R.",
-                  },
-                ].map((review, index) => (
-                  <article
-                    key={index}
-                    className="bg-white rounded-xl shadow-sm p-6 flex flex-col h-full"
-                  >
-                    <div className="text-[#5E17EB] mb-2">★★★★★</div>
-                    <p
-                      className="text-sm text-[#181818] leading-relaxed mb-4 flex-1"
-                      style={{ fontFamily: "Lato, sans-serif" }}
-                    >
-                      {review.text}
-                    </p>
-                    <p
-                      className="text-xs text-[#555555]"
-                      style={{ fontFamily: "Lato, sans-serif" }}
-                    >
-                      {review.name}
-                    </p>
-                  </article>
-                ))}
-              </div>
-            </div>
-          )}
+              <div className="space-y-4 text-sm">
+                {/* Month to travel */}
+                <div>
+                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>The month you plan to travel</label>
+                  <input
+                    type="month"
+                    value={dateFrom}
+                    min={new Date().toISOString().slice(0, 7)}
+                    onChange={(e) => { setDateFrom(e.target.value); setFormErrors((prev) => ({ ...prev, dateFrom: undefined })); }}
+                    className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.dateFrom ? "border-red-400" : "border-[#E0D4C8]"}`}
+                  />
+                  {formErrors.dateFrom && <p className="text-red-500 text-[10px] mt-1">{formErrors.dateFrom}</p>}
+                </div>
 
-          {/* Gallery content */}
-          {activeTab === "gallery" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {(() => {
-                const images = hotel.images
-                  ? Array.isArray(hotel.images)
-                    ? hotel.images
-                    : [hotel.images]
-                  : [];
-                if (images.length === 0) {
-                  return (
-                    <div className="col-span-full bg-white/60 rounded-xl p-8 text-center">
-                      <p className="text-[#555555]" style={{ fontFamily: "Lato, sans-serif" }}>
-                        No gallery images available for this retreat.
-                      </p>
-                    </div>
-                  );
-                }
-                return images.map((img, index) => (
-                  <div key={index} className="aspect-[4/3] rounded-xl overflow-hidden shadow-sm bg-white">
-                    <img
-                      src={img}
-                      alt={`${na(hotel.name)} – image ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
+                {/* Room type */}
+                <div>
+                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Room type</label>
+                  <select value={roomType} onChange={(e) => setRoomType(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]">
+                    <option>Single</option>
+                    <option>Double</option>
+                  </select>
+                </div>
+
+                {/* People */}
+                <div>
+                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Guests</label>
+                  <div className="inline-flex items-center border border-[#E0D4C8] rounded-lg">
+                    <button type="button" onClick={() => setPeople((p) => Math.max(1, p - 1))} className="px-3 py-2 text-base hover:bg-[#F0EBE4]/50 rounded-l-lg transition-colors leading-none">−</button>
+                    <span className="px-4 py-2 text-xs border-l border-r border-[#E0D4C8] min-w-[40px] text-center" style={{ fontFamily: "Lato, sans-serif" }}>{people}</span>
+                    <button type="button" onClick={() => setPeople((p) => p + 1)} className="px-3 py-2 text-base hover:bg-[#F0EBE4]/50 rounded-r-lg transition-colors leading-none">+</button>
                   </div>
-                ));
-              })()}
-            </div>
-          )}
-        </section>
+                </div>
 
-        {/* Other retreats from API */}
-        <section className="mt-16">
-          <div className="text-center mb-12 sm:mb-16">
-            <h1
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#181818] uppercase mb-2"
-              style={{ fontFamily: "Sentient, serif" }}
-            >
-              RAYA WELLBEING
-            </h1>
-            <h2
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#5E17EB] font-normal"
-              style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
-            >
-              Other retreats
-            </h2>
+                {/* Flight */}
+                {/* <div>
+                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Flight</label>
+                  <select value={flightIncluded} onChange={(e) => setFlightIncluded(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]">
+                    <option value="">Not included</option>
+                    <option value="included">Included</option>
+                  </select>
+                </div> */}
+
+                {/* Transport */}
+                <div>
+                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Transport</label>
+                  <select value={transportMode} onChange={(e) => setTransportMode(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]">
+                    <option value="">Select</option>
+                    <option>Car</option>
+                    <option>Van</option>
+                  </select>
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-[#F0EBE4] pt-4">
+                  <p className="text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-4" style={{ fontFamily: "Lato, sans-serif" }}>Personal Details</p>
+
+                  {/* Gender */}
+                  <div className="flex flex-wrap gap-4 mb-4">
+                    {[{ value: "female", label: "Female" }, { value: "male", label: "Male" }, { value: "prefer-not", label: "Other" }].map((opt) => (
+                      <label key={opt.value} className="flex items-center gap-1.5 cursor-pointer">
+                        <input type="radio" name="gender" value={opt.value} checked={gender === opt.value} onChange={() => setGender(opt.value)} className="w-3.5 h-3.5 text-[#5E17EB] border-[#E0D4C8] focus:ring-[#5E17EB]" />
+                        <span className="text-xs text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>{opt.label}</span>
+                      </label>
+                    ))}
+                  </div>
+
+                  {/* Full Name */}
+                  <div className="mb-3">
+                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Full Name*</label>
+                    <input type="text" placeholder="Enter full name" value={fullName} onChange={(e) => { setFullName(e.target.value); setFormErrors((p) => ({ ...p, fullName: undefined })); }} className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] ${formErrors.fullName ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }} />
+                    {formErrors.fullName && <p className="text-red-500 text-[10px] mt-1">{formErrors.fullName}</p>}
+                  </div>
+
+                  {/* Email */}
+                  <div className="mb-3">
+                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Email*</label>
+                    <input type="email" placeholder="Enter email" value={email} onChange={(e) => { setEmail(e.target.value); setFormErrors((p) => ({ ...p, email: undefined })); }} className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] ${formErrors.email ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }} />
+                    {formErrors.email && <p className="text-red-500 text-[10px] mt-1">{formErrors.email}</p>}
+                  </div>
+
+                  {/* Country */}
+                  <div className="mb-3">
+                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Country*</label>
+                    <select value={country} onChange={(e) => { setCountry(e.target.value); setFormErrors((p) => ({ ...p, country: undefined })); }} className={`w-full border rounded-lg px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.country ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }}>
+                      <option value="">Select country</option>
+                      <option value="AT">Austria</option>
+                      <option value="DE">Germany</option>
+                      <option value="CH">Switzerland</option>
+                      <option value="UK">United Kingdom</option>
+                      <option value="US">United States</option>
+                      <option value="IN">India</option>
+                      <option value="LK">Sri Lanka</option>
+                    </select>
+                    {formErrors.country && <p className="text-red-500 text-[10px] mt-1">{formErrors.country}</p>}
+                  </div>
+
+                  {/* Mobile */}
+                  <div className="mb-3">
+                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Mobile*</label>
+                    <input type="tel" placeholder="Enter mobile number" value={mobile} onChange={(e) => { setMobile(e.target.value); setFormErrors((p) => ({ ...p, mobile: undefined })); }} className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] ${formErrors.mobile ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }} />
+                    {formErrors.mobile && <p className="text-red-500 text-[10px] mt-1">{formErrors.mobile}</p>}
+                  </div>
+
+                  {/* Comment */}
+                  <div>
+                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Comment</label>
+                    <textarea placeholder="Any additional wishes..." value={comment} onChange={(e) => setComment(e.target.value)} rows={3} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] resize-y" style={{ fontFamily: "Lato, sans-serif" }} />
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleInquire}
+                disabled={submitting}
+                className="mt-6 w-full py-3 bg-[#5E17EB] text-white text-[10px] tracking-[0.22em] uppercase rounded-lg hover:bg-[#4B12BD] transition-colors disabled:opacity-60"
+                style={{ fontFamily: "Lato, sans-serif" }}
+              >
+                {submitting ? "Sending…" : "Send Inquiry →"}
+              </button>
+            </aside>
           </div>
+        </div>
 
-          <div className="relative mb-24 sm:mb-24">
-            <div className="hidden md:block absolute left-1/2 top-0 bottom-10 w-px bg-gray-900 transform -translate-x-1/2"></div>
+        {/* ── Other retreats ── */}
+        {otherHotels.length > 0 && (
+          <section className="mt-20">
+            <div className="text-center mb-12">
+              <p
+                className="text-[10px] tracking-[0.22em] text-[#5E17EB] uppercase mb-3"
+                style={{ fontFamily: "Lato, sans-serif" }}
+              >
+                Raya Wellbeing
+              </p>
+              <h2
+                className="text-3xl sm:text-4xl md:text-5xl text-[#181818]"
+                style={{ fontFamily: "Sentient, serif", fontStyle: "italic", fontWeight: 300 }}
+              >
+                Other retreats
+              </h2>
+            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 items-start">
-              {otherHotels.map((h, index) => {
-                const img = h.images && (Array.isArray(h.images) ? h.images[0] : h.images);
-                return (
-                  <div key={h.id} className="flex flex-col">
-                    <div className={`mb-4 ${index === 1 ? "lg:mt-[60px]" : index === 2 ? "lg:mt-[100px]" : ""}`}>
+            <div className="relative">
+              <div className="hidden md:block absolute left-1/2 top-0 bottom-10 w-px bg-gray-200 -translate-x-1/2" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 items-start">
+                {otherHotels.map((h, index) => {
+                  const img =
+                    h.images && (Array.isArray(h.images) ? h.images[0] : h.images);
+                  return (
+                    <div
+                      key={h.id}
+                      className={`flex flex-col ${
+                        index === 1
+                          ? "lg:mt-[60px]"
+                          : index === 2
+                          ? "lg:mt-[100px]"
+                          : ""
+                      }`}
+                    >
                       <img
                         src={img || "/hotel.png"}
-                        alt={na(h.name)}
-                        className="w-full aspect-[4/3] object-cover rounded-lg"
+                        alt={h.name}
+                        className="w-full aspect-[4/3] object-cover rounded-lg mb-4"
                       />
+                      <h3
+                        className="text-xl sm:text-2xl text-[#181818] mb-2"
+                        style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
+                      >
+                        {h.name}
+                      </h3>
+                      {h.slogan_line && (
+                        <p
+                          className="text-sm text-[#5E17EB] mb-1"
+                          style={{ fontFamily: "Lato, sans-serif" }}
+                        >
+                          {h.slogan_line}
+                        </p>
+                      )}
+                      <p
+                        className="text-xs text-[#8C8C8C] mb-4"
+                        style={{ fontFamily: "Lato, sans-serif" }}
+                      >
+                        {h.location}
+                      </p>
+                      <Link
+                        to={`/book-hotel/${h.id}`}
+                        className="text-[#5E17EB] hover:underline text-xs tracking-[0.1em] uppercase mt-auto"
+                        style={{ fontFamily: "Lato, sans-serif", fontWeight: 500 }}
+                      >
+                        View Retreat →
+                      </Link>
                     </div>
-                    <h3
-                      className="text-xl sm:text-2xl md:text-2xl text-[#181818] mb-3"
-                      style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
-                    >
-                      {na(h.name)}
-                    </h3>
-                    <p
-                      className="text-sm text-[#181818] mb-4 leading-relaxed line-clamp-3"
-                      style={{ fontFamily: "poppins" }}
-                    >
-                      {na(h.description)}
-                    </p>
-                    <Link
-                      to={`/book-hotel/${h.id}`}
-                      className="text-[#5E17EB] hover:underline inline-block uppercase mt-auto"
-                      style={{
-                        fontFamily: "Lato",
-                        fontWeight: "500",
-                        fontSize: "14px",
-                        letterSpacing: "0.1em",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      VIEW RETREAT →
-                    </Link>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
 
-            <div className="text-center mt-24 sm:mt-32">
-              <Link
-                to="/individual-stays"
-                className="text-[#5E17EB] text-lg hover:underline inline-block"
-                style={{ fontFamily: "poppins" }}
-              >
-                DISCOVER ALL RETREATS →
-              </Link>
+              <div className="text-center mt-16">
+                <button
+                  type="button"
+                  onClick={() => navigate(-1)}
+                  className="text-[#5E17EB] text-sm tracking-[0.1em] uppercase hover:underline"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  ← Back to all retreats
+                </button>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
+
+      {/* ── Success popup ── */}
+      {showSuccessPopup && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          onClick={() => setShowSuccessPopup(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="bg-[#F4F4F4] rounded-2xl shadow-xl max-w-lg w-full p-8 sm:p-10 text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="mb-6" style={{ fontFamily: "Sentient, serif" }}>
+              <span className="block text-2xl sm:text-3xl text-[#181818]">Thank you</span>
+              <span className="block text-xl sm:text-2xl mt-1" style={{ fontStyle: "italic", color: "#5E17EB" }}>for your inquiry!</span>
+            </h2>
+            <div className="space-y-4 mb-8 text-sm text-[#181818] leading-relaxed" style={{ fontFamily: "Lato, sans-serif" }}>
+              <p>Congratulations, you've taken the first step toward your Ayurvedic wellness journey. Our team is already preparing a personalized retreat offer based on your wishes.</p>
+              <p>You will usually receive your customized offer within 2 to 6 hours.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => { setShowSuccessPopup(false); navigate("/individual-stays"); }}
+              className="text-[#5E17EB] tracking-wide uppercase text-sm hover:underline inline-flex items-center gap-1"
+              style={{ fontFamily: "Lato, sans-serif" }}
+            >
+              CONTINUE →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Lightbox ── */}
+      {lightboxImg && (
+        <div
+          className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4"
+          onClick={() => setLightboxImg(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightboxImg(null)}
+            className="absolute top-4 right-5 text-white/70 hover:text-white text-3xl leading-none"
+            aria-label="Close"
+          >
+            ×
+          </button>
+          <img
+            src={lightboxImg}
+            alt="Gallery"
+            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }
-

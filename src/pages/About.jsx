@@ -111,6 +111,9 @@ export default function About() {
   const img4Visible = useReveal(img4Ref, 100);
   const overlay4Visible = useReveal(overlay4Ref, 300);
 
+  const [openSection, setOpenSection] = useState(null);
+  const toggleSection = (id) => setOpenSection((prev) => (prev === id ? null : id));
+
   useEffect(() => {
     if (hash) {
       const id = hash.replace("#", "");
@@ -333,7 +336,7 @@ Sri Lanka and beyond. </p>
                 <div
                   className="w-10 h-10 rounded-full border-2 border-white/60 flex items-center justify-center text-white text-sm font-semibold mb-3 cursor-pointer hover:border-white transition-colors"
                   style={{ fontFamily: "Lato, sans-serif" }}
-                  onClick={() => scrollToSection(label.toLowerCase())}
+                  onClick={() => { scrollToSection(label.toLowerCase()); setOpenSection(label.toLowerCase()); }}
                 >
                   {i + 1}
                 </div>
@@ -350,167 +353,246 @@ Sri Lanka and beyond. </p>
       </section>
 
       {/* ══════════════════════════════════════════
-          BEFORE YOUR STAY
+          JOURNEY ACCORDION — Before / During / After
       ══════════════════════════════════════════ */}
+      <div className="bg-[#FFFBF7] px-4 sm:px-8 lg:px-12">
 
-      <div id="before" className="bg-[#FFFBF7] w-full pb-10 pt-[7%]">
-        <h2 className="text-[#5E17EB] mb-4 uppercase" style={{
-          fontFamily: "Lato, sans-serif",
-          fontWeight: 500,
-          fontSize: "16px",
-          lineHeight: "100%",
-          letterSpacing: "0.1em",
-          textAlign: "center",
-          textTransform: "uppercase",
-        }}>
-          Before Your Stay
-        </h2>
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start p-4 sm:p-8 lg:p-12">
-          <div className="flex w-full lg:w-1/2 gap-4 lg:gap-6 lg:pl-[20%] items-center justify-between">
-            <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#181818] font-serif" style={{ fontFamily: "Sentient Bold, serif" }}>
-              Before Your Stay
-            </h3>
-            <div className="hidden lg:block w-0 h-24 border-l-2 border-dotted border-[#181818] mr-0 self-center" />
-          </div>
-          <div className="flex w-full lg:w-1/2 items-center gap-4 lg:gap-8">
-            <p className="text-[16px] sm:text-lg text-[#181818] leading-relaxed" style={{ fontFamily: "Lato, sans-serif" }}>
-              We begin by understanding your wellness goals, lifestyle, preferences, and expectations to recommend the most suitable Ayurveda or wellness retreat.
-            </p>
-          </div>
+        {/* ── Before Your Stay ── */}
+        <div id="before" className="border-b border-[#181818]/15">
+          <button
+            className="w-full flex items-center justify-between py-7 text-left cursor-pointer"
+            onClick={() => toggleSection("before")}
+          >
+            <div className="flex items-center gap-5">
+              <span className="text-[#5E17EB] text-[11px] uppercase tracking-[0.3em]" style={{ fontFamily: "Lato, sans-serif" }}>01</span>
+              <span className="text-[#5E17EB] mb-4 uppercase px-4 sm:px-8 lg:px-12" style={{
+                fontFamily: "Lato, sans-serif",
+                fontWeight: 500,
+                fontSize: "16px",
+                lineHeight: "100%",
+                letterSpacing: "0.1em",
+                textAlign: "center",
+                textTransform: "uppercase",
+              }}>Before Your Stay</span>
+            </div>
+            <span className="flex-shrink-0 text-[#5E17EB]">
+              {openSection === "before" ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+                </svg>
+              )}
+            </span>
+          </button>
+          {openSection === "before" && (
+            <div className="pb-10 -mx-4 sm:-mx-8 lg:-mx-12">
+              <h2 className="text-[#5E17EB] mb-4 uppercase px-4 sm:px-8 lg:px-12" style={{
+                fontFamily: "Lato, sans-serif",
+                fontWeight: 500,
+                fontSize: "16px",
+                lineHeight: "100%",
+                letterSpacing: "0.1em",
+                textAlign: "center",
+                textTransform: "uppercase",
+              }}>
+                Before Your Stay
+              </h2>
+              <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start p-4 sm:p-8 lg:p-12">
+                <div className="flex w-full lg:w-1/2 gap-4 lg:gap-6 lg:pl-[20%] items-center justify-between">
+                  <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#181818] font-serif" style={{ fontFamily: "Sentient Bold, serif" }}>
+                    Before Your Stay
+                  </h3>
+                  <div className="hidden lg:block w-0 h-24 border-l-2 border-dotted border-[#181818] mr-0 self-center" />
+                </div>
+                <div className="flex w-full lg:w-1/2 items-center gap-4 lg:gap-8">
+                  <p className="text-[16px] sm:text-lg text-[#181818] leading-relaxed" style={{ fontFamily: "Lato, sans-serif" }}>
+                    We begin by understanding your wellness goals, lifestyle, preferences, and expectations to recommend the most suitable Ayurveda or wellness retreat.
+                  </p>
+                </div>
+              </div>
+              <div className="relative px-4 sm:px-6 lg:px-0">
+                <img
+                  ref={img2Ref}
+                  src="/a1.jpg"
+                  alt="Before your stay preparation"
+                  className={`w-full lg:w-[892px] h-auto lg:h-[458px] lg:ml-[32%] object-cover rounded-lg lg:rounded-none transition-all duration-1000 ease-out ${img2Visible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"}`}
+                />
+                <div
+                  ref={overlay2Ref}
+                  className={`relative lg:absolute bottom-0 left-0 lg:left-40 bg-[#F4F4F4] lg:bg-opacity-95 h-auto lg:h-[342px] p-4 sm:p-6 md:p-8 lg:p-10 max-w-full lg:max-w-lg mt-4 lg:mt-0 lg:m-8 rounded-lg transition-all duration-1000 ease-out ${overlay2Visible ? "opacity-100 translate-x-0 translate-y-0" : "opacity-0 translate-x-12 translate-y-8"}`}
+                >
+                  <div className="space-y-4 lg:space-y-5 overflow-y-auto h-full">
+                    {BEFORE_ITEMS.map((item, i) => (
+                      <div key={i}>
+                        <h4 className="text-[#181818] mb-1 italic text-base lg:text-[17px]" style={{ fontFamily: "Sentient, serif", fontWeight: 400, fontStyle: "italic", lineHeight: "100%" }}>
+                          {item.title}
+                        </h4>
+                        <p className="text-[#181818] text-sm lg:text-[13px]" style={{ fontFamily: "Lato, sans-serif", lineHeight: "1.5" }}>
+                          {item.body}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
-        
-      </div>
-
-      {/* Before — remaining items grid */}
-      <section className="py-16 sm:py-20 px-4 sm:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="relative mb-16">
-            <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-gray-900 transform -translate-x-1/2" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 items-start">
-              {BEFORE_ITEMS.map((item, index) => (
-                <RevealOnScroll key={index} delay={(index % 4) * 70} className="flex flex-col">
-                  <div className={`mb-4 ${index === 1 ? "lg:mt-[60px]" : index === 2 ? "lg:mt-[100px]" : ""}`}>
-                    <div className="w-full aspect-[4/3] bg-[#EAE9E3] rounded-lg flex items-center justify-center">
-                      <span className="text-4xl text-[#5E17EB] font-light" style={{ fontFamily: "Sentient, serif" }}>
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
+        {/* ── During Your Stay ── */}
+        <div id="during" className="border-b border-[#181818]/15">
+          <button
+            className="w-full flex items-center justify-between py-7 text-left cursor-pointer"
+            onClick={() => toggleSection("during")}
+          >
+            <div className="flex items-center gap-5">
+              <span className="text-[#5E17EB] text-[11px] uppercase tracking-[0.3em]" style={{ fontFamily: "Lato, sans-serif" }}>02</span>
+              <span className="text-[#5E17EB] mb-4 uppercase px-4 sm:px-8 lg:px-12" style={{
+                fontFamily: "Lato, sans-serif",
+                fontWeight: 500,
+                fontSize: "16px",
+                lineHeight: "100%",
+                letterSpacing: "0.1em",
+                textAlign: "center",
+                textTransform: "uppercase",
+              }}>During Your Stay</span>
+            </div>
+            <span className="flex-shrink-0 text-[#5E17EB]">
+              {openSection === "during" ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+                </svg>
+              )}
+            </span>
+          </button>
+          {openSection === "during" && (
+            <div className="pb-10 -mx-4 sm:-mx-8 lg:-mx-12 py-16 sm:py-20 px-4 sm:px-8 bg-[#EAE9E3]">
+              <div className="max-w-7xl mx-auto">
+                <div className="flex flex-col lg:flex-row gap-12 items-start">
+                  <div className="lg:w-1/2">
+                    <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#181818] font-serif mb-4" style={{ fontFamily: "Sentient, serif", fontStyle: "light" }}>
+                      During Your
+                    </h2>
+                    <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#5E17EB] mb-8" style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}>
+                      Stay.
+                    </h3>
+                  </div>
+                  <div className="lg:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="text-lg text-[#181818] mb-2 italic" style={{ fontFamily: "Sentient, serif" }}>
+                        A Personalized Experience
+                      </h4>
+                      <p className="text-base text-[#181818] mb-4 leading-relaxed" style={{ fontFamily: "Lato" }}>
+                        Daily wellness activities are tailored to each guest. Depending on the retreat, guests may experience Ayurveda treatments, yoga and meditation, wellness-focused meals, nature and cultural experiences, and fitness and mindfulness activities.
+                      </p>
+                    </div>
+                    <div>
+                      <h4 className="text-lg text-[#181818] mb-2 italic" style={{ fontFamily: "Sentient, serif" }}>
+                        Nourishing Dining
+                      </h4>
+                      <p className="text-base text-[#181818] mb-4 leading-relaxed" style={{ fontFamily: "Lato" }}>
+                        Many retreats focus on balanced wellness cuisine, including Ayurveda-based or health-focused meal plans designed to support overall wellbeing.
+                      </p>
+                      <h4 className="text-lg text-[#181818] mb-2 italic" style={{ fontFamily: "Sentient, serif" }}>
+                        Time to Slow Down
+                      </h4>
+                      <p className="text-base text-[#181818] leading-relaxed" style={{ fontFamily: "Lato" }}>
+                        Wellness stays are designed to encourage rest, mindfulness, balance, and reconnection with yourself and your surroundings. Our team remains available throughout your stay to assist if needed.
+                      </p>
                     </div>
                   </div>
-                  <h3 className="text-xl sm:text-2xl md:text-2xl text-[#181818] mb-3" style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}>
-                    {item.title}
-                  </h3>
-                  <p className="text-sm text-[#181818] leading-relaxed" style={{ fontFamily: "poppins" }}>
-                    {item.body}
-                  </p>
-                </RevealOnScroll>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════
-          DURING YOUR STAY
-      ══════════════════════════════════════════ */}
-      <section
-        id="during"
-        className="py-16 sm:py-20 px-4 sm:px-8 bg-[#EAE9E3]"
-      >
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row gap-12 items-start">
-            <div className="lg:w-1/2">
-             
-              <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#181818] font-serif mb-4" style={{ fontFamily: "Sentient, serif", fontStyle: "light" }}>
-                During Your
-              </h2>
-              <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#5E17EB] mb-8" style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}>
-                Stay.
-              </h3>
-            </div>
-            <div className="lg:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="text-lg text-[#181818] mb-2 italic" style={{ fontFamily: "Sentient, serif" }}>
-                  A Personalized Experience
-                </h4>
-                <p className="text-base text-[#181818] mb-4 leading-relaxed" style={{ fontFamily: "Lato" }}>
-                  Daily wellness activities are tailored to each guest. Depending on the retreat, guests may experience Ayurveda treatments, yoga and meditation, wellness-focused meals, nature and cultural experiences, and fitness and mindfulness activities.
-                </p>
-              </div>
-              <div>
-                <h4 className="text-lg text-[#181818] mb-2 italic" style={{ fontFamily: "Sentient, serif" }}>
-                  Nourishing Dining
-                </h4>
-                <p className="text-base text-[#181818] mb-4 leading-relaxed" style={{ fontFamily: "Lato" }}>
-                  Many retreats focus on balanced wellness cuisine, including Ayurveda-based or health-focused meal plans designed to support overall wellbeing.
-                </p>
-                <h4 className="text-lg text-[#181818] mb-2 italic" style={{ fontFamily: "Sentient, serif" }}>
-                  Time to Slow Down
-                </h4>
-                <p className="text-base text-[#181818] leading-relaxed" style={{ fontFamily: "Lato" }}>
-                  Wellness stays are designed to encourage rest, mindfulness, balance, and reconnection with yourself and your surroundings. Our team remains available throughout your stay to assist if needed.
-                </p>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════
-          AFTER YOUR STAY
-      ══════════════════════════════════════════ */}
-
-      <div id="after" className="bg-[#FFFBF7] w-full pb-10 pt-[7%]">
-        <h2 className="text-[#5E17EB] mb-4 uppercase" style={{
-          fontFamily: "Lato, sans-serif",
-          fontWeight: 500,
-          fontSize: "16px",
-          lineHeight: "100%",
-          letterSpacing: "0.1em",
-          textAlign: "center",
-          textTransform: "uppercase",
-        }}>
-          After Your Stay
-        </h2>
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start p-4 sm:p-8 lg:p-12">
-          <div className="flex w-full lg:w-1/2 gap-4 lg:gap-6 lg:pl-[20%] items-center justify-between">
-            <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#181818] font-serif" style={{ fontFamily: "Sentient Bold, serif" }}>
-              After Your Stay
-            </h3>
-            <div className="hidden lg:block w-0 h-24 border-l-2 border-dotted border-[#181818] mr-0 self-center" />
-          </div>
-          <div className="flex w-full lg:w-1/2 items-center gap-4 lg:gap-8">
-            <p className="text-[16px] sm:text-lg text-[#181818] leading-relaxed" style={{ fontFamily: "Lato, sans-serif" }}>
-              Wellness does not end when your stay is over. Many guests continue practices learned during their retreat—including mindful routines, healthier habits, balanced nutrition, movement, and self-care rituals that support long-term wellbeing.
-            </p>
-          </div>
+          )}
         </div>
 
-        {/* Image + left overlay */}
-        <div className="relative px-4 sm:px-6 lg:px-0">
-          <img
-            ref={img4Ref}
-            src="/app.png"
-            alt="Continuing your wellness journey"
-            className={`w-full lg:w-[892px] h-auto lg:h-[458px] lg:ml-[32%] object-cover rounded-lg lg:rounded-none transition-all duration-1000 ease-out ${img4Visible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"}`}
-          />
-          <div
-            ref={overlay4Ref}
-            className={`relative lg:absolute bottom-0 left-0 lg:left-40 bg-[#F4F4F4] lg:bg-opacity-95 h-auto lg:h-[342px] p-4 sm:p-6 md:p-8 lg:p-10 max-w-full lg:max-w-lg mt-4 lg:mt-0 lg:m-8 rounded-lg transition-all duration-1000 ease-out ${overlay4Visible ? "opacity-100 translate-x-0 translate-y-0" : "opacity-0 translate-x-12 translate-y-8"}`}
+        {/* ── After Your Stay ── */}
+        <div id="after" className="border-b border-[#181818]/15">
+          <button
+            className="w-full flex items-center justify-between py-7 text-left cursor-pointer"
+            onClick={() => toggleSection("after")}
           >
-            <h4 className="text-[#181818] mb-4 lg:mb-5 italic text-lg sm:text-xl lg:text-[20px]" style={{
-              fontFamily: "Sentient, serif",
-              fontWeight: 400,
-              fontStyle: "italic",
-              lineHeight: "100%",
-            }}>
-              Follow-Up Support
-            </h4>
-            <p className="text-[#181818] leading-relaxed text-sm sm:text-base lg:text-[16px]" style={{ fontFamily: "Lato, sans-serif", lineHeight: "1.5", whiteSpace: "pre-line" }}>
-              Where possible, we remain available after your stay to support your ongoing wellness journey through future retreat recommendations, continued wellness guidance, healthy eating ideas, seasonal detox juice suggestions, and wellness-focused recipes to help maintain balance beyond your retreat.
-            </p>
-          </div>
+            <div className="flex items-center gap-5">
+              <span className="text-[#5E17EB] text-[11px] uppercase tracking-[0.3em]" style={{ fontFamily: "Lato, sans-serif" }}>03</span>
+              <span className="text-[#5E17EB] mb-4 uppercase px-4 sm:px-8 lg:px-12" style={{
+                fontFamily: "Lato, sans-serif",
+                fontWeight: 500,
+                fontSize: "16px",
+                lineHeight: "100%",
+                letterSpacing: "0.1em",
+                textAlign: "center",
+                textTransform: "uppercase",
+              }}>After Your Stay</span>
+            </div>
+            <span className="flex-shrink-0 text-[#5E17EB]">
+              {openSection === "after" ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+                </svg>
+              )}
+            </span>
+          </button>
+          {openSection === "after" && (
+            <div className="pb-10 -mx-4 sm:-mx-8 lg:-mx-12">
+              <h2 className="text-[#5E17EB] mb-4 uppercase px-4 sm:px-8 lg:px-12" style={{
+                fontFamily: "Lato, sans-serif",
+                fontWeight: 500,
+                fontSize: "16px",
+                lineHeight: "100%",
+                letterSpacing: "0.1em",
+                textAlign: "center",
+                textTransform: "uppercase",
+              }}>
+                After Your Stay
+              </h2>
+              <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start p-4 sm:p-8 lg:p-12">
+                <div className="flex w-full lg:w-1/2 gap-4 lg:gap-6 lg:pl-[20%] items-center justify-between">
+                  <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#181818] font-serif" style={{ fontFamily: "Sentient Bold, serif" }}>
+                    After Your Stay
+                  </h3>
+                  <div className="hidden lg:block w-0 h-24 border-l-2 border-dotted border-[#181818] mr-0 self-center" />
+                </div>
+                <div className="flex w-full lg:w-1/2 items-center gap-4 lg:gap-8">
+                  <p className="text-[16px] sm:text-lg text-[#181818] leading-relaxed" style={{ fontFamily: "Lato, sans-serif" }}>
+                    Wellness does not end when your stay is over. Many guests continue practices learned during their retreat—including mindful routines, healthier habits, balanced nutrition, movement, and self-care rituals that support long-term wellbeing.
+                  </p>
+                </div>
+              </div>
+              <div className="relative px-4 sm:px-6 lg:px-0">
+                <img
+                  ref={img4Ref}
+                  src="/app.png"
+                  alt="Continuing your wellness journey"
+                  className={`w-full lg:w-[892px] h-auto lg:h-[458px] lg:ml-[32%] object-cover rounded-lg lg:rounded-none transition-all duration-1000 ease-out ${img4Visible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"}`}
+                />
+                <div
+                  ref={overlay4Ref}
+                  className={`relative lg:absolute bottom-0 left-0 lg:left-40 bg-[#F4F4F4] lg:bg-opacity-95 h-auto lg:h-[342px] p-4 sm:p-6 md:p-8 lg:p-10 max-w-full lg:max-w-lg mt-4 lg:mt-0 lg:m-8 rounded-lg transition-all duration-1000 ease-out ${overlay4Visible ? "opacity-100 translate-x-0 translate-y-0" : "opacity-0 translate-x-12 translate-y-8"}`}
+                >
+                  <h4 className="text-[#181818] mb-4 lg:mb-5 italic text-lg sm:text-xl lg:text-[20px]" style={{ fontFamily: "Sentient, serif", fontWeight: 400, fontStyle: "italic", lineHeight: "100%" }}>
+                    Follow-Up Support
+                  </h4>
+                  <p className="text-[#181818] leading-relaxed text-sm sm:text-base lg:text-[16px]" style={{ fontFamily: "Lato, sans-serif", lineHeight: "1.5", whiteSpace: "pre-line" }}>
+                    Where possible, we remain available after your stay to support your ongoing wellness journey through future retreat recommendations, continued wellness guidance, healthy eating ideas, seasonal detox juice suggestions, and wellness-focused recipes to help maintain balance beyond your retreat.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
+
       </div>
 
       {/* Closing band */}

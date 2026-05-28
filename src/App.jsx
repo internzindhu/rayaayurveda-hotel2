@@ -5,7 +5,6 @@ import Home from './pages/Home'
 import About from './pages/About'
 import BookHotel from './pages/BookHotel'
 import HotelDetails from './pages/HotelDetails'
-import WellnessInquiry from './pages/WellnessInquiry'
 import Consultation from './pages/Consultation'
 import Questionnaire from './pages/Questionnaire'
 import QuestionnaireResults from './pages/QuestionnaireResults'
@@ -68,7 +67,6 @@ function App() {
         <Route path="/ayurveda-guide/ayurveda-vs-wellness" element={<AyurvedaVsWellness />} />
         <Route path="/book-hotel" element={<BookHotel />} />
         <Route path="/book-hotel/:id" element={<HotelDetails />} />
-        <Route path="/book-hotel/:id/inquiry" element={<WellnessInquiry />} />
         <Route path="/consultation" element={<Consultation />} />
         <Route path="/questionnaire" element={<Questionnaire />} />
         <Route path="/questionnaire/results" element={<QuestionnaireResults />} />

@@ -4,8 +4,8 @@ import { Link, useLocation } from "react-router-dom";
 export default function Navbar() {
   const stayCountries = [
     { label: "SRI LANKA", slug: "sri-lanka" },
-    { label: "INDIA", slug: "india" },
-    { label: "THAILAND", slug: "thailand" },
+    // { label: "INDIA", slug: "india" },
+    // { label: "THAILAND", slug: "thailand" },
   ];
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
@@ -191,7 +191,7 @@ export default function Navbar() {
                   <span className="text-xs">{isAboutOpen ? "▲" : "▼"}</span>
                 </button>
                 {isAboutOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60]">
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60] rounded-xl overflow-hidden">
                     <Link to="/about#our-story" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>OUR STORY</Link>
                     <Link to="/about#why-travel-with-us" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>WHY TRAVEL WITH US</Link>
                     <Link to="/about#how-it-works" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsAboutOpen(false)}>HOW IT WORKS</Link>
@@ -211,7 +211,7 @@ export default function Navbar() {
                   <span className="text-xs">{isRetreatsOpen ? "▲" : "▼"}</span>
                 </button>
                 {isRetreatsOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60]">
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60] rounded-xl overflow-hidden">
                     <Link to="/individual-stays" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsRetreatsOpen(false)}>INDIVIDUAL STAYS</Link>
                     <Link to="/group-stays" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsRetreatsOpen(false)}>GROUP STAYS</Link>
                   </div>
@@ -227,15 +227,15 @@ export default function Navbar() {
                   <span className="text-xs">{isWellnessOpen ? "▲" : "▼"}</span>
                 </button>
                 {isWellnessOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60]">
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60] rounded-xl overflow-hidden">
                     <div className="px-4 py-2.5 text-sm text-white font-semibold">INDIVIDUAL STAYS</div>
                     {stayCountries.map((country) => (
                       <Link key={`desktop-wellness-individual-${country.slug}`} to={`/individual-stays/${country.slug}`} className="block pl-8 pr-4 py-2 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsWellnessOpen(false)}>{country.label}</Link>
                     ))}
-                    <div className="px-4 pt-3 pb-2 text-sm text-white font-semibold border-t border-white/10 mt-1">GROUP STAYS</div>
-                    {stayCountries.map((country) => (
+                    {/* <div className="px-4 pt-3 pb-2 text-sm text-white font-semibold border-t border-white/10 mt-1">GROUP STAYS</div> */}
+                    {/* {stayCountries.map((country) => (
                       <Link key={`desktop-wellness-group-${country.slug}`} to={`/group-stays/${country.slug}`} className="block pl-8 pr-4 py-2 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsWellnessOpen(false)}>{country.label}</Link>
-                    ))}
+                    ))} */}
                   </div>
                 )}
               </div>
@@ -256,7 +256,7 @@ export default function Navbar() {
                   <span className="text-xs">{isGuideOpen ? "▲" : "▼"}</span>
                 </button>
                 {isGuideOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60]">
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60] rounded-xl overflow-hidden">
                     <Link to="/ayurveda-guide#what-is-ayurveda" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>WHAT IS AYURVEDA</Link>
                     <Link to="/ayurveda-guide#doshas" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>VATA, PITTA & KAPHA</Link>
                     <Link to="/ayurveda-guide#preventive-curative" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>PREVENTIVE & CURATIVE</Link>
@@ -277,7 +277,7 @@ export default function Navbar() {
                   <span className="text-xs">{isBlogOpen ? "▲" : "▼"}</span>
                 </button>
                 {isBlogOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60]">
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60] rounded-xl overflow-hidden">
                     <Link to="/faq" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsBlogOpen(false)}>FAQ</Link>
                     <Link to="/guest-testimonies" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsBlogOpen(false)}>GUEST TESTIMONIES</Link>
                     <Link to="/blogs" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsBlogOpen(false)}>BLOG</Link>
@@ -295,7 +295,7 @@ export default function Navbar() {
                   <span className="text-xs">{isServicesOpen ? "▲" : "▼"}</span>
                 </button>
                 {isServicesOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60]">
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60] rounded-xl overflow-hidden">
                     <Link to="/vouchers" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsServicesOpen(false)}>VOUCHERS</Link>
                     <Link to="/consultation" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsServicesOpen(false)}>BOOKING AND CONTACT</Link>
                   </div>
@@ -521,7 +521,7 @@ export default function Navbar() {
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         @keyframes dropdown {
           from { opacity: 0; transform: translate(-50%, -6px); }
           to   { opacity: 1; transform: translate(-50%, 0); }

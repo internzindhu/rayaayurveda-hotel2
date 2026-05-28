@@ -77,7 +77,7 @@ export default function Footer() {
                 <nav className="flex flex-col space-y-1">
                   {links.map(({ label, to }) => (
                     <Link
-                      key={label}
+                      key={to}
                       to={to}
                       className="text-white hover:text-white/70 transition-colors duration-200 text-xs tracking-wide sm:tracking-widest font-light"
                       style={{ fontFamily: "Poppins, sans-serif" }}

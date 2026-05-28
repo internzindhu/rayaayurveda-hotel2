@@ -462,28 +462,6 @@ export default function AdvancedFilters({ onApply, className = "mb-8" }) {
 
                   <SectionDivider />
 
-                  {/* Room Features */}
-                  <SectionTitle>Room Features</SectionTitle>
-                  <LookupCheckboxList
-                    items={roomFeatures}
-                    selectedIds={filters.roomFeatureIds}
-                    onToggle={toggleId("roomFeatureIds")}
-                    loading={lookupsLoading}
-                  />
-
-                  <SectionDivider />
-
-                  {/* Meal Plans */}
-                  <SectionTitle>Meal Plans</SectionTitle>
-                  <LookupCheckboxList
-                    items={mealPlans}
-                    selectedIds={filters.mealPlanIds}
-                    onToggle={toggleId("mealPlanIds")}
-                    loading={lookupsLoading}
-                  />
-
-                  <SectionDivider />
-
                   {/* Ayurveda / Wellness Offering */}
                   <SectionTitle>Ayurveda / Wellness Offering</SectionTitle>
                   <LookupCheckboxList
@@ -492,10 +470,8 @@ export default function AdvancedFilters({ onApply, className = "mb-8" }) {
                     onToggle={toggleId("wellnessOfferingIds")}
                     loading={lookupsLoading}
                   />
-                </div>
 
-                {/* ── Middle Column ── */}
-                <div className="py-8 lg:py-0 lg:px-8">
+                  <SectionDivider />
 
                   {/* Medical & Ayurveda Support */}
                   <SectionTitle>Medical &amp; Ayurveda Support</SectionTitle>
@@ -525,8 +501,56 @@ export default function AdvancedFilters({ onApply, className = "mb-8" }) {
                       />
                     </div>
                   </div>
+                </div>
+
+                {/* ── Middle Column ── */}
+                <div className="py-8 lg:py-0 lg:px-8">
+
+                  {/* Meal Plans */}
+                  <SectionTitle>Meal Plans</SectionTitle>
+                  <LookupCheckboxList
+                    items={mealPlans}
+                    selectedIds={filters.mealPlanIds}
+                    onToggle={toggleId("mealPlanIds")}
+                    loading={lookupsLoading}
+                  />
 
                   <SectionDivider />
+
+                  {/* Dining Features */}
+                  <SectionTitle>Dining Features</SectionTitle>
+                  <LookupCheckboxList
+                    items={diningFeatures}
+                    selectedIds={filters.diningFeatureIds}
+                    onToggle={toggleId("diningFeatureIds")}
+                    loading={lookupsLoading}
+                  />
+
+                  <SectionDivider />
+
+                  {/* Cuisine Type */}
+                  <SectionTitle>Cuisine Type</SectionTitle>
+                  <LookupCheckboxList
+                    items={cuisineTypes}
+                    selectedIds={filters.cuisineTypeIds}
+                    onToggle={toggleId("cuisineTypeIds")}
+                    loading={lookupsLoading}
+                  />
+
+                  <SectionDivider />
+
+                  {/* Room Features */}
+                  <SectionTitle>Room Features</SectionTitle>
+                  <LookupCheckboxList
+                    items={roomFeatures}
+                    selectedIds={filters.roomFeatureIds}
+                    onToggle={toggleId("roomFeatureIds")}
+                    loading={lookupsLoading}
+                  />
+                </div>
+
+                {/* ── Right Column ── */}
+                <div className="pt-8 lg:pt-0 lg:pl-8">
 
                   {/* Facilities — "Swimming Pool" is a plain label, rest are checkboxes */}
                   <SectionTitle>Facilities</SectionTitle>
@@ -547,12 +571,12 @@ export default function AdvancedFilters({ onApply, className = "mb-8" }) {
 
                   <SectionDivider />
 
-                  {/* Dining Features */}
-                  <SectionTitle>Dining Features</SectionTitle>
+                  {/* Activities & Experiences */}
+                  <SectionTitle>Activities &amp; Experiences</SectionTitle>
                   <LookupCheckboxList
-                    items={diningFeatures}
-                    selectedIds={filters.diningFeatureIds}
-                    onToggle={toggleId("diningFeatureIds")}
+                    items={activities}
+                    selectedIds={filters.activityIds}
+                    onToggle={toggleId("activityIds")}
                     loading={lookupsLoading}
                   />
 
@@ -564,30 +588,6 @@ export default function AdvancedFilters({ onApply, className = "mb-8" }) {
                     items={restrictions}
                     selectedIds={filters.restrictionIds}
                     onToggle={toggleId("restrictionIds")}
-                    loading={lookupsLoading}
-                  />
-                </div>
-
-                {/* ── Right Column ── */}
-                <div className="pt-8 lg:pt-0 lg:pl-8">
-
-                  {/* Cuisine Type */}
-                  <SectionTitle>Cuisine Type</SectionTitle>
-                  <LookupCheckboxList
-                    items={cuisineTypes}
-                    selectedIds={filters.cuisineTypeIds}
-                    onToggle={toggleId("cuisineTypeIds")}
-                    loading={lookupsLoading}
-                  />
-
-                  <SectionDivider />
-
-                  {/* Activities & Experiences */}
-                  <SectionTitle>Activities &amp; Experiences</SectionTitle>
-                  <LookupCheckboxList
-                    items={activities}
-                    selectedIds={filters.activityIds}
-                    onToggle={toggleId("activityIds")}
                     loading={lookupsLoading}
                   />
                 </div>
