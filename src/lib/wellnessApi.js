@@ -41,3 +41,13 @@ export async function fetchLookups() {
   if (!res.ok) throw new Error(`Lookups fetch failed: ${res.status}`);
   return res.json();
 }
+
+export async function submitInquiry(payload) {
+  const res = await fetch(`${API_BASE}/api/inquiries`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(`Inquiry submission failed: ${res.status}`);
+  return res.json();
+}

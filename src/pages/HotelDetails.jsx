@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { fetchHotelById, fetchRelatedHotels } from "../lib/wellnessApi";
+import { fetchHotelById, fetchRelatedHotels, submitInquiry } from "../lib/wellnessApi";
 
 /* ─── Helpers ──────────────────────────────────────────────────────────────── */
 
@@ -259,19 +259,11 @@ export default function HotelDetails() {
     setFormErrors({});
     try {
       setSubmitting(true);
-      const res = await fetch(
-        "https://akeroaymrygpdkasjzov.functions.supabase.co/send-wellness-inquiry",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            booking: { dateFrom, dateTo, roomType, people, transportMode, flightIncluded },
-            personal: { gender, fullName, email, country, mobile, comment },
-            hotelName: hotel.name,
-          }),
-        }
-      );
-      if (!res.ok) throw new Error("Failed to send inquiry");
+      await submitInquiry({
+        booking: { dateFrom, dateTo, roomType, people, transportMode, flightIncluded },
+        personal: { gender, fullName, email, country, mobile, comment },
+        hotelName: hotel.name,
+      });
       setShowSuccessPopup(true);
     } catch {
       alert("Something went wrong. Please try again.");
@@ -338,6 +330,17 @@ export default function HotelDetails() {
   const diningFeatures = getItems(hotel.dining_features,     "dining_feature",    hotel.dining_features_raw);
   const roomFeatures   = getNames(hotel.room_features,       "room_feature",      null);
   const restrictions   = getNames(hotel.restrictions,        "restriction",       hotel.restrictions_raw);
+
+  const pricingForMonth = (() => {
+    if (!hotel.monthly_prices?.length) return [];
+    if (!dateFrom) return hotel.monthly_prices;
+    const [year, month] = dateFrom.split("-").map(Number);
+    const probe = new Date(year, month - 1, 15);
+    const filtered = hotel.monthly_prices.filter(
+      (mp) => new Date(mp.valid_from) <= probe && probe <= new Date(mp.valid_to)
+    );
+    return filtered.length > 0 ? filtered : hotel.monthly_prices;
+  })();
 
   // Property type: try structured array first, fall back to raw string
   const propertyType =
@@ -434,6 +437,43 @@ export default function HotelDetails() {
                   >
                     {hotel.slogan_line}
                   </p>
+                )}
+
+                {pricingForMonth.length > 0 && (
+                  <div className="mb-6">
+                    <p
+                      className="text-[10px] tracking-[0.18em] uppercase text-[#5E17EB] mb-2"
+                      style={{ fontFamily: "Lato, sans-serif" }}
+                    >
+                      {dateFrom
+                        ? new Date(dateFrom + "-01").toLocaleString("default", { month: "long", year: "numeric" })
+                        : "Pricing"}
+                    </p>
+                    <div className="flex flex-col gap-1.5">
+                      {pricingForMonth.map((mp) => {
+                        const from = new Date(mp.valid_from).toLocaleString("default", { month: "short", year: "numeric" });
+                        const to   = new Date(mp.valid_to).toLocaleString("default", { month: "short", year: "numeric" });
+                        const rangeLabel = from === to ? from : `${from} – ${to}`;
+                        return (
+                          <div
+                            key={mp.id}
+                            className="flex justify-between items-center text-xs text-[#333]"
+                            style={{ fontFamily: "Lato, sans-serif" }}
+                          >
+                            <span>
+                              {dateFrom
+                                ? <span className="capitalize">{mp.occupancy || "per stay"}</span>
+                                : <>{rangeLabel}{mp.occupancy && <span className="ml-1 text-[#888]">({mp.occupancy})</span>}</>
+                              }
+                            </span>
+                            <span className="font-medium text-[#181818] ml-3 whitespace-nowrap">
+                              {mp.currency} {Number(mp.price).toLocaleString()}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 )}
 
                 <div className="flex items-center gap-5 mt-auto">
@@ -738,6 +778,20 @@ export default function HotelDetails() {
                     <option>Van</option>
                   </select>
                 </div>
+
+                {pricingForMonth.length > 0 && dateFrom && (
+                  <div className="bg-[#F3F0FF] rounded-lg px-4 py-3">
+                    <p className="text-[10px] text-[#5E17EB] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "Lato, sans-serif" }}>
+                      Estimated price
+                    </p>
+                    {pricingForMonth.map((mp) => (
+                      <div key={mp.id} className="flex justify-between items-center text-xs" style={{ fontFamily: "Lato, sans-serif" }}>
+                        <span className="text-[#555] capitalize">{mp.occupancy || "per stay"}</span>
+                        <span className="font-medium text-[#181818]">{mp.currency} {Number(mp.price).toLocaleString()}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {/* Divider */}
                 <div className="border-t border-[#F0EBE4] pt-4">

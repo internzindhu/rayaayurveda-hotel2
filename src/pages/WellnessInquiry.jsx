@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { HOTELS } from "../data/hotels";
+import { fetchHotelById, submitInquiry } from "../lib/wellnessApi";
 
 const inputClass =
   "w-full border border-[#E0D4C8] rounded-md px-3 py-2.5 text-sm text-[#181818] bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#888]";
@@ -13,15 +13,25 @@ function formatDate(str) {
   return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
 
-
+function getPrimaryImage(images) {
+  if (!images) return null;
+  if (typeof images === "string") return images;
+  if (Array.isArray(images) && images.length > 0) {
+    const sorted = [...images].sort((a, b) => (b?.is_primary ? 1 : 0) - (a?.is_primary ? 1 : 0));
+    const first = sorted[0];
+    return typeof first === "string" ? first : first?.url;
+  }
+  return images?.url ?? null;
+}
 
 export default function WellnessInquiry() {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const booking = location.state || {};
-  const hotelId = Number(id) || 1;
-  const hotel = HOTELS.find((h) => h.id === hotelId) ?? HOTELS[0];
+
+  const [hotel, setHotel] = useState(null);
+  const [hotelLoading, setHotelLoading] = useState(true);
 
   const [gender, setGender] = useState(booking.gender || "female");
   const [fullName, setFullName] = useState("");
@@ -37,7 +47,7 @@ export default function WellnessInquiry() {
   const roomType = booking.roomType || "Double";
   const people = booking.people ?? 2;
   const extras = booking.extras || "Insurance, Service per person";
-  const totalPrice = booking.totalPrice || hotel.price || "470€";
+  const totalPrice = booking.totalPrice || "";
 
   const nights =
     dateFrom && dateTo
@@ -48,42 +58,26 @@ export default function WellnessInquiry() {
       ? `${formatDate(dateFrom)} - ${formatDate(dateTo)}`
       : "12, Sep, 2025 - 20, Sep, 2025";
 
+  useEffect(() => {
+    if (!id) { setHotelLoading(false); return; }
+    fetchHotelById(id)
+      .then(setHotel)
+      .catch(() => setHotel(null))
+      .finally(() => setHotelLoading(false));
+  }, [id]);
 
   const handleSendInquiry = async () => {
     if (!fullName || !email || !country || !mobile) {
       alert("Please fill in all required fields.");
       return;
     }
-  
     try {
       setLoading(true);
-  
-      const response = await fetch(
-        "https://akeroaymrygpdkasjzov.functions.supabase.co/send-wellness-inquiry",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            booking,
-            personal: {
-              gender,
-              fullName,
-              email,
-              country,
-              mobile,
-              comment,
-            },
-            hotelName: hotel.name,
-          }),
-        }
-      );
-  
-      if (!response.ok) {
-        throw new Error("Failed to send inquiry");
-      }
-  
+      await submitInquiry({
+        booking,
+        personal: { gender, fullName, email, country, mobile, comment },
+        hotelName: hotel?.name ?? "",
+      });
       setShowSuccessPopup(true);
     } catch (error) {
       console.error(error);
@@ -92,6 +86,21 @@ export default function WellnessInquiry() {
       setLoading(false);
     }
   };
+
+  if (hotelLoading) {
+    return (
+      <div className="min-h-screen bg-[#FFFBF7]">
+        <Navbar />
+        <main className="max-w-7xl mx-auto px-4 pt-[10%] text-center">
+          <p className="text-[#181818] animate-pulse" style={{ fontFamily: "Lato, sans-serif" }}>Loading retreat…</p>
+        </main>
+      </div>
+    );
+  }
+
+  const hotelImage = getPrimaryImage(hotel?.images);
+  const displayPrice = totalPrice || hotel?.price || "";
+
   return (
     <div className="min-h-screen bg-[#FFFBF7]">
       <Navbar />
@@ -100,7 +109,6 @@ export default function WellnessInquiry() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr,1px,1fr] gap-6 md:gap-8 lg:gap-12">
           {/* Left – Wellness inquiry form */}
           <div className="bg-[#FFFBF7] rounded-xl p-6 sm:p-8 shadow-sm">
-            {/* Intro box (matches reference) */}
             <div className="bg-[#F4F4F4] rounded-md p-6 sm:p-7 mb-10">
               <h1
                 className="text-2xl sm:text-3xl font-normal text-[#181818] mb-2"
@@ -148,41 +156,16 @@ export default function WellnessInquiry() {
 
             <div className="space-y-4">
               <div>
-                <label className={labelClass} style={{ fontFamily: "Lato, sans-serif" }}>
-                  Full Name*
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter full name"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className={inputClass}
-                  style={{ fontFamily: "Lato, sans-serif" }}
-                />
+                <label className={labelClass} style={{ fontFamily: "Lato, sans-serif" }}>Full Name*</label>
+                <input type="text" placeholder="Enter full name" value={fullName} onChange={(e) => setFullName(e.target.value)} className={inputClass} style={{ fontFamily: "Lato, sans-serif" }} />
               </div>
               <div>
-                <label className={labelClass} style={{ fontFamily: "Lato, sans-serif" }}>
-                  Email*
-                </label>
-                <input
-                  type="email"
-                  placeholder="Enter email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={inputClass}
-                  style={{ fontFamily: "Lato, sans-serif" }}
-                />
+                <label className={labelClass} style={{ fontFamily: "Lato, sans-serif" }}>Email*</label>
+                <input type="email" placeholder="Enter email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} style={{ fontFamily: "Lato, sans-serif" }} />
               </div>
               <div>
-                <label className={labelClass} style={{ fontFamily: "Lato, sans-serif" }}>
-                  Country*
-                </label>
-                <select
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  className={inputClass}
-                  style={{ fontFamily: "Lato, sans-serif" }}
-                >
+                <label className={labelClass} style={{ fontFamily: "Lato, sans-serif" }}>Country*</label>
+                <select value={country} onChange={(e) => setCountry(e.target.value)} className={inputClass} style={{ fontFamily: "Lato, sans-serif" }}>
                   <option value="">Select</option>
                   <option value="AT">Austria</option>
                   <option value="DE">Germany</option>
@@ -194,30 +177,12 @@ export default function WellnessInquiry() {
                 </select>
               </div>
               <div>
-                <label className={labelClass} style={{ fontFamily: "Lato, sans-serif" }}>
-                  Mobile Number*
-                </label>
-                <input
-                  type="tel"
-                  placeholder="Enter mobile number"
-                  value={mobile}
-                  onChange={(e) => setMobile(e.target.value)}
-                  className={inputClass}
-                  style={{ fontFamily: "Lato, sans-serif" }}
-                />
+                <label className={labelClass} style={{ fontFamily: "Lato, sans-serif" }}>Mobile Number*</label>
+                <input type="tel" placeholder="Enter mobile number" value={mobile} onChange={(e) => setMobile(e.target.value)} className={inputClass} style={{ fontFamily: "Lato, sans-serif" }} />
               </div>
               <div>
-                <label className={labelClass} style={{ fontFamily: "Lato, sans-serif" }}>
-                  Comment
-                </label>
-                <textarea
-                  placeholder="Enter comment..."
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  rows={4}
-                  className={inputClass + " resize-y"}
-                  style={{ fontFamily: "Lato, sans-serif" }}
-                />
+                <label className={labelClass} style={{ fontFamily: "Lato, sans-serif" }}>Comment</label>
+                <textarea placeholder="Enter comment..." value={comment} onChange={(e) => setComment(e.target.value)} rows={4} className={inputClass + " resize-y"} style={{ fontFamily: "Lato, sans-serif" }} />
               </div>
             </div>
 
@@ -232,61 +197,41 @@ export default function WellnessInquiry() {
             </button>
           </div>
 
-          {/* Divider (only on large screens) */}
+          {/* Divider */}
           <div className="hidden lg:block w-px bg-[#E0D4C8]" aria-hidden="true" />
 
           {/* Right – Retreat summary card */}
           <div className="lg:sticky lg:top-28 h-fit">
             <div className="bg-white rounded-xl shadow-md overflow-hidden border border-[#E0D4C8]/30">
               <img
-                src={hotel.mainImage}
-                alt={hotel.name}
+                src={hotelImage || "/hotel.png"}
+                alt={hotel?.name || "Retreat"}
                 className="w-full h-48 sm:h-56 object-cover"
               />
               <div className="p-5 sm:p-6">
-                <h2
-                  className="text-lg font-semibold text-[#181818] mb-1"
-                  style={{ fontFamily: "Sentient, serif" }}
-                >
-                  {hotel.name}
+                <h2 className="text-lg font-semibold text-[#181818] mb-1" style={{ fontFamily: "Sentient, serif" }}>
+                  {hotel?.name || "Ayurvedic Retreat"}
                 </h2>
-                <p
-                  className="text-sm text-[#555] mb-4"
-                  style={{ fontFamily: "Lato, sans-serif" }}
-                >
-                  {hotel.location}
+                <p className="text-sm text-[#555] mb-4" style={{ fontFamily: "Lato, sans-serif" }}>
+                  {hotel?.location || ""}
                 </p>
-                <ul
-                  className="text-sm text-[#181818] space-y-1.5 mb-4"
-                  style={{ fontFamily: "Lato, sans-serif" }}
-                >
+                <ul className="text-sm text-[#181818] space-y-1.5 mb-4" style={{ fontFamily: "Lato, sans-serif" }}>
                   <li>{nights} days ({dateRange})</li>
-                  <li>
-                    {people} people, {roomType.toLowerCase()} room, business
-                  </li>
-                  <li>{extras}</li>
+                  <li>{people} people, {roomType.toLowerCase()} room</li>
+                  {extras && <li>{extras}</li>}
                 </ul>
-                <div className="flex items-center justify-between pt-3 border-t border-[#E0D4C8]">
-                  <span
-                    className="text-sm font-medium text-[#181818]"
-                    style={{ fontFamily: "Lato, sans-serif" }}
-                  >
-                    Total Price
-                  </span>
-                  <span
-                    className="text-lg font-semibold text-[#5E17EB]"
-                    style={{ fontFamily: "Sentient, serif" }}
-                  >
-                    {totalPrice}
-                  </span>
-                </div>
+                {displayPrice && (
+                  <div className="flex items-center justify-between pt-3 border-t border-[#E0D4C8]">
+                    <span className="text-sm font-medium text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>Total Price</span>
+                    <span className="text-lg font-semibold text-[#5E17EB]" style={{ fontFamily: "Sentient, serif" }}>{displayPrice}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
       </main>
 
-      {/* Success popup */}
       {showSuccessPopup && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
@@ -299,38 +244,17 @@ export default function WellnessInquiry() {
             className="bg-[#F4F4F4] rounded-2xl shadow-xl max-w-lg w-full p-8 sm:p-10 text-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2
-              id="success-popup-title"
-              className="mb-6"
-              style={{ fontFamily: "Sentient, serif" }}
-            >
-              <span className="block text-2xl sm:text-3xl font-semibold text-[#181818]">
-                Thank you
-              </span>
-              <span
-                className="block text-xl sm:text-2xl font-normal mt-1"
-                style={{ fontFamily: "Sentient, serif", fontStyle: "italic", color: "#5E17EB" }}
-              >
-                for your inquiry!
-              </span>
+            <h2 id="success-popup-title" className="mb-6" style={{ fontFamily: "Sentient, serif" }}>
+              <span className="block text-2xl sm:text-3xl font-semibold text-[#181818]">Thank you</span>
+              <span className="block text-xl sm:text-2xl font-normal mt-1" style={{ fontStyle: "italic", color: "#5E17EB" }}>for your inquiry!</span>
             </h2>
             <div className="space-y-4 mb-8 text-sm text-[#181818] leading-relaxed" style={{ fontFamily: "Lato, sans-serif" }}>
-              <p>
-                Congratulations, you&apos;ve taken the first step toward your Ayurvedic wellness journey. Your satisfaction and well-being are very important to us, and our team is already preparing a personalized retreat offer based on your wishes.
-              </p>
-              <p>
-                Simply sit back and relax while our experts design the perfect package for your individual needs. You will usually receive your customized offer within 2 to 6 hours. In rare cases, it may take a little longer.
-              </p>
-              <p>
-                Would you like to explore a different date or another resort? No problem — simply submit another request, and we&apos;ll be happy to assist.
-              </p>
+              <p>Congratulations, you&apos;ve taken the first step toward your Ayurvedic wellness journey. Our team is already preparing a personalized retreat offer based on your wishes.</p>
+              <p>You will usually receive your customized offer within 2 to 6 hours.</p>
             </div>
             <button
               type="button"
-              onClick={() => {
-                setShowSuccessPopup(false);
-                navigate("/individual-stays");
-              }}
+              onClick={() => { setShowSuccessPopup(false); navigate("/individual-stays"); }}
               className="text-[#5E17EB] font-medium tracking-wide uppercase text-sm hover:underline inline-flex items-center gap-1"
               style={{ fontFamily: "Lato, sans-serif" }}
             >

@@ -40,6 +40,7 @@ export default function IndividualStaysSriLanka() {
       setError(null);
       const params = {
         ownership_type: "Individual",
+        location: "Sri Lanka",
         ...extraParams,
       };
       const result = await fetchWellnessHotels(params);
@@ -83,6 +84,7 @@ export default function IndividualStaysSriLanka() {
     const params = { ...activeFilterParams };
     if (searchInput.trim()) params.location = searchInput.trim();
     if (selectedMonth) params.month = selectedMonth;
+    if (startingPrice.trim()) params.min_price = startingPrice.trim();
     loadHotels(params);
   };
 
@@ -370,7 +372,10 @@ export default function IndividualStaysSriLanka() {
                     {hotel.slogan_line && (
                       <p className="text-sm text-[#5E17EB] mb-1" style={{ fontFamily: "Lato, sans-serif" }}>{hotel.slogan_line}</p>
                     )}
-                    <p className="text-sm text-[#8C8C8C] mb-2" style={{ fontFamily: "Lato, sans-serif" }}>{hotel.location}</p>
+                    <p className="text-sm text-[#8C8C8C] mb-1" style={{ fontFamily: "Lato, sans-serif" }}>{hotel.location}</p>
+                    {hotel.price && (
+                      <p className="text-sm font-medium text-[#181818] mb-2" style={{ fontFamily: "Lato, sans-serif" }}>{hotel.price}</p>
+                    )}
                     {hotel.facilities && hotel.facilities.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-4">
                         {hotel.facilities.slice(0, 4).map((f) => (
