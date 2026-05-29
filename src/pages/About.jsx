@@ -282,37 +282,34 @@ Sri Lanka and beyond. </p>
       </section>
 
 
-      {/* 8-item staggered card grid */}
-      <section className="py-16 sm:py-20 px-4 sm:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          
-          <div className="relative mb-24 sm:mb-24">
-            <div className="hidden md:block absolute left-1/2 top-0 bottom-24 w-px bg-gray-900 transform -translate-x-1/2" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 items-start">
-              {WHY_ITEMS.map((item, index) => (
-                <RevealOnScroll key={index} delay={(index % 4) * 70} className="flex flex-col">
-                  <div className={`mb-4 ${index === 1 ? "lg:mt-[60px]" : index === 2 ? "lg:mt-[100px]" : ""}`}>
-                    <div className="w-full aspect-[4/3] bg-[#EAE9E3] rounded-lg flex items-center justify-center">
-                      <span
-                        className="text-4xl text-[#5E17EB] font-light"
-                        style={{ fontFamily: "Sentient, serif" }}
-                      >
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                    </div>
-                  </div>
+      {/* 8-item list */}
+      <section className="py-16 sm:py-24 px-4 sm:px-8 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="divide-y divide-[#181818]/10">
+            {WHY_ITEMS.map((item, index) => (
+              <RevealOnScroll key={index} delay={index * 40}>
+                <div className="flex flex-col sm:grid sm:grid-cols-[2.5rem_2fr_3fr] gap-x-10 lg:gap-x-16 py-8 sm:py-10 items-start group">
+                  <span
+                    className="text-[#5E17EB] text-[11px] tracking-[0.3em] uppercase mb-3 sm:mb-0 pt-1"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                  >
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
                   <h3
-                    className="text-xl sm:text-2xl md:text-2xl text-[#181818] mb-3"
+                    className="text-lg sm:text-xl lg:text-2xl text-[#181818] mb-2 sm:mb-0 leading-snug"
                     style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
                   >
                     {item.title}
                   </h3>
-                  <p className="text-sm text-[#181818] leading-relaxed" style={{ fontFamily: "poppins" }}>
+                  <p
+                    className="text-sm text-[#181818]/80 leading-relaxed"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                  >
                     {item.body}
                   </p>
-                </RevealOnScroll>
-              ))}
-            </div>
+                </div>
+              </RevealOnScroll>
+            ))}
           </div>
         </div>
       </section>

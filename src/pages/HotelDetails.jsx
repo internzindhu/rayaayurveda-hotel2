@@ -638,11 +638,11 @@ export default function HotelDetails() {
                   <InfoRow label="Medical Report Assistance" value={medicalValue} />
                 </AccordionSection>
               )}
-              {mealPlans.length > 0 && (
+              {/* {mealPlans.length > 0 && (
                 <AccordionSection id="meal-plans" title="Meal Plans" openAccordion={openAccordion} onToggle={toggleAccordion}>
                   <ItemList className="ml-12" items={mealPlans} />
                 </AccordionSection>
-              )}
+              )} */}
               {roomFeatures.length > 0 && (
                 <AccordionSection id="room-features" title="Room Features" openAccordion={openAccordion} onToggle={toggleAccordion}>
                   <div className="flex flex-wrap gap-2">
