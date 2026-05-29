@@ -833,8 +833,12 @@ export default function HotelDetails() {
               <div className="hidden md:block absolute left-1/2 top-0 bottom-10 w-px bg-gray-200 -translate-x-1/2" />
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 items-start">
                 {otherHotels.map((h, index) => {
-                  const img =
-                    h.images && (Array.isArray(h.images) ? h.images[0] : h.images);
+                  const imgRaw = h.images;
+                  const img = !imgRaw ? null
+                    : typeof imgRaw === "string" ? imgRaw
+                    : Array.isArray(imgRaw) && imgRaw.length > 0
+                      ? (() => { const s = [...imgRaw].sort((a, b) => (b?.is_primary ? 1 : 0) - (a?.is_primary ? 1 : 0))[0]; return typeof s === "string" ? s : s?.url; })()
+                    : imgRaw?.url ?? null;
                   return (
                     <div
                       key={h.id}

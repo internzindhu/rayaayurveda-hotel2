@@ -9,6 +9,17 @@ import AdvancedFilters from "../components/AdvancedFilters";
 const INITIAL_DISPLAY = 4;
 const DROPDOWN_MAX = 8;
 
+function getPrimaryImage(images) {
+  if (!images) return null;
+  if (typeof images === "string") return images || null;
+  if (Array.isArray(images) && images.length > 0) {
+    const sorted = [...images].sort((a, b) => (b?.is_primary ? 1 : 0) - (a?.is_primary ? 1 : 0));
+    const first = sorted[0];
+    return (typeof first === "string" ? first : first?.url) || null;
+  }
+  return images?.url || null;
+}
+
 export default function IndividualStays({ heroConfig = {} }) {
   const {
     countryLabel = "",
@@ -330,7 +341,7 @@ export default function IndividualStays({ heroConfig = {} }) {
                   <RevealOnScroll key={hotel.id} delay={(index % 4) * 70} className="flex flex-col">
                     <div className={`mb-4 ${index === 1 ? "lg:mt-[60px]" : index === 2 ? "lg:mt-[100px]" : ""}`}>
                       <img
-                        src={(hotel.images && hotel.images[0]) || "/hotel.png"}
+                        src={getPrimaryImage(hotel.images) || "/hotel.png"}
                         alt={hotel.name}
                         className="w-full aspect-[4/3] object-cover rounded-lg"
                       />
