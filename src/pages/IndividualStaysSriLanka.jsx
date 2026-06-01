@@ -8,6 +8,13 @@ import AdvancedFilters from "../components/AdvancedFilters";
 
 const INITIAL_DISPLAY = 8;
 
+const PRICE_RANGES = [
+  { label: "< 1,500",       min: null, max: 1500 },
+  { label: "1,500 – 3,000", min: 1500, max: 3000 },
+  { label: "3,000 – 5,000", min: 3000, max: 5000 },
+  { label: "5,000+",        min: 5000, max: null  },
+];
+
 function getPrimaryImage(images) {
   if (!images) return null;
   if (typeof images === "string") return images || null;
@@ -26,7 +33,7 @@ export default function IndividualStaysSriLanka() {
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY);
   const [searchInput, setSearchInput] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
-  const [startingPrice, setStartingPrice] = useState("");
+  const [selectedPriceRange, setSelectedPriceRange] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeFilterParams, setActiveFilterParams] = useState({});
 
@@ -40,7 +47,6 @@ export default function IndividualStaysSriLanka() {
       setError(null);
       const params = {
         ownership_type: "Individual",
-        location: "Sri Lanka",
         ...extraParams,
       };
       const result = await fetchWellnessHotels(params);
@@ -84,7 +90,8 @@ export default function IndividualStaysSriLanka() {
     const params = { ...activeFilterParams };
     if (searchInput.trim()) params.location = searchInput.trim();
     if (selectedMonth) params.month = selectedMonth;
-    if (startingPrice.trim()) params.min_price = startingPrice.trim();
+    if (selectedPriceRange?.min != null) params.min_price = selectedPriceRange.min;
+    if (selectedPriceRange?.max != null) params.max_price = selectedPriceRange.max;
     loadHotels(params);
   };
 
@@ -108,6 +115,20 @@ export default function IndividualStaysSriLanka() {
     setDisplayCount(INITIAL_DISPLAY);
     const params = { ...filterParams };
     if (searchInput.trim()) params.location = searchInput.trim();
+    if (selectedMonth) params.month = selectedMonth;
+    if (selectedPriceRange?.min != null) params.min_price = selectedPriceRange.min;
+    if (selectedPriceRange?.max != null) params.max_price = selectedPriceRange.max;
+    loadHotels(params);
+  };
+
+  const handlePriceToggle = (range) => {
+    const next = selectedPriceRange?.label === range.label ? null : range;
+    setSelectedPriceRange(next);
+    const params = { ...activeFilterParams };
+    if (searchInput.trim()) params.location = searchInput.trim();
+    if (selectedMonth) params.month = selectedMonth;
+    if (next?.min != null) params.min_price = next.min;
+    if (next?.max != null) params.max_price = next.max;
     loadHotels(params);
   };
 
@@ -301,28 +322,6 @@ export default function IndividualStaysSriLanka() {
             </select>
           </div>
 
-          <div className="hidden md:block w-px self-stretch bg-[#E0D4C8]" />
-
-          {/* Starting Price */}
-          <div className="flex-1 flex flex-col">
-            <label
-              htmlFor="starting-price"
-              className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
-              style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
-            >
-              Starting Price
-            </label>
-            <input
-              id="starting-price"
-              type="text"
-              value={startingPrice}
-              onChange={(e) => setStartingPrice(e.target.value)}
-              placeholder="e.g. EUR 3000"
-              className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] placeholder:text-[#8C8C8C]"
-              style={{ fontFamily: "Lato, sans-serif" }}
-            />
-          </div>
-
           <button
             type="button"
             onClick={handleSearchClick}
@@ -331,6 +330,32 @@ export default function IndividualStaysSriLanka() {
           >
             Search &rarr;
           </button>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <p
+              className="text-xs tracking-[0.16em] text-[#181818] uppercase"
+              style={{ fontFamily: "Lato, sans-serif" }}
+            >
+              Price Range
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {PRICE_RANGES.map((range) => (
+                <button
+                  key={range.label}
+                  type="button"
+                  onClick={() => handlePriceToggle(range)}
+                  className={`px-4 py-1.5 rounded-full border text-xs transition-colors whitespace-nowrap ${
+                    selectedPriceRange?.label === range.label
+                      ? "bg-[#5E17EB] text-white border-[#5E17EB]"
+                      : "bg-transparent text-[#181818] border-[#E0D4C8] hover:border-[#5E17EB] hover:text-[#5E17EB]"
+                  }`}
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  {range.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="border-t border-[#E0D4C8] pt-4">
