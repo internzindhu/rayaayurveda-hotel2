@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import RevealOnScroll from "../components/RevealOnScroll";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
@@ -14,6 +14,19 @@ const PRICE_RANGES = [
   { label: "3,000 – 5,000", min: 3000, max: 5000 },
   { label: "5,000+",        min: 5000, max: null  },
 ];
+
+// Hardcoded Sri Lanka city list — always available for the dropdown,
+// independent of the hotels fetch state.
+const SRI_LANKA_CITIES = [
+  "Ahungalla", "Aluthgama", "Ambalangoda", "Anuradhapura", "Arugam Bay",
+  "Balapitiya", "Bandarawela", "Bentota", "Beruwala", "Colombo",
+  "Dambulla", "Dikwella", "Ella", "Galle", "Hambantota",
+  "Haputale", "Hikkaduwa", "Induruwa", "Kalutara", "Kandy",
+  "Koggala", "Kosgoda", "Mirissa", "Matara", "Negombo",
+  "Nilaveli", "Nuwara Eliya", "Pasikuda", "Polonnaruwa", "Sigiriya",
+  "Tangalle", "Trincomalee", "Unawatuna", "Ulapane", "Wadduwa",
+  "Waikkal", "Weligama", "Yala",
+].sort();
 
 function getPrimaryImage(images) {
   if (!images) return null;
@@ -37,19 +50,16 @@ export default function IndividualStaysSriLanka() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeFilterParams, setActiveFilterParams] = useState({});
 
-  const navigate = useNavigate();
   const searchRef = useRef(null);
   const dropdownCloseTimer = useRef(null);
 
+  // No ownership_type or location:"Sri Lanka" — all hotels in the DB are
+  // individual Sri Lanka stays so no base filter is needed.
   const loadHotels = useCallback(async (extraParams = {}) => {
     try {
       setLoading(true);
       setError(null);
-      const params = {
-        ownership_type: "Individual",
-        ...extraParams,
-      };
-      const result = await fetchWellnessHotels(params);
+      const result = await fetchWellnessHotels(extraParams);
       setHotels(result.data ?? []);
     } catch (e) {
       setError(e.message);
@@ -72,11 +82,16 @@ export default function IndividualStaysSriLanka() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Selecting a hotel by name uses the `search` param so the backend matches
+  // against hotel names, not the city (which would return all hotels there).
   const handleSelectHotel = (hotel) => {
+    setSearchInput(hotel.name);
+    setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
-    navigate(`/book-hotel/${hotel.id}`);
+    loadHotels({ ...activeFilterParams, search: hotel.name });
   };
 
+  // City selection uses `location` for city-level filtering.
   const handleSelectCity = (city) => {
     setSearchInput(city);
     setDisplayCount(INITIAL_DISPLAY);
@@ -84,17 +99,30 @@ export default function IndividualStaysSriLanka() {
     loadHotels({ ...activeFilterParams, location: city });
   };
 
+  // Search button: if input matches a known city → send as location,
+  // otherwise treat as hotel name and send as search.
   const handleSearchClick = () => {
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
     const params = { ...activeFilterParams };
-    if (searchInput.trim()) params.location = searchInput.trim();
+    const q = searchInput.trim();
+    if (q) {
+      const matchedCity = SRI_LANKA_CITIES.find(
+        (c) => c.toLowerCase() === q.toLowerCase()
+      );
+      if (matchedCity) {
+        params.location = matchedCity;
+      } else {
+        params.search = q;
+      }
+    }
     if (selectedMonth) params.month = selectedMonth;
     if (selectedPriceRange?.min != null) params.min_price = selectedPriceRange.min;
     if (selectedPriceRange?.max != null) params.max_price = selectedPriceRange.max;
     loadHotels(params);
   };
 
+  // Clearing the input resets to full list; typing alone doesn't re-query.
   const handleSearchInputChange = (value) => {
     setSearchInput(value);
     if (!value.trim()) {
@@ -132,11 +160,13 @@ export default function IndividualStaysSriLanka() {
     loadHotels(params);
   };
 
+  // Dropdown uses the hardcoded city list — works before hotels load,
+  // and always shows all cities regardless of the active filter.
+  // Hotels shown above cities (more specific match), cities capped at 8.
   const q = searchInput.trim().toLowerCase();
-  const allCities = [...new Set(hotels.map((h) => h.location).filter(Boolean))].sort();
   const matchingCities = q
-    ? allCities.filter((c) => c.toLowerCase().includes(q))
-    : allCities;
+    ? SRI_LANKA_CITIES.filter((c) => c.toLowerCase().includes(q))
+    : SRI_LANKA_CITIES;
   const matchingHotels = q
     ? hotels.filter((h) => (h.name ?? "").toLowerCase().includes(q)).slice(0, 5)
     : [];
@@ -145,7 +175,8 @@ export default function IndividualStaysSriLanka() {
 
   return (
     <div className="landing-theme min-h-screen bg-[#FFFBF7] overflow-x-hidden">
-      {/* Hero Section */}
+
+      {/* Hero */}
       <div className="relative min-h-[80svh] lg:h-[60vh] overflow-hidden">
         <div
           className="absolute top-0 left-0 w-full h-full bg-cover bg-center"
@@ -153,7 +184,6 @@ export default function IndividualStaysSriLanka() {
         />
         <div className="absolute top-0 left-0 w-full h-full z-5 bg-black/10" />
         <div className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none bg-black/50" />
-
         <div className="relative z-20">
           <Navbar />
           <section className="relative min-h-[100svh] lg:h-[80vh] flex flex-col justify-center items-center text-center px-4">
@@ -187,6 +217,7 @@ export default function IndividualStaysSriLanka() {
         </div>
       </div>
 
+      {/* Intro band */}
       <section className="py-16 px-4 mb-4 sm:px-8 bg-[#EAE9E3]">
         <div className="max-w-4xl mx-auto">
           <p className="text-base sm:text-lg text-[#181818] leading-relaxed text-center" style={{ fontFamily: "poppins" }}>
@@ -223,115 +254,118 @@ export default function IndividualStaysSriLanka() {
         <div className="w-full bg-[#FFF8F2] rounded-xl shadow-sm border border-[#FFF0E0] px-6 sm:px-10 py-6 sm:py-8 mb-6 flex flex-col gap-6">
           <div className="flex flex-col md:flex-row items-stretch md:items-center gap-6 md:gap-8">
 
-          {/* Destination or Hotel */}
-          <div className="flex-1 flex flex-col relative" ref={searchRef}>
-            <label
-              htmlFor="hotel-search"
-              className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
-              style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
-            >
-              Destination or Hotel
-            </label>
-            <input
-              id="hotel-search"
-              type="text"
-              value={searchInput}
-              onChange={(e) => handleSearchInputChange(e.target.value)}
-              onFocus={handleInputFocus}
-              onBlur={handleInputBlur}
-              placeholder="City or hotel name"
-              className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] placeholder:text-[#8C8C8C]"
-              style={{ fontFamily: "Lato, sans-serif" }}
-            />
-            {showDropdown && (matchingCities.length > 0 || matchingHotels.length > 0) && (
-              <ul
-                className="absolute left-0 right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-[#FFF0E0] py-2 max-h-60 overflow-y-auto z-50"
-                style={{ fontFamily: "Lato, sans-serif" }}
-                onMouseDown={cancelBlur}
+            {/* Destination or Hotel */}
+            <div className="flex-1 flex flex-col relative" ref={searchRef}>
+              <label
+                htmlFor="hotel-search"
+                className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
+                style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
               >
-                {matchingCities.length > 0 && (
-                  <>
-                    <li className="px-4 pt-1 pb-0.5 text-[10px] tracking-widest uppercase text-[#8C8C8C]">Cities</li>
-                    {matchingCities.map((city) => (
-                      <li key={city}>
-                        <button
-                          type="button"
-                          className="w-full text-left px-4 py-2 text-sm text-[#181818] hover:bg-[#FFF0E0] transition-colors"
-                          onClick={() => handleSelectCity(city)}
-                        >
-                          {city}
-                        </button>
-                      </li>
-                    ))}
-                  </>
-                )}
-                {matchingHotels.length > 0 && (
-                  <>
-                    <li className="px-4 pt-2 pb-0.5 text-[10px] tracking-widest uppercase text-[#8C8C8C]">Hotels</li>
-                    {matchingHotels.map((hotel) => (
-                      <li key={hotel.id}>
-                        <button
-                          type="button"
-                          className="w-full text-left px-4 py-2.5 text-sm text-[#181818] hover:bg-[#FFF0E0] transition-colors"
-                          onClick={() => handleSelectHotel(hotel)}
-                        >
-                          <span className="font-medium">{hotel.name}</span>
-                          {hotel.location && (
-                            <span className="block text-[#8C8C8C] text-xs mt-0.5 truncate">{hotel.location}</span>
-                          )}
-                        </button>
-                      </li>
-                    ))}
-                  </>
-                )}
-              </ul>
-            )}
-          </div>
+                Destination or Hotel
+              </label>
+              <input
+                id="hotel-search"
+                type="text"
+                value={searchInput}
+                onChange={(e) => handleSearchInputChange(e.target.value)}
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
+                onKeyDown={(e) => e.key === "Enter" && handleSearchClick()}
+                placeholder="City or hotel name"
+                className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] placeholder:text-[#8C8C8C]"
+                style={{ fontFamily: "Lato, sans-serif" }}
+              />
 
-          <div className="hidden md:block w-px self-stretch bg-[#E0D4C8]" />
+              {showDropdown && (matchingHotels.length > 0 || matchingCities.length > 0) && (
+                <ul
+                  className="absolute left-0 right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-[#FFF0E0] py-2 max-h-60 overflow-y-auto z-50"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                  onMouseDown={cancelBlur}
+                >
+                  {matchingHotels.length > 0 && (
+                    <>
+                      <li className="px-4 pt-1 pb-0.5 text-[10px] tracking-widest uppercase text-[#8C8C8C]">Hotels</li>
+                      {matchingHotels.map((hotel) => (
+                        <li key={hotel.id}>
+                          <button
+                            type="button"
+                            className="w-full text-left px-4 py-2.5 text-sm text-[#181818] hover:bg-[#FFF0E0] transition-colors"
+                            onClick={() => handleSelectHotel(hotel)}
+                          >
+                            <span className="font-medium">{hotel.name}</span>
+                            {hotel.location && (
+                              <span className="block text-[#8C8C8C] text-xs mt-0.5 truncate">{hotel.location}</span>
+                            )}
+                          </button>
+                        </li>
+                      ))}
+                    </>
+                  )}
+                  {matchingCities.length > 0 && (
+                    <>
+                      <li className="px-4 pt-2 pb-0.5 text-[10px] tracking-widest uppercase text-[#8C8C8C]">Cities</li>
+                      {matchingCities.slice(0, 8).map((city) => (
+                        <li key={city}>
+                          <button
+                            type="button"
+                            className="w-full text-left px-4 py-2 text-sm text-[#181818] hover:bg-[#FFF0E0] transition-colors"
+                            onClick={() => handleSelectCity(city)}
+                          >
+                            {city}
+                          </button>
+                        </li>
+                      ))}
+                    </>
+                  )}
+                </ul>
+              )}
+            </div>
 
-          {/* Month */}
-          <div className="flex-1 flex flex-col">
-            <label
-              htmlFor="travel-month"
-              className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
-              style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
-            >
-              Month
-            </label>
-            <select
-              id="travel-month"
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-              className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] appearance-none cursor-pointer"
+            <div className="hidden md:block w-px self-stretch bg-[#E0D4C8]" />
+
+            {/* Month */}
+            <div className="flex-1 flex flex-col">
+              <label
+                htmlFor="travel-month"
+                className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
+                style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
+              >
+                Month
+              </label>
+              <select
+                id="travel-month"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] appearance-none cursor-pointer"
+                style={{ fontFamily: "Lato, sans-serif" }}
+              >
+                <option value="">Any month</option>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+              </select>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleSearchClick}
+              className="md:ml-auto text-[#5E17EB] text-xs sm:text-sm tracking-[0.16em] uppercase hover:underline cursor-pointer whitespace-nowrap"
               style={{ fontFamily: "Lato, sans-serif" }}
             >
-              <option value="">Any month</option>
-              <option value="January">January</option>
-              <option value="February">February</option>
-              <option value="March">March</option>
-              <option value="April">April</option>
-              <option value="May">May</option>
-              <option value="June">June</option>
-              <option value="July">July</option>
-              <option value="August">August</option>
-              <option value="September">September</option>
-              <option value="October">October</option>
-              <option value="November">November</option>
-              <option value="December">December</option>
-            </select>
+              Search &rarr;
+            </button>
           </div>
 
-          <button
-            type="button"
-            onClick={handleSearchClick}
-            className="md:ml-auto text-[#5E17EB] text-xs sm:text-sm tracking-[0.16em] uppercase hover:underline cursor-pointer"
-            style={{ fontFamily: "Lato, sans-serif" }}
-          >
-            Search &rarr;
-          </button>
-          </div>
-
+          {/* Price Range */}
           <div className="flex flex-col gap-2">
             <p
               className="text-xs tracking-[0.16em] text-[#181818] uppercase"
@@ -358,6 +392,7 @@ export default function IndividualStaysSriLanka() {
             </div>
           </div>
 
+          {/* Advanced Filters */}
           <div className="border-t border-[#E0D4C8] pt-4">
             <AdvancedFilters onApply={handleAdvancedFiltersApply} className="mb-0" />
           </div>
@@ -368,13 +403,19 @@ export default function IndividualStaysSriLanka() {
           <div className="hidden md:block absolute left-1/2 top-0 bottom-24 w-px bg-gray-900 transform -translate-x-1/2" />
 
           {loading && (
-            <p className="text-center text-[#181818] py-12" style={{ fontFamily: "Lato, sans-serif" }}>Loading hotels…</p>
+            <p className="text-center text-[#181818] py-12" style={{ fontFamily: "Lato, sans-serif" }}>
+              Loading hotels…
+            </p>
           )}
           {error && (
-            <p className="text-center text-red-600 py-12" style={{ fontFamily: "Lato, sans-serif" }}>Failed to load hotels: {error}</p>
+            <p className="text-center text-red-600 py-12" style={{ fontFamily: "Lato, sans-serif" }}>
+              Failed to load hotels: {error}
+            </p>
           )}
           {!loading && !error && hotels.length === 0 && (
-            <p className="text-center text-[#181818] py-12" style={{ fontFamily: "Lato, sans-serif" }}>No hotels found. Try adjusting your filters.</p>
+            <p className="text-center text-[#181818] py-12" style={{ fontFamily: "Lato, sans-serif" }}>
+              No hotels found. Try adjusting your filters.
+            </p>
           )}
           {!loading && !error && hotels.length > 0 && (
             <>
@@ -395,16 +436,26 @@ export default function IndividualStaysSriLanka() {
                       {hotel.name}
                     </h3>
                     {hotel.slogan_line && (
-                      <p className="text-sm text-[#5E17EB] mb-1" style={{ fontFamily: "Lato, sans-serif" }}>{hotel.slogan_line}</p>
+                      <p className="text-sm text-[#5E17EB] mb-1" style={{ fontFamily: "Lato, sans-serif" }}>
+                        {hotel.slogan_line}
+                      </p>
                     )}
-                    <p className="text-sm text-[#8C8C8C] mb-1" style={{ fontFamily: "Lato, sans-serif" }}>{hotel.location}</p>
+                    <p className="text-sm text-[#8C8C8C] mb-1" style={{ fontFamily: "Lato, sans-serif" }}>
+                      {hotel.location}
+                    </p>
                     {hotel.price && (
-                      <p className="text-sm font-medium text-[#181818] mb-2" style={{ fontFamily: "Lato, sans-serif" }}>{hotel.price}</p>
+                      <p className="text-sm font-medium text-[#181818] mb-2" style={{ fontFamily: "Lato, sans-serif" }}>
+                        {hotel.price}
+                      </p>
                     )}
                     {hotel.facilities && hotel.facilities.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-4">
                         {hotel.facilities.slice(0, 4).map((f) => (
-                          <span key={f.facility_id} className="text-xs px-2 py-1 bg-[#FFF0E0] rounded" style={{ fontFamily: "Lato, sans-serif" }}>
+                          <span
+                            key={f.facility_id}
+                            className="text-xs px-2 py-1 bg-[#FFF0E0] rounded"
+                            style={{ fontFamily: "Lato, sans-serif" }}
+                          >
                             {f.facility?.name}
                           </span>
                         ))}
@@ -420,6 +471,7 @@ export default function IndividualStaysSriLanka() {
                   </RevealOnScroll>
                 ))}
               </div>
+
               {displayCount < hotels.length && (
                 <div className="text-center mt-24">
                   <button

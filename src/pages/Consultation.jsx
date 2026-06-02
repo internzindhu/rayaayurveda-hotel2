@@ -1,130 +1,5 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState } from "react";
 import Navbar from "../components/Navbar";
-
-const BUDGET_STEPS = [
-  { label: "$0",    display: "$0" },
-  { label: "$2k",   display: "$2k" },
-  { label: "$5k",   display: "$5k" },
-  { label: "$10k",  display: "$10k" },
-  { label: "$15k+", display: "$15k+" },
-];
-const LAST = BUDGET_STEPS.length - 1;
-
-function BudgetRangeSlider({ minIdx, maxIdx, onChange }) {
-  const trackRef = useRef(null);
-  const dragging = useRef(null);
-  const stateRef = useRef({ minIdx, maxIdx });
-  const onChangeRef = useRef(onChange);
-  useEffect(() => { onChangeRef.current = onChange; });
-  useEffect(() => { stateRef.current = { minIdx, maxIdx }; }, [minIdx, maxIdx]);
-
-  const getIdx = useCallback((clientX) => {
-    const rect = trackRef.current.getBoundingClientRect();
-    const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-    return Math.round(pct * LAST);
-  }, []);
-
-  const onMove = useCallback((e) => {
-    if (!dragging.current) return;
-    const idx = getIdx(e.clientX);
-    const { minIdx, maxIdx } = stateRef.current;
-    if (dragging.current === "min") onChangeRef.current(Math.min(idx, maxIdx), maxIdx);
-    else onChangeRef.current(minIdx, Math.max(idx, minIdx));
-  }, [getIdx]);
-
-  const onUp = useCallback(() => {
-    dragging.current = null;
-    window.removeEventListener("pointermove", onMove);
-    window.removeEventListener("pointerup", onUp);
-  }, [onMove]);
-
-  const startDrag = useCallback((thumb) => (e) => {
-    e.preventDefault();
-    dragging.current = thumb;
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerup", onUp);
-  }, [onMove, onUp]);
-
-  useEffect(() => () => {
-    window.removeEventListener("pointermove", onMove);
-    window.removeEventListener("pointerup", onUp);
-  }, [onMove, onUp]);
-
-  const minPct = (minIdx / LAST) * 100;
-  const maxPct = (maxIdx / LAST) * 100;
-  const midPct = (minPct + maxPct) / 2;
-  const minLabel = BUDGET_STEPS[minIdx].display;
-  const maxLabel = BUDGET_STEPS[maxIdx].display;
-
-  return (
-    <div className="px-2 pt-10 pb-4 select-none">
-      {/* Floating label */}
-      <div
-        className="absolute -translate-x-1/2 pointer-events-none"
-        style={{ left: `calc(8px + ${midPct}% * (100% - 16px) / 100)`, top: 0 }}
-      >
-        <div
-          className="bg-white border border-gray-200 rounded-full px-3 py-1 text-xs shadow whitespace-nowrap text-[#181818]"
-          style={{ fontFamily: "Poppins, sans-serif" }}
-        >
-          {minLabel} – {maxLabel}
-          <span
-            className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0"
-            style={{ borderLeft: "5px solid transparent", borderRight: "5px solid transparent", borderTop: "5px solid #e5e7eb" }}
-          />
-          <span
-            className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0"
-            style={{ borderLeft: "4px solid transparent", borderRight: "4px solid transparent", borderTop: "4px solid white", marginTop: "-1px" }}
-          />
-        </div>
-      </div>
-
-      {/* Track */}
-      <div ref={trackRef} className="relative h-[3px] bg-gray-200 rounded-full mx-2">
-        {/* Active fill */}
-        <div
-          className="absolute h-full bg-[#5E17EB] rounded-full"
-          style={{ left: `${minPct}%`, width: `${maxPct - minPct}%`, transition: "left 0.1s, width 0.1s" }}
-        />
-
-        {/* Min thumb */}
-        <button
-          type="button"
-          onPointerDown={startDrag("min")}
-          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-[#5E17EB] shadow-md cursor-grab active:cursor-grabbing focus:outline-none hover:scale-110 active:scale-125 transition-transform duration-150"
-          style={{ left: `${minPct}%` }}
-          aria-label="Minimum budget"
-        />
-
-        {/* Max thumb */}
-        <button
-          type="button"
-          onPointerDown={startDrag("max")}
-          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-[#5E17EB] shadow-md cursor-grab active:cursor-grabbing focus:outline-none hover:scale-110 active:scale-125 transition-transform duration-150"
-          style={{ left: `${maxPct}%` }}
-          aria-label="Maximum budget"
-        />
-      </div>
-
-      {/* Step labels */}
-      <div className="flex justify-between mt-3 mx-2">
-        {BUDGET_STEPS.map((step, i) => (
-          <span
-            key={i}
-            className="text-xs transition-colors duration-200"
-            style={{
-              fontFamily: "Poppins, sans-serif",
-              color: (i >= minIdx && i <= maxIdx) ? "#5E17EB" : "#d1d5db",
-              fontWeight: (i === minIdx || i === maxIdx) ? 600 : 400,
-            }}
-          >
-            {step.label}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 export default function Consultation() {
   const [formData, setFormData] = useState({
@@ -135,8 +10,8 @@ export default function Consultation() {
     mobile: "",
     preferredContact: [],
     travelMonth: "",
-    budgetMinIdx: 0,
-    budgetMaxIdx: 4,
+    budget: "",
+    budgetCurrency: "USD",
     numberOfNights: "",
     scheduleDateTime: "",
     comment: ""
@@ -153,8 +28,8 @@ export default function Consultation() {
       mobile: "",
       preferredContact: [],
       travelMonth: "",
-      budgetMinIdx: 0,
-      budgetMaxIdx: 4,
+      budget: "",
+      budgetCurrency: "USD",
       numberOfNights: "",
       scheduleDateTime: "",
       comment: ""
@@ -350,16 +225,29 @@ export default function Consultation() {
                 </div>
               </div>
 
-              {/* Total Travel Budget — dual-handle range slider */}
+              {/* Per Night Travel Budget */}
               <div>
-                <label className="block text-gray-700 font-medium mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <label className="block text-gray-700 font-medium mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
                   Per Night Travel Budget
                 </label>
-                <div className="relative">
-                  <BudgetRangeSlider
-                    minIdx={formData.budgetMinIdx}
-                    maxIdx={formData.budgetMaxIdx}
-                    onChange={(min, max) => setFormData({ ...formData, budgetMinIdx: min, budgetMaxIdx: max })}
+                <div className="flex">
+                  <select
+                    value={formData.budgetCurrency}
+                    onChange={(e) => setFormData({ ...formData, budgetCurrency: e.target.value })}
+                    className="px-3 py-3 border border-r-0 border-gray-300 rounded-l-lg bg-gray-50 text-gray-700 font-medium focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent transition-all"
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                  >
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                  </select>
+                  <input
+                    type="number"
+                    min="0"
+                    value={formData.budget}
+                    onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                    placeholder="0"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent transition-all"
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
                   />
                 </div>
               </div>
