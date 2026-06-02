@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import RevealOnScroll from "../components/RevealOnScroll";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 
 const WHY_ITEMS = [
@@ -65,14 +64,16 @@ function scrollToSection(id) {
   window.scrollTo({ top, behavior: "smooth" });
 }
 
-function useReveal(ref, delay = 0) {
+function useReveal(ref, delay = 0, triggerDep = null) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
+    if (visible) return;
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
     if (rect.top < window.innerHeight && rect.bottom > 0) {
       setTimeout(() => setVisible(true), delay);
+      return;
     }
     const obs = new IntersectionObserver(
       ([entry]) => {
@@ -85,7 +86,8 @@ function useReveal(ref, delay = 0) {
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [triggerDep]);
   return visible;
 }
 
@@ -102,17 +104,17 @@ export default function About() {
   const img4Ref = useRef(null);
   const overlay4Ref = useRef(null);
 
-  const img1Visible = useReveal(img1Ref, 100);
-  const overlay1Visible = useReveal(overlay1Ref, 300);
-  const img2Visible = useReveal(img2Ref, 100);
-  const overlay2Visible = useReveal(overlay2Ref, 300);
-  const img3Visible = useReveal(img3Ref, 100);
-  const overlay3Visible = useReveal(overlay3Ref, 300);
-  const img4Visible = useReveal(img4Ref, 100);
-  const overlay4Visible = useReveal(overlay4Ref, 300);
-
   const [openSection, setOpenSection] = useState(null);
   const toggleSection = (id) => setOpenSection((prev) => (prev === id ? null : id));
+
+  const img1Visible = useReveal(img1Ref, 100);
+  const overlay1Visible = useReveal(overlay1Ref, 300);
+  const img2Visible = useReveal(img2Ref, 100, openSection);
+  const overlay2Visible = useReveal(overlay2Ref, 300, openSection);
+  const img3Visible = useReveal(img3Ref, 100, openSection);
+  const overlay3Visible = useReveal(overlay3Ref, 300, openSection);
+  const img4Visible = useReveal(img4Ref, 100, openSection);
+  const overlay4Visible = useReveal(overlay4Ref, 300, openSection);
 
   useEffect(() => {
     if (hash) {
@@ -282,34 +284,50 @@ Sri Lanka and beyond. </p>
       </section>
 
 
-      {/* 8-item list */}
-      <section className="py-16 sm:py-24 px-4 sm:px-8 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="divide-y divide-[#181818]/10">
-            {WHY_ITEMS.map((item, index) => (
-              <RevealOnScroll key={index} delay={index * 40}>
-                <div className="flex flex-col sm:grid sm:grid-cols-[2.5rem_2fr_3fr] gap-x-10 lg:gap-x-16 py-8 sm:py-10 items-start group">
-                  <span
-                    className="text-[#5E17EB] text-[11px] tracking-[0.3em] uppercase mb-3 sm:mb-0 pt-1"
-                    style={{ fontFamily: "Lato, sans-serif" }}
-                  >
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <h3
-                    className="text-lg sm:text-xl lg:text-2xl text-[#181818] mb-2 sm:mb-0 leading-snug"
-                    style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
-                  >
-                    {item.title}
-                  </h3>
-                  <p
-                    className="text-sm text-[#181818]/80 leading-relaxed"
-                    style={{ fontFamily: "Lato, sans-serif" }}
-                  >
-                    {item.body}
-                  </p>
+      {/* 8-item grid with image — same style as Our Story */}
+      <section className="py-8 px-4 sm:px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="relative w-full">
+            <div className="relative w-full aspect-[4/3] sm:h-[500px] lg:h-[800px]">
+              <img
+                ref={img3Ref}
+                src="/ayurveda2.jpg"
+                alt="Why travel with Raya"
+                className={`w-full h-full object-cover rounded-lg transition-all duration-1000 ease-out ${img3Visible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"}`}
+              />
+              <div
+                ref={overlay3Ref}
+                className={`hidden sm:flex absolute top-4 right-4 bottom-4 w-[400px] lg:w-[500px] bg-[#E3E3E3] backdrop-blur-sm p-6 lg:p-8 shadow-lg flex-col rounded-lg transition-all duration-1000 ease-out ${overlay3Visible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"}`}
+              >
+                <div className="space-y-4 lg:space-y-5 overflow-y-auto h-full">
+                  {WHY_ITEMS.map((item, i) => (
+                    <div key={i}>
+                      <h4 className="text-[#181818] mb-1 italic text-base lg:text-[17px]" style={{ fontFamily: "Sentient, serif", fontWeight: 400, fontStyle: "italic", lineHeight: "100%" }}>
+                        {item.title}
+                      </h4>
+                      <p className="text-[#181818] text-sm lg:text-[13px]" style={{ fontFamily: "Lato, sans-serif", lineHeight: "1.5" }}>
+                        {item.body}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-              </RevealOnScroll>
-            ))}
+              </div>
+            </div>
+            {/* Mobile: stacked list */}
+            <div className={`sm:hidden w-full bg-[#E3E3E3] p-6 shadow-lg rounded-lg mt-6 transition-all duration-1000 ease-out ${overlay3Visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+              <div className="space-y-4">
+                {WHY_ITEMS.map((item, i) => (
+                  <div key={i}>
+                    <h4 className="text-[#181818] mb-1 italic text-base" style={{ fontFamily: "Sentient, serif", fontWeight: 400, fontStyle: "italic", lineHeight: "100%" }}>
+                      {item.title}
+                    </h4>
+                    <p className="text-[#181818] text-sm" style={{ fontFamily: "Lato, sans-serif", lineHeight: "1.5" }}>
+                      {item.body}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
