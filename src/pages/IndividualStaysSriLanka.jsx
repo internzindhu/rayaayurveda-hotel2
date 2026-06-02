@@ -51,7 +51,6 @@ export default function IndividualStaysSriLanka() {
   const [activeFilterParams, setActiveFilterParams] = useState({});
 
   const searchRef = useRef(null);
-  const dropdownCloseTimer = useRef(null);
 
   // No ownership_type or location:"Sri Lanka" — all hotels in the DB are
   // individual Sri Lanka stays so no base filter is needed.
@@ -99,23 +98,24 @@ export default function IndividualStaysSriLanka() {
     loadHotels({ ...activeFilterParams, location: city });
   };
 
+  const applySearchInput = (input, params) => {
+    const q = input.trim();
+    if (!q) return;
+    const matchedCity = SRI_LANKA_CITIES.find((c) => c.toLowerCase() === q.toLowerCase());
+    if (matchedCity) {
+      params.location = matchedCity;
+    } else {
+      params.search = q;
+    }
+  };
+
   // Search button: if input matches a known city → send as location,
   // otherwise treat as hotel name and send as search.
   const handleSearchClick = () => {
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
     const params = { ...activeFilterParams };
-    const q = searchInput.trim();
-    if (q) {
-      const matchedCity = SRI_LANKA_CITIES.find(
-        (c) => c.toLowerCase() === q.toLowerCase()
-      );
-      if (matchedCity) {
-        params.location = matchedCity;
-      } else {
-        params.search = q;
-      }
-    }
+    applySearchInput(searchInput, params);
     if (selectedMonth) params.month = selectedMonth;
     if (selectedPriceRange?.min != null) params.min_price = selectedPriceRange.min;
     if (selectedPriceRange?.max != null) params.max_price = selectedPriceRange.max;
@@ -126,23 +126,22 @@ export default function IndividualStaysSriLanka() {
   const handleSearchInputChange = (value) => {
     setSearchInput(value);
     if (!value.trim()) {
-      loadHotels(activeFilterParams);
+      const params = { ...activeFilterParams };
+      if (selectedMonth) params.month = selectedMonth;
+      if (selectedPriceRange?.min != null) params.min_price = selectedPriceRange.min;
+      if (selectedPriceRange?.max != null) params.max_price = selectedPriceRange.max;
+      loadHotels(params);
     }
   };
 
   const handleInputFocus = () => setShowDropdown(true);
-  const handleInputBlur = () => {
-    dropdownCloseTimer.current = setTimeout(() => setShowDropdown(false), 150);
-  };
-  const cancelBlur = () => {
-    if (dropdownCloseTimer.current) clearTimeout(dropdownCloseTimer.current);
-  };
+  const handleInputBlur = () => setTimeout(() => setShowDropdown(false), 150);
 
   const handleAdvancedFiltersApply = (filterParams) => {
     setActiveFilterParams(filterParams);
     setDisplayCount(INITIAL_DISPLAY);
     const params = { ...filterParams };
-    if (searchInput.trim()) params.location = searchInput.trim();
+    applySearchInput(searchInput, params);
     if (selectedMonth) params.month = selectedMonth;
     if (selectedPriceRange?.min != null) params.min_price = selectedPriceRange.min;
     if (selectedPriceRange?.max != null) params.max_price = selectedPriceRange.max;
@@ -153,7 +152,7 @@ export default function IndividualStaysSriLanka() {
     const next = selectedPriceRange?.label === range.label ? null : range;
     setSelectedPriceRange(next);
     const params = { ...activeFilterParams };
-    if (searchInput.trim()) params.location = searchInput.trim();
+    applySearchInput(searchInput, params);
     if (selectedMonth) params.month = selectedMonth;
     if (next?.min != null) params.min_price = next.min;
     if (next?.max != null) params.max_price = next.max;
@@ -166,7 +165,7 @@ export default function IndividualStaysSriLanka() {
   const q = searchInput.trim().toLowerCase();
   const matchingCities = q
     ? SRI_LANKA_CITIES.filter((c) => c.toLowerCase().includes(q))
-    : SRI_LANKA_CITIES;
+    : [];
   const matchingHotels = q
     ? hotels.filter((h) => (h.name ?? "").toLowerCase().includes(q)).slice(0, 5)
     : [];
@@ -280,7 +279,7 @@ export default function IndividualStaysSriLanka() {
                 <ul
                   className="absolute left-0 right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-[#FFF0E0] py-2 max-h-60 overflow-y-auto z-50"
                   style={{ fontFamily: "Lato, sans-serif" }}
-                  onMouseDown={cancelBlur}
+                  onMouseDown={(e) => e.preventDefault()}
                 >
                   {matchingHotels.length > 0 && (
                     <>

@@ -44,23 +44,20 @@ export default function Consultation() {
           {/* Left Column - Form Section */}
           <div>
             <h1 className="text-4xl sm:text-3xl font-bold text-[#181818] mb-4" style={{ fontFamily: 'Sentient, serif' }}>
-              We will help you choose the perfect treatment stay.
+              Let us help you find your ideal Ayurveda/Wellness retreat.
             </h1>
             <p className="text-lg text-gray-700 mb-8" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              Leave your contact details along with any questions, and our team will guide you personally in planning your Ayurvedic retreat.
+              Our wellness advisors are available during the hours below to assist with enquiries, retreat recommendations, and booking support.
             </p>
 
             {/* Working Hours Section */}
             <div className="mb-8">
-              <h2 className="text-xl font-semibold text-[#181818] mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                Working Hours
-              </h2>
               <p className="text-gray-700 mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                We're here to welcome you and assist with all your inquiries during the following hours:
+                We aim to respond to all messages as quickly as possible. Enquiries received outside working hours will be attended to at the earliest opportunity.
               </p>
               <div className="space-y-2 text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                <p>Monday - Friday: 08:30 - 17:00 (UTC+5:30)</p>
-                <p>Saturday - Sunday: 09:00 - 12:00 (UTC+5:30)</p>
+                <p>Monday – Friday: 08:30 – 17:00 (UTC +5:30)</p>
+                <p>Saturday – Sunday: 09:00 – 12:00 (UTC +5:30)</p>
               </div>
             </div>
 
@@ -305,26 +302,20 @@ export default function Consultation() {
 
               {/* Consultation Popup Overlay */}
               <div className="absolute top-8 right-[-100px] bg-[#F5F1E8] shadow-2xl p-6 max-w-[400px] w-full">
-                <div className="flex items-center gap-2 mb-4 flex-wrap">
-                  <p className="text-[#5E17EB] font-semibold text-lg leading-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    15 minutes
-                  </p>
-                  <p className="text-[#181818] font-serif text-base leading-tight">
-                    consultation with Ayurvedic doctor
-                  </p>
-                  <p className="text-[#5E17EB] font-semibold text-lg leading-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    for Free
+                <div className="mb-4">
+                  <p className="text-[#181818] font-serif text-base leading-snug">
+                    Talk to our Ayurveda/Wellness Expert
                   </p>
                 </div>
                 <p className="text-[#181818] text-sm mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Call for appointment
+                  Call or WhatsApp
                 </p>
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-[#181818] text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    +123 595 9966 / +123 595 9966
+                    +94744135359 / +94744135358
                   </p>
                   <a
-                    href="https://wa.me/1235959966"
+                    href="https://wa.me/94744135359"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-[#5E17EB] hover:bg-[#4B12BD] text-white p-3 rounded-full transition-colors flex items-center justify-center"

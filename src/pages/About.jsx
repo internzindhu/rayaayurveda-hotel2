@@ -379,7 +379,7 @@ Sri Lanka and beyond. </p>
             onClick={() => toggleSection("before")}
           >
             <div className="flex items-center gap-5">
-              <span className="text-[#5E17EB] text-[11px] uppercase tracking-[0.3em]" style={{ fontFamily: "Lato, sans-serif" }}>01</span>
+              {/* <span className="text-[#5E17EB] text-[11px] uppercase tracking-[0.3em]" style={{ fontFamily: "Lato, sans-serif" }}>01</span> */}
               <span className="text-[#5E17EB] mb-4 uppercase px-4 sm:px-8 lg:px-12" style={{
                 fontFamily: "Lato, sans-serif",
                 fontWeight: 500,
@@ -464,7 +464,7 @@ Sri Lanka and beyond. </p>
             onClick={() => toggleSection("during")}
           >
             <div className="flex items-center gap-5">
-              <span className="text-[#5E17EB] text-[11px] uppercase tracking-[0.3em]" style={{ fontFamily: "Lato, sans-serif" }}>02</span>
+              {/* <span className="text-[#5E17EB] text-[11px] uppercase tracking-[0.3em]" style={{ fontFamily: "Lato, sans-serif" }}>02</span> */}
               <span className="text-[#5E17EB] mb-4 uppercase px-4 sm:px-8 lg:px-12" style={{
                 fontFamily: "Lato, sans-serif",
                 fontWeight: 500,
@@ -536,7 +536,7 @@ Sri Lanka and beyond. </p>
             onClick={() => toggleSection("after")}
           >
             <div className="flex items-center gap-5">
-              <span className="text-[#5E17EB] text-[11px] uppercase tracking-[0.3em]" style={{ fontFamily: "Lato, sans-serif" }}>03</span>
+              {/* <span className="text-[#5E17EB] text-[11px] uppercase tracking-[0.3em]" style={{ fontFamily: "Lato, sans-serif" }}>03</span> */}
               <span className="text-[#5E17EB] mb-4 uppercase px-4 sm:px-8 lg:px-12" style={{
                 fontFamily: "Lato, sans-serif",
                 fontWeight: 500,
