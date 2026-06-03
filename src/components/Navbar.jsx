@@ -415,12 +415,12 @@ export default function Navbar() {
                       {country.label}
                     </MobileLink>
                   ))}
-                  <CategoryLabel>Group Stays</CategoryLabel>
+                  {/* <CategoryLabel>Group Stays</CategoryLabel>
                   {stayCountries.map((country) => (
                     <MobileLink key={`mobile-wellness-group-${country.slug}`} to={`/group-stays/${country.slug}`} indent onClose={() => { setIsWellnessOpen(false); setIsMobileMenuOpen(false); }}>
                       {country.label}
                     </MobileLink>
-                  ))}
+                  ))} */}
                 </div>
               )}
             </div>
@@ -475,7 +475,7 @@ export default function Navbar() {
               {isServicesOpen && (
                 <div className="pb-4 animate-mobile-dropdown">
                   <MobileLink to="/vouchers" onClose={() => { setIsServicesOpen(false); setIsMobileMenuOpen(false); }}>VOUCHERS</MobileLink>
-                  <MobileLink to="/contact" onClose={() => { setIsServicesOpen(false); setIsMobileMenuOpen(false); }}>BOOKING AND CONTACT</MobileLink>
+                  <MobileLink to="/consultation" onClose={() => { setIsServicesOpen(false); setIsMobileMenuOpen(false); }}>BOOKING AND CONTACT</MobileLink>
                 </div>
               )}
             </div>
@@ -498,7 +498,7 @@ export default function Navbar() {
               {isBlogOpen && (
                 <div className="pb-4 animate-mobile-dropdown">
                   <MobileLink to="/faq" onClose={() => { setIsBlogOpen(false); setIsMobileMenuOpen(false); }}>FAQ</MobileLink>
-                  {/* <MobileLink to="/guest-testimonies" onClose={() => { setIsBlogOpen(false); setIsMobileMenuOpen(false); }}>GUEST TESTIMONIES</MobileLink> */}
+                  <MobileLink to="/guest-testimonies" onClose={() => { setIsBlogOpen(false); setIsMobileMenuOpen(false); }}>GUEST TESTIMONIES</MobileLink>
                   <MobileLink to="/blogs" onClose={() => { setIsBlogOpen(false); setIsMobileMenuOpen(false); }}>BLOG</MobileLink>
                   <MobileLink to="/newsletter" onClose={() => { setIsBlogOpen(false); setIsMobileMenuOpen(false); }}>NEWSLETTER</MobileLink>
                 </div>

@@ -39,7 +39,7 @@ export default function Consultation() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      <div className="max-w-7xl mx-auto  py-32">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pt-28 pb-20 sm:pt-32 sm:pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Left Column - Form Section */}
           <div>
@@ -292,16 +292,17 @@ export default function Consultation() {
 
           {/* Right Column - Doctor Image with Consultation Popup */}
           <div className="relative flex items-start">
-            <div className="relative w-full h-full rounded-lg overflow-visible">
+            <div className="relative w-full rounded-lg overflow-hidden">
               {/* Doctor Image */}
               <img
                 src="/consutation.jpg"
                 alt="Ayurvedic Doctor"
-                className="w-full h-full object-contain mt-[-100px] rounded-lg"
+                className="w-full h-full object-cover object-top rounded-lg"
+                style={{ minHeight: "420px", maxHeight: "720px" }}
               />
 
               {/* Consultation Popup Overlay */}
-              <div className="absolute top-8 right-[-100px] bg-[#F5F1E8] shadow-2xl p-6 max-w-[400px] w-full">
+              <div className="absolute top-6 right-4 bg-[#F5F1E8] shadow-2xl p-5 max-w-[300px] w-[calc(100%-2rem)] sm:w-auto sm:max-w-[340px]">
                 <div className="mb-4">
                   <p className="text-[#181818] font-serif text-base leading-snug">
                     Talk to our Ayurveda/Wellness Expert
