@@ -27,7 +27,7 @@ export default function ConsultationPopup({ isOpen, onClose }) {
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-[#181818] hover:text-gray-600 transition-colors z-10 p-1 bg-white/80 rounded-full"
+          className="absolute top-2 right-2 text-[#181818] hover:text-gray-600 transition-colors z-10 p-2 bg-white/80 rounded-full min-w-[36px] min-h-[36px] flex items-center justify-center"
           aria-label="Close"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

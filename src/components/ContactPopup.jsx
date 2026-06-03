@@ -35,7 +35,7 @@ export default function ContactPopup({ isOpen, onClose }) {
             <h2 className="text-2xl font-semibold" style={{ fontFamily: 'poppins' }}>Contact Us</h2>
             <button
               onClick={onClose}
-              className="text-white hover:text-gray-200 transition-colors p-2"
+              className="text-white hover:text-gray-200 transition-colors p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center"
               aria-label="Close"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

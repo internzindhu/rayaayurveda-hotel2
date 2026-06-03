@@ -173,7 +173,7 @@ export default function Navbar() {
   );
 
   return (
-    <nav className={`w-full bg-[#5E17EB] fixed top-0 left-0 right-0 transition-all duration-500 ease-in-out ${isVisible ? "translate-y-0" : "-translate-y-full"} ${!isAtTop ? "backdrop-blur-sm" : ""} ${isMobileMenuOpen ? "z-[100]" : "z-50"}`}>
+    <nav className={`w-full bg-[#5E17EB] fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ease-in-out ${isVisible ? "translate-y-0" : "-translate-y-full"} ${!isAtTop ? "backdrop-blur-sm" : ""}`}>
       <div className="relative">
         <div className="relative z-10 h-16 sm:h-20 md:h-[93px] px-4 sm:px-6 pt-8 flex items-center">
 
@@ -312,7 +312,7 @@ export default function Navbar() {
             </Link>
             <button
               onClick={toggleMobileMenu}
-              className={`w-10 h-10 flex flex-col items-center justify-center gap-[5px] rounded-lg transition-all duration-200 ${isMobileMenuOpen ? "bg-white/15" : "hover:bg-white/10"}`}
+              className={`w-11 h-11 flex flex-col items-center justify-center gap-[5px] rounded-lg transition-all duration-200 ${isMobileMenuOpen ? "bg-white/15" : "hover:bg-white/10"}`}
               aria-label="Toggle mobile menu"
             >
               <span className={`block h-[1.5px] bg-white rounded-full transition-all duration-300 ${isMobileMenuOpen ? "w-5 rotate-45 translate-y-[6.5px]" : "w-5"}`} />
@@ -335,7 +335,7 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <div
           ref={mobileMenuRef}
-          className="lg:hidden relative z-[110] bg-[#5E17EB] overflow-y-auto max-h-[82vh] animate-mobile-menu"
+          className="lg:hidden relative z-[110] bg-[#5E17EB] overflow-y-auto max-h-[calc(100dvh-4rem)] animate-mobile-menu"
         >
           {/* thin gold rule at the top */}
           <div className="h-px bg-[#fdbb3a]/30 mx-6" />

@@ -549,7 +549,7 @@ export default function HotelDetails() {
               <button
                 type="button"
                 onClick={prev}
-                className="w-9 h-9 flex items-center justify-center border border-[#5E17EB] text-[#5E17EB] hover:bg-[#5E17EB] hover:text-white transition-colors rounded-none text-base"
+                className="w-11 h-11 sm:w-9 sm:h-9 flex items-center justify-center border border-[#5E17EB] text-[#5E17EB] hover:bg-[#5E17EB] hover:text-white transition-colors rounded-none text-base"
                 aria-label="Previous image"
               >
                 ←
@@ -557,7 +557,7 @@ export default function HotelDetails() {
               <button
                 type="button"
                 onClick={next}
-                className="w-9 h-9 flex items-center justify-center border border-[#5E17EB] text-[#5E17EB] hover:bg-[#5E17EB] hover:text-white transition-colors rounded-none text-base"
+                className="w-11 h-11 sm:w-9 sm:h-9 flex items-center justify-center border border-[#5E17EB] text-[#5E17EB] hover:bg-[#5E17EB] hover:text-white transition-colors rounded-none text-base"
                 aria-label="Next image"
               >
                 →
