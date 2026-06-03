@@ -5,18 +5,10 @@ import RevealOnScroll from "../components/RevealOnScroll";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import { fetchWellnessHotels } from "../lib/wellnessApi";
 import AdvancedFilters from "../components/AdvancedFilters";
+import PriceRangeSlider from "../components/PriceRangeSlider";
 
 const INITIAL_DISPLAY = 8;
 
-const PRICE_RANGES = [
-  { label: "< 1,500",       min: null, max: 1500 },
-  { label: "1,500 – 3,000", min: 1500, max: 3000 },
-  { label: "3,000 – 5,000", min: 3000, max: 5000 },
-  { label: "5,000+",        min: 5000, max: null  },
-];
-
-// Hardcoded Sri Lanka city list — always available for the dropdown,
-// independent of the hotels fetch state.
 const SRI_LANKA_CITIES = [
   "Ahungalla", "Aluthgama", "Ambalangoda", "Anuradhapura", "Arugam Bay",
   "Balapitiya", "Bandarawela", "Bentota", "Beruwala", "Colombo",
@@ -39,6 +31,37 @@ function getPrimaryImage(images) {
   return images?.url || null;
 }
 
+function getCurrentMonthPrice(hotel) {
+  if (!hotel.monthly_prices?.length) return null;
+  const now = new Date();
+  const probe = new Date(now.getFullYear(), now.getMonth(), 15);
+  const match = hotel.monthly_prices.find(
+    (mp) => new Date(mp.valid_from) <= probe && probe <= new Date(mp.valid_to)
+  );
+  if (match) return match;
+  return [...hotel.monthly_prices].sort((a, b) => Number(a.price) - Number(b.price))[0] ?? null;
+}
+
+function formatMonthlyPrice(mp) {
+  if (!mp) return null;
+  const price = Number(mp.price);
+  if (isNaN(price) || price <= 0) return null;
+  const currency = mp.currency ?? "USD";
+  return `From ${currency} ${price.toLocaleString()} / night`;
+}
+
+function computePriceBounds(hotels) {
+  const prices = hotels
+    .map(getCurrentMonthPrice)
+    .filter(Boolean)
+    .map((mp) => Number(mp.price))
+    .filter((n) => !isNaN(n) && n > 0);
+  if (!prices.length) return { min: 0, max: 800 };
+  prices.sort((a, b) => a - b);
+  const roundedMax = Math.ceil(prices[prices.length - 1] / 100) * 100;
+  return { min: prices[0], max: roundedMax };
+}
+
 export default function IndividualStaysSriLanka() {
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -46,14 +69,13 @@ export default function IndividualStaysSriLanka() {
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY);
   const [searchInput, setSearchInput] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
-  const [selectedPriceRange, setSelectedPriceRange] = useState(null);
+  const [priceBounds, setPriceBounds] = useState(null);
+  const [selectedPrice, setSelectedPrice] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeFilterParams, setActiveFilterParams] = useState({});
 
   const searchRef = useRef(null);
 
-  // No ownership_type or location:"Sri Lanka" — all hotels in the DB are
-  // individual Sri Lanka stays so no base filter is needed.
   const loadHotels = useCallback(async (extraParams = {}) => {
     try {
       setLoading(true);
@@ -71,6 +93,16 @@ export default function IndividualStaysSriLanka() {
     loadHotels();
   }, [loadHotels]);
 
+  const boundsInitialized = useRef(false);
+  useEffect(() => {
+    if (hotels.length > 0 && !boundsInitialized.current) {
+      const bounds = computePriceBounds(hotels);
+      setPriceBounds(bounds);
+      setSelectedPrice([bounds.min, bounds.max]);
+      boundsInitialized.current = true;
+    }
+  }, [hotels]);
+
   useEffect(() => {
     function handleClickOutside(e) {
       if (searchRef.current && !searchRef.current.contains(e.target)) {
@@ -81,8 +113,6 @@ export default function IndividualStaysSriLanka() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Selecting a hotel by name uses the `search` param so the backend matches
-  // against hotel names, not the city (which would return all hotels there).
   const handleSelectHotel = (hotel) => {
     setSearchInput(hotel.name);
     setDisplayCount(INITIAL_DISPLAY);
@@ -90,7 +120,6 @@ export default function IndividualStaysSriLanka() {
     loadHotels({ ...activeFilterParams, search: hotel.name });
   };
 
-  // City selection uses `location` for city-level filtering.
   const handleSelectCity = (city) => {
     setSearchInput(city);
     setDisplayCount(INITIAL_DISPLAY);
@@ -102,36 +131,41 @@ export default function IndividualStaysSriLanka() {
     const q = input.trim();
     if (!q) return;
     const matchedCity = SRI_LANKA_CITIES.find((c) => c.toLowerCase() === q.toLowerCase());
-    if (matchedCity) {
-      params.location = matchedCity;
-    } else {
-      params.search = q;
-    }
+    if (matchedCity) params.location = matchedCity;
+    else params.search = q;
   };
 
-  // Search button: if input matches a known city → send as location,
-  // otherwise treat as hotel name and send as search.
+  // price is only applied on explicit Search click, not on other filter changes
+  const buildParams = ({ month = selectedMonth, price = null, filters = activeFilterParams, search = searchInput } = {}) => {
+    const params = { ...filters };
+    applySearchInput(search, params);
+    if (month) params.month = month;
+    if (price) {
+      params.min_price = price[0];
+      params.max_price = price[1];
+    }
+    return params;
+  };
+
   const handleSearchClick = () => {
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
-    const params = { ...activeFilterParams };
-    applySearchInput(searchInput, params);
-    if (selectedMonth) params.month = selectedMonth;
-    if (selectedPriceRange?.min != null) params.min_price = selectedPriceRange.min;
-    if (selectedPriceRange?.max != null) params.max_price = selectedPriceRange.max;
-    loadHotels(params);
+    loadHotels(buildParams({ price: selectedPrice }));
   };
 
-  // Clearing the input resets to full list; typing alone doesn't re-query.
   const handleSearchInputChange = (value) => {
     setSearchInput(value);
-    if (!value.trim()) {
-      const params = { ...activeFilterParams };
-      if (selectedMonth) params.month = selectedMonth;
-      if (selectedPriceRange?.min != null) params.min_price = selectedPriceRange.min;
-      if (selectedPriceRange?.max != null) params.max_price = selectedPriceRange.max;
-      loadHotels(params);
-    }
+    if (!value.trim()) loadHotels(buildParams({ search: "" }));
+  };
+
+  const handleMonthChange = (month) => {
+    setSelectedMonth(month);
+    setDisplayCount(INITIAL_DISPLAY);
+    loadHotels(buildParams({ month }));
+  };
+
+  const handlePriceChange = ([low, high]) => {
+    setSelectedPrice([low, high]);
   };
 
   const handleInputFocus = () => setShowDropdown(true);
@@ -140,32 +174,11 @@ export default function IndividualStaysSriLanka() {
   const handleAdvancedFiltersApply = (filterParams) => {
     setActiveFilterParams(filterParams);
     setDisplayCount(INITIAL_DISPLAY);
-    const params = { ...filterParams };
-    applySearchInput(searchInput, params);
-    if (selectedMonth) params.month = selectedMonth;
-    if (selectedPriceRange?.min != null) params.min_price = selectedPriceRange.min;
-    if (selectedPriceRange?.max != null) params.max_price = selectedPriceRange.max;
-    loadHotels(params);
+    loadHotels(buildParams({ filters: filterParams }));
   };
 
-  const handlePriceToggle = (range) => {
-    const next = selectedPriceRange?.label === range.label ? null : range;
-    setSelectedPriceRange(next);
-    const params = { ...activeFilterParams };
-    applySearchInput(searchInput, params);
-    if (selectedMonth) params.month = selectedMonth;
-    if (next?.min != null) params.min_price = next.min;
-    if (next?.max != null) params.max_price = next.max;
-    loadHotels(params);
-  };
-
-  // Dropdown uses the hardcoded city list — works before hotels load,
-  // and always shows all cities regardless of the active filter.
-  // Hotels shown above cities (more specific match), cities capped at 8.
   const q = searchInput.trim().toLowerCase();
-  const matchingCities = q
-    ? SRI_LANKA_CITIES.filter((c) => c.toLowerCase().includes(q))
-    : [];
+  const matchingCities = q ? SRI_LANKA_CITIES.filter((c) => c.toLowerCase().includes(q)) : [];
   const matchingHotels = q
     ? hotels.filter((h) => (h.name ?? "").toLowerCase().includes(q)).slice(0, 5)
     : [];
@@ -249,16 +262,18 @@ export default function IndividualStaysSriLanka() {
       {/* Page Content */}
       <div className="max-w-7xl mx-auto px-4 py-16">
 
-        {/* Search Bar */}
-        <div className="w-full bg-[#FFF8F2] rounded-xl shadow-sm border border-[#FFF0E0] px-6 sm:px-10 py-6 sm:py-8 mb-6 flex flex-col gap-6">
-          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-6 md:gap-8">
+        {/* Search Bar — single line */}
+        <div className="w-full bg-[#FFF8F2] rounded-xl shadow-sm border border-[#FFF0E0] px-6 sm:px-10 py-6 sm:py-8 mb-6 flex flex-col gap-4">
+
+          {/* One unified bar: destination | month | price | search */}
+          <div className="flex flex-col md:flex-row items-stretch md:items-end gap-4 md:gap-0 md:divide-x md:divide-[#E0D4C8]">
 
             {/* Destination or Hotel */}
-            <div className="flex-1 flex flex-col relative" ref={searchRef}>
+            <div className="flex-[2] flex flex-col relative md:pr-6" ref={searchRef}>
               <label
                 htmlFor="hotel-search"
-                className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
-                style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
+                className="text-xs tracking-[0.16em] text-[#181818] mb-1 uppercase"
+                style={{ fontFamily: "Lato, sans-serif" }}
               >
                 Destination or Hotel
               </label>
@@ -271,10 +286,9 @@ export default function IndividualStaysSriLanka() {
                 onBlur={handleInputBlur}
                 onKeyDown={(e) => e.key === "Enter" && handleSearchClick()}
                 placeholder="City or hotel name"
-                className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] placeholder:text-[#8C8C8C]"
+                className="w-full text-sm text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] placeholder:text-[#8C8C8C]"
                 style={{ fontFamily: "Lato, sans-serif" }}
               />
-
               {showDropdown && (matchingHotels.length > 0 || matchingCities.length > 0) && (
                 <ul
                   className="absolute left-0 right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-[#FFF0E0] py-2 max-h-60 overflow-y-auto z-50"
@@ -320,22 +334,20 @@ export default function IndividualStaysSriLanka() {
               )}
             </div>
 
-            <div className="hidden md:block w-px self-stretch bg-[#E0D4C8]" />
-
             {/* Month */}
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col md:px-6">
               <label
                 htmlFor="travel-month"
-                className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
-                style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
+                className="text-xs tracking-[0.16em] text-[#181818] mb-1 uppercase"
+                style={{ fontFamily: "Lato, sans-serif" }}
               >
                 Month
               </label>
               <select
                 id="travel-month"
                 value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] appearance-none cursor-pointer"
+                onChange={(e) => handleMonthChange(e.target.value)}
+                className="w-full text-sm text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] appearance-none cursor-pointer"
                 style={{ fontFamily: "Lato, sans-serif" }}
               >
                 <option value="">Any month</option>
@@ -354,40 +366,40 @@ export default function IndividualStaysSriLanka() {
               </select>
             </div>
 
-            <button
-              type="button"
-              onClick={handleSearchClick}
-              className="md:ml-auto text-[#5E17EB] text-xs sm:text-sm tracking-[0.16em] uppercase hover:underline cursor-pointer whitespace-nowrap"
-              style={{ fontFamily: "Lato, sans-serif" }}
-            >
-              Search &rarr;
-            </button>
-          </div>
+            {/* Price Range */}
+            <div className="flex-[2] flex flex-col md:px-6">
+              <label
+                className="text-xs tracking-[0.16em] text-[#181818] mb-1 uppercase"
+                style={{ fontFamily: "Lato, sans-serif" }}
+              >
+                Price Range
+              </label>
+              {priceBounds ? (
+                <PriceRangeSlider
+                  min={priceBounds.min}
+                  max={priceBounds.max}
+                  low={selectedPrice[0]}
+                  high={selectedPrice[1]}
+                  currency="USD"
+                  onChange={handlePriceChange}
+                />
+              ) : (
+                <div className="h-10 flex items-center">
+                  <span className="text-xs text-[#8C8C8C]" style={{ fontFamily: "Lato, sans-serif" }}>Loading…</span>
+                </div>
+              )}
+            </div>
 
-          {/* Price Range */}
-          <div className="flex flex-col gap-2">
-            <p
-              className="text-xs tracking-[0.16em] text-[#181818] uppercase"
-              style={{ fontFamily: "Lato, sans-serif" }}
-            >
-              Price Range
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {PRICE_RANGES.map((range) => (
-                <button
-                  key={range.label}
-                  type="button"
-                  onClick={() => handlePriceToggle(range)}
-                  className={`px-4 py-1.5 rounded-full border text-xs transition-colors whitespace-nowrap ${
-                    selectedPriceRange?.label === range.label
-                      ? "bg-[#5E17EB] text-white border-[#5E17EB]"
-                      : "bg-transparent text-[#181818] border-[#E0D4C8] hover:border-[#5E17EB] hover:text-[#5E17EB]"
-                  }`}
-                  style={{ fontFamily: "Lato, sans-serif" }}
-                >
-                  {range.label}
-                </button>
-              ))}
+            {/* Search button */}
+            <div className="md:pl-6 flex items-end">
+              <button
+                type="button"
+                onClick={handleSearchClick}
+                className="text-[#5E17EB] text-xs tracking-[0.16em] uppercase hover:underline cursor-pointer whitespace-nowrap pb-1"
+                style={{ fontFamily: "Lato, sans-serif" }}
+              >
+                Search &rarr;
+              </button>
             </div>
           </div>
 
@@ -419,56 +431,60 @@ export default function IndividualStaysSriLanka() {
           {!loading && !error && hotels.length > 0 && (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 items-start">
-                {hotelsToShow.map((hotel, index) => (
-                  <RevealOnScroll key={hotel.id} delay={(index % 4) * 70} className="flex flex-col">
-                    <div className={`mb-4 ${index === 1 ? "lg:mt-[60px]" : index === 2 ? "lg:mt-[100px]" : ""}`}>
-                      <img
-                        src={getPrimaryImage(hotel.images) || "/hotel.png"}
-                        alt={hotel.name}
-                        className="w-full aspect-[4/3] object-cover rounded-lg"
-                      />
-                    </div>
-                    <h3
-                      className="text-xl sm:text-2xl md:text-2xl text-[#181818] mb-3"
-                      style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
-                    >
-                      {hotel.name}
-                    </h3>
-                    {hotel.slogan_line && (
-                      <p className="text-sm text-[#5E17EB] mb-1" style={{ fontFamily: "Lato, sans-serif" }}>
-                        {hotel.slogan_line}
-                      </p>
-                    )}
-                    <p className="text-sm text-[#8C8C8C] mb-1" style={{ fontFamily: "Lato, sans-serif" }}>
-                      {hotel.location}
-                    </p>
-                    {hotel.price && (
-                      <p className="text-sm font-medium text-[#181818] mb-2" style={{ fontFamily: "Lato, sans-serif" }}>
-                        {hotel.price}
-                      </p>
-                    )}
-                    {hotel.facilities && hotel.facilities.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {hotel.facilities.slice(0, 4).map((f) => (
-                          <span
-                            key={f.facility_id}
-                            className="text-xs px-2 py-1 bg-[#FFF0E0] rounded"
-                            style={{ fontFamily: "Lato, sans-serif" }}
-                          >
-                            {f.facility?.name}
-                          </span>
-                        ))}
+                {hotelsToShow.map((hotel, index) => {
+                  const monthlyPrice = getCurrentMonthPrice(hotel);
+                  const priceDisplay = formatMonthlyPrice(monthlyPrice) ?? hotel.price ?? null;
+                  return (
+                    <RevealOnScroll key={hotel.id} delay={(index % 4) * 70} className="flex flex-col">
+                      <div className={`mb-4 ${index === 1 ? "lg:mt-[60px]" : index === 2 ? "lg:mt-[100px]" : ""}`}>
+                        <img
+                          src={getPrimaryImage(hotel.images) || "/hotel.png"}
+                          alt={hotel.name}
+                          className="w-full aspect-[4/3] object-cover rounded-lg"
+                        />
                       </div>
-                    )}
-                    <Link
-                      to={`/book-hotel/${hotel.id}`}
-                      className="text-[#5E17EB] hover:underline inline-block uppercase mt-6"
-                      style={{ fontFamily: "Lato", fontWeight: "500", fontStyle: "normal", fontSize: "14px", lineHeight: "100%", letterSpacing: "0.1em", textTransform: "uppercase" }}
-                    >
-                      VIEW RETREAT →
-                    </Link>
-                  </RevealOnScroll>
-                ))}
+                      <h3
+                        className="text-xl sm:text-2xl md:text-2xl text-[#181818] mb-3"
+                        style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
+                      >
+                        {hotel.name}
+                      </h3>
+                      {hotel.slogan_line && (
+                        <p className="text-sm text-[#5E17EB] mb-1" style={{ fontFamily: "Lato, sans-serif" }}>
+                          {hotel.slogan_line}
+                        </p>
+                      )}
+                      <p className="text-sm text-[#8C8C8C] mb-1" style={{ fontFamily: "Lato, sans-serif" }}>
+                        {hotel.location}
+                      </p>
+                      {priceDisplay && (
+                        <p className="text-sm font-medium text-[#181818] mb-2" style={{ fontFamily: "Lato, sans-serif" }}>
+                          {priceDisplay}
+                        </p>
+                      )}
+                      {hotel.facilities && hotel.facilities.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {hotel.facilities.slice(0, 4).map((f) => (
+                            <span
+                              key={f.facility_id}
+                              className="text-xs px-2 py-1 bg-[#FFF0E0] rounded"
+                              style={{ fontFamily: "Lato, sans-serif" }}
+                            >
+                              {f.facility?.name}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <Link
+                        to={`/book-hotel/${hotel.id}`}
+                        className="text-[#5E17EB] hover:underline inline-block uppercase mt-6"
+                        style={{ fontFamily: "Lato", fontWeight: "500", fontStyle: "normal", fontSize: "14px", lineHeight: "100%", letterSpacing: "0.1em", textTransform: "uppercase" }}
+                      >
+                        VIEW RETREAT →
+                      </Link>
+                    </RevealOnScroll>
+                  );
+                })}
               </div>
 
               {displayCount < hotels.length && (

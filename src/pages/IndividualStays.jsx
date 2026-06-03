@@ -5,6 +5,7 @@ import RevealOnScroll from "../components/RevealOnScroll";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import { fetchWellnessHotels } from "../lib/wellnessApi";
 import AdvancedFilters from "../components/AdvancedFilters";
+import PriceRangeSlider from "../components/PriceRangeSlider";
 
 const INITIAL_DISPLAY = 4;
 const DROPDOWN_MAX = 8;
@@ -18,6 +19,37 @@ function getPrimaryImage(images) {
     return (typeof first === "string" ? first : first?.url) || null;
   }
   return images?.url || null;
+}
+
+function getCurrentMonthPrice(hotel) {
+  if (!hotel.monthly_prices?.length) return null;
+  const now = new Date();
+  const probe = new Date(now.getFullYear(), now.getMonth(), 15);
+  const match = hotel.monthly_prices.find(
+    (mp) => new Date(mp.valid_from) <= probe && probe <= new Date(mp.valid_to)
+  );
+  if (match) return match;
+  return [...hotel.monthly_prices].sort((a, b) => Number(a.price) - Number(b.price))[0] ?? null;
+}
+
+function formatMonthlyPrice(mp) {
+  if (!mp) return null;
+  const price = Number(mp.price);
+  if (isNaN(price) || price <= 0) return null;
+  const currency = mp.currency ?? "USD";
+  return `From ${currency} ${price.toLocaleString()} / night`;
+}
+
+function computePriceBounds(hotels) {
+  const prices = hotels
+    .map(getCurrentMonthPrice)
+    .filter(Boolean)
+    .map((mp) => Number(mp.price))
+    .filter((n) => !isNaN(n) && n > 0);
+  if (!prices.length) return { min: 0, max: 800 };
+  prices.sort((a, b) => a - b);
+  const roundedMax = Math.ceil(prices[prices.length - 1] / 100) * 100;
+  return { min: prices[0], max: roundedMax };
 }
 
 export default function IndividualStays({ heroConfig = {} }) {
@@ -35,15 +67,14 @@ export default function IndividualStays({ heroConfig = {} }) {
   const [error, setError] = useState(null);
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY);
   const [searchInput, setSearchInput] = useState("");
-  const [travelMonth, setTravelMonth] = useState("");
-  const [startingPrice, setStartingPrice] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [priceBounds, setPriceBounds] = useState(null);
+  const [selectedPrice, setSelectedPrice] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeFilterParams, setActiveFilterParams] = useState({});
 
   const searchRef = useRef(null);
   const dropdownCloseTimer = useRef(null);
-
-  // ─── Fetch hotels from the new backend ──────────────────────────────────────
 
   const loadHotels = useCallback(async (extraParams = {}) => {
     try {
@@ -67,7 +98,15 @@ export default function IndividualStays({ heroConfig = {} }) {
     loadHotels();
   }, [loadHotels]);
 
-  // ─── Search bar handlers ─────────────────────────────────────────────────────
+  const boundsInitialized = useRef(false);
+  useEffect(() => {
+    if (hotels.length > 0 && !boundsInitialized.current) {
+      const bounds = computePriceBounds(hotels);
+      setPriceBounds(bounds);
+      setSelectedPrice([bounds.min, bounds.max]);
+      boundsInitialized.current = true;
+    }
+  }, [hotels]);
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -86,19 +125,37 @@ export default function IndividualStays({ heroConfig = {} }) {
     loadHotels({ ...activeFilterParams, location: hotel.name });
   };
 
+  // price is only applied on explicit Search click, not on other filter changes
+  const buildParams = ({ month = selectedMonth, price = null, filters = activeFilterParams, search = searchInput } = {}) => {
+    const params = { ...filters };
+    if (search.trim()) params.location = search.trim();
+    if (month) params.month = month;
+    if (price) {
+      params.min_price = price[0];
+      params.max_price = price[1];
+    }
+    return params;
+  };
+
   const handleSearchClick = () => {
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
-    const params = { ...activeFilterParams };
-    if (searchInput.trim()) params.location = searchInput.trim();
-    loadHotels(params);
+    loadHotels(buildParams({ price: selectedPrice }));
   };
 
   const handleSearchInputChange = (value) => {
     setSearchInput(value);
-    if (!value.trim()) {
-      loadHotels(activeFilterParams);
-    }
+    if (!value.trim()) loadHotels(buildParams({ search: "" }));
+  };
+
+  const handleMonthChange = (month) => {
+    setSelectedMonth(month);
+    setDisplayCount(INITIAL_DISPLAY);
+    loadHotels(buildParams({ month }));
+  };
+
+  const handlePriceChange = ([low, high]) => {
+    setSelectedPrice([low, high]);
   };
 
   const handleInputFocus = () => setShowDropdown(true);
@@ -109,17 +166,11 @@ export default function IndividualStays({ heroConfig = {} }) {
     if (dropdownCloseTimer.current) clearTimeout(dropdownCloseTimer.current);
   };
 
-  // ─── Advanced filters handler ────────────────────────────────────────────────
-
   const handleAdvancedFiltersApply = (filterParams) => {
     setActiveFilterParams(filterParams);
     setDisplayCount(INITIAL_DISPLAY);
-    const params = { ...filterParams };
-    if (searchInput.trim()) params.location = searchInput.trim();
-    loadHotels(params);
+    loadHotels(buildParams({ filters: filterParams }));
   };
-
-  // ─── Dropdown suggestions (client-side from current results) ────────────────
 
   const dropdownHotels = hotels
     .filter((h) => {
@@ -212,114 +263,137 @@ export default function IndividualStays({ heroConfig = {} }) {
       {/* Page Content */}
       <div className="max-w-7xl mx-auto px-4 py-16">
 
-        {/* Search Bar */}
-        <div className="w-full bg-[#FFF8F2] rounded-xl shadow-sm border border-[#FFF0E0] px-6 sm:px-10 py-6 sm:py-8 mb-6 flex flex-col md:flex-row items-stretch md:items-center gap-6 md:gap-8">
+        {/* Search Bar — single line */}
+        <div className="w-full bg-[#FFF8F2] rounded-xl shadow-sm border border-[#FFF0E0] px-6 sm:px-10 py-6 sm:py-8 mb-6 flex flex-col gap-4">
 
-          {/* Destination or Hotel */}
-          <div className="flex-1 flex flex-col relative" ref={searchRef}>
-            <label
-              htmlFor="hotel-search"
-              className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
-              style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
-            >
-              Destination or Hotel
-            </label>
-            <input
-              id="hotel-search"
-              type="text"
-              value={searchInput}
-              onChange={(e) => handleSearchInputChange(e.target.value)}
-              onFocus={handleInputFocus}
-              onBlur={handleInputBlur}
-              placeholder="Country, region, hotel"
-              className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] placeholder:text-[#8C8C8C]"
-              style={{ fontFamily: "Lato, sans-serif" }}
-            />
-            {showDropdown && (
-              <ul
-                className="absolute left-0 right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-[#FFF0E0] py-2 max-h-48 sm:max-h-60 overflow-y-auto z-50"
+          {/* One unified bar: destination | month | price | search */}
+          <div className="flex flex-col md:flex-row items-stretch md:items-end gap-4 md:gap-0 md:divide-x md:divide-[#E0D4C8]">
+
+            {/* Destination or Hotel */}
+            <div className="flex-[2] flex flex-col relative md:pr-6" ref={searchRef}>
+              <label
+                htmlFor="hotel-search"
+                className="text-xs tracking-[0.16em] text-[#181818] mb-1 uppercase"
                 style={{ fontFamily: "Lato, sans-serif" }}
-                onMouseDown={cancelBlur}
               >
-                {searchInput.trim() === "" ? (
-                  <li className="px-4 py-2 text-sm text-[#8C8C8C]">Type to search hotels</li>
-                ) : dropdownHotels.length === 0 ? (
-                  <li className="px-4 py-2 text-sm text-[#8C8C8C]">No hotels match</li>
-                ) : (
-                  dropdownHotels.map((hotel) => (
-                    <li key={hotel.id}>
-                      <button
-                        type="button"
-                        className="w-full text-left px-4 py-2.5 text-sm text-[#181818] hover:bg-[#FFF0E0] transition-colors"
-                        onClick={() => handleSelectHotel(hotel)}
-                      >
-                        <span className="font-medium">{hotel.name}</span>
-                        {hotel.location && (
-                          <span className="block text-[#8C8C8C] text-xs mt-0.5 truncate">{hotel.location}</span>
-                        )}
-                      </button>
-                    </li>
-                  ))
-                )}
-              </ul>
-            )}
+                Destination or Hotel
+              </label>
+              <input
+                id="hotel-search"
+                type="text"
+                value={searchInput}
+                onChange={(e) => handleSearchInputChange(e.target.value)}
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
+                onKeyDown={(e) => e.key === "Enter" && handleSearchClick()}
+                placeholder="Country, region, hotel"
+                className="w-full text-sm text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] placeholder:text-[#8C8C8C]"
+                style={{ fontFamily: "Lato, sans-serif" }}
+              />
+              {showDropdown && (
+                <ul
+                  className="absolute left-0 right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-[#FFF0E0] py-2 max-h-60 overflow-y-auto z-50"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                  onMouseDown={cancelBlur}
+                >
+                  {searchInput.trim() === "" ? (
+                    <li className="px-4 py-2 text-sm text-[#8C8C8C]">Type to search hotels</li>
+                  ) : dropdownHotels.length === 0 ? (
+                    <li className="px-4 py-2 text-sm text-[#8C8C8C]">No hotels match</li>
+                  ) : (
+                    dropdownHotels.map((hotel) => (
+                      <li key={hotel.id}>
+                        <button
+                          type="button"
+                          className="w-full text-left px-4 py-2.5 text-sm text-[#181818] hover:bg-[#FFF0E0] transition-colors"
+                          onClick={() => handleSelectHotel(hotel)}
+                        >
+                          <span className="font-medium">{hotel.name}</span>
+                          {hotel.location && (
+                            <span className="block text-[#8C8C8C] text-xs mt-0.5 truncate">{hotel.location}</span>
+                          )}
+                        </button>
+                      </li>
+                    ))
+                  )}
+                </ul>
+              )}
+            </div>
+
+            {/* Month */}
+            <div className="flex-1 flex flex-col md:px-6">
+              <label
+                htmlFor="travel-month"
+                className="text-xs tracking-[0.16em] text-[#181818] mb-1 uppercase"
+                style={{ fontFamily: "Lato, sans-serif" }}
+              >
+                Month
+              </label>
+              <select
+                id="travel-month"
+                value={selectedMonth}
+                onChange={(e) => handleMonthChange(e.target.value)}
+                className="w-full text-sm text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] appearance-none cursor-pointer"
+                style={{ fontFamily: "Lato, sans-serif" }}
+              >
+                <option value="">Any month</option>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+              </select>
+            </div>
+
+            {/* Price Range */}
+            <div className="flex-[2] flex flex-col md:px-6">
+              <label
+                className="text-xs tracking-[0.16em] text-[#181818] mb-1 uppercase"
+                style={{ fontFamily: "Lato, sans-serif" }}
+              >
+                Price Range
+              </label>
+              {priceBounds ? (
+                <PriceRangeSlider
+                  min={priceBounds.min}
+                  max={priceBounds.max}
+                  low={selectedPrice[0]}
+                  high={selectedPrice[1]}
+                  currency="USD"
+                  onChange={handlePriceChange}
+                />
+              ) : (
+                <div className="h-10 flex items-center">
+                  <span className="text-xs text-[#8C8C8C]" style={{ fontFamily: "Lato, sans-serif" }}>Loading…</span>
+                </div>
+              )}
+            </div>
+
+            {/* Search button */}
+            <div className="md:pl-6 flex items-end">
+              <button
+                type="button"
+                onClick={handleSearchClick}
+                className="text-[#5E17EB] text-xs tracking-[0.16em] uppercase hover:underline cursor-pointer whitespace-nowrap pb-1"
+                style={{ fontFamily: "Lato, sans-serif" }}
+              >
+                Search &rarr;
+              </button>
+            </div>
           </div>
 
-          <div className="hidden md:block w-px self-stretch bg-[#E0D4C8]" />
-
-          {/* Month */}
-          <div className="flex-1 flex flex-col">
-            <label
-              htmlFor="travel-month"
-              className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
-              style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
-            >
-              Month
-            </label>
-            <input
-              id="travel-month"
-              type="month"
-              value={travelMonth}
-              onChange={(e) => setTravelMonth(e.target.value)}
-              className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB]"
-              style={{ fontFamily: "Lato, sans-serif" }}
-            />
+          {/* Advanced Filters */}
+          <div className="border-t border-[#E0D4C8] pt-4">
+            <AdvancedFilters onApply={handleAdvancedFiltersApply} className="mb-0" />
           </div>
-
-          <div className="hidden md:block w-px self-stretch bg-[#E0D4C8]" />
-
-          {/* Starting Price */}
-          <div className="flex-1 flex flex-col">
-            <label
-              htmlFor="starting-price"
-              className="text-xs sm:text-sm tracking-[0.16em] text-[#181818] mb-1"
-              style={{ fontFamily: "Lato, sans-serif", textTransform: "uppercase" }}
-            >
-              Starting Price
-            </label>
-            <input
-              id="starting-price"
-              type="text"
-              value={startingPrice}
-              onChange={(e) => setStartingPrice(e.target.value)}
-              placeholder="e.g. EUR 3000"
-              className="w-full text-sm sm:text-base text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] placeholder:text-[#8C8C8C]"
-              style={{ fontFamily: "Lato, sans-serif" }}
-            />
-          </div>
-
-          <button
-            type="button"
-            onClick={handleSearchClick}
-            className="md:ml-auto text-[#5E17EB] text-xs sm:text-sm tracking-[0.16em] uppercase hover:underline cursor-pointer"
-            style={{ fontFamily: "Lato, sans-serif" }}
-          >
-            Search &rarr;
-          </button>
         </div>
-
-        {/* Advanced Filters */}
-        <AdvancedFilters onApply={handleAdvancedFiltersApply} />
 
         {/* Hotels Grid */}
         <div className="relative mb-24 sm:mb-24">
@@ -337,43 +411,50 @@ export default function IndividualStays({ heroConfig = {} }) {
           {!loading && !error && hotels.length > 0 && (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 items-start">
-                {hotelsToShow.map((hotel, index) => (
-                  <RevealOnScroll key={hotel.id} delay={(index % 4) * 70} className="flex flex-col">
-                    <div className={`mb-4 ${index === 1 ? "lg:mt-[60px]" : index === 2 ? "lg:mt-[100px]" : ""}`}>
-                      <img
-                        src={getPrimaryImage(hotel.images) || "/hotel.png"}
-                        alt={hotel.name}
-                        className="w-full aspect-[4/3] object-cover rounded-lg"
-                      />
-                    </div>
-                    <h3
-                      className="text-xl sm:text-2xl md:text-2xl text-[#181818] mb-3"
-                      style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
-                    >
-                      {hotel.name}
-                    </h3>
-                    {hotel.slogan_line && (
-                      <p className="text-sm text-[#5E17EB] mb-1" style={{ fontFamily: "Lato, sans-serif" }}>{hotel.slogan_line}</p>
-                    )}
-                    <p className="text-sm text-[#8C8C8C] mb-2" style={{ fontFamily: "Lato, sans-serif" }}>{hotel.location}</p>
-                    {hotel.facilities && hotel.facilities.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {hotel.facilities.slice(0, 4).map((f) => (
-                          <span key={f.facility_id} className="text-xs px-2 py-1 bg-[#FFF0E0] rounded" style={{ fontFamily: "Lato, sans-serif" }}>
-                            {f.facility?.name}
-                          </span>
-                        ))}
+                {hotelsToShow.map((hotel, index) => {
+                  const monthlyPrice = getCurrentMonthPrice(hotel);
+                  const priceDisplay = formatMonthlyPrice(monthlyPrice) ?? hotel.price ?? null;
+                  return (
+                    <RevealOnScroll key={hotel.id} delay={(index % 4) * 70} className="flex flex-col">
+                      <div className={`mb-4 ${index === 1 ? "lg:mt-[60px]" : index === 2 ? "lg:mt-[100px]" : ""}`}>
+                        <img
+                          src={getPrimaryImage(hotel.images) || "/hotel.png"}
+                          alt={hotel.name}
+                          className="w-full aspect-[4/3] object-cover rounded-lg"
+                        />
                       </div>
-                    )}
-                    <Link
-                      to={`/book-hotel/${hotel.id}`}
-                      className="text-[#5E17EB] hover:underline inline-block uppercase mt-6"
-                      style={{ fontFamily: "Lato", fontWeight: "500", fontStyle: "normal", fontSize: "14px", lineHeight: "100%", letterSpacing: "0.1em", textTransform: "uppercase" }}
-                    >
-                      VIEW RETREAT →
-                    </Link>
-                  </RevealOnScroll>
-                ))}
+                      <h3
+                        className="text-xl sm:text-2xl md:text-2xl text-[#181818] mb-3"
+                        style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
+                      >
+                        {hotel.name}
+                      </h3>
+                      {hotel.slogan_line && (
+                        <p className="text-sm text-[#5E17EB] mb-1" style={{ fontFamily: "Lato, sans-serif" }}>{hotel.slogan_line}</p>
+                      )}
+                      <p className="text-sm text-[#8C8C8C] mb-1" style={{ fontFamily: "Lato, sans-serif" }}>{hotel.location}</p>
+                      {priceDisplay && (
+                        <p className="text-sm font-medium text-[#181818] mb-2" style={{ fontFamily: "Lato, sans-serif" }}>{priceDisplay}</p>
+                      )}
+                      {hotel.facilities && hotel.facilities.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {hotel.facilities.slice(0, 4).map((f) => (
+                            <span key={f.facility_id} className="text-xs px-2 py-1 bg-[#FFF0E0] rounded" style={{ fontFamily: "Lato, sans-serif" }}>
+                              {f.facility?.name}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <Link
+                        to={`/book-hotel/${hotel.id}`}
+                        className="text-[#5E17EB] hover:underline inline-block uppercase mt-6"
+                        style={{ fontFamily: "Lato", fontWeight: "500", fontStyle: "normal", fontSize: "14px", lineHeight: "100%", letterSpacing: "0.1em", textTransform: "uppercase" }}
+                      >
+                        VIEW RETREAT →
+                      </Link>
+                    </RevealOnScroll>
+                  );
+                })}
               </div>
               {displayCount < hotels.length && (
                 <div className="text-center mt-24">

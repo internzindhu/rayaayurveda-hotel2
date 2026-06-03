@@ -375,22 +375,16 @@ Sri Lanka and beyond. </p>
         {/* ── Before Your Stay ── */}
         <div id="before" className="border-b border-[#181818]/15">
           <button
-            className="w-full flex items-center justify-between py-7 text-left cursor-pointer"
+            className="w-full relative flex items-center py-7 cursor-pointer"
             onClick={() => toggleSection("before")}
           >
-            <div className="flex items-center gap-5">
-              {/* <span className="text-[#5E17EB] text-[11px] uppercase tracking-[0.3em]" style={{ fontFamily: "Lato, sans-serif" }}>01</span> */}
-              <span className="text-[#5E17EB] mb-4 uppercase px-4 sm:px-8 lg:px-12" style={{
-                fontFamily: "Lato, sans-serif",
-                fontWeight: 500,
-                fontSize: "16px",
-                lineHeight: "100%",
-                letterSpacing: "0.1em",
-                textAlign: "center",
-                textTransform: "uppercase",
-              }}>Before Your Stay</span>
-            </div>
-            <span className="flex-shrink-0 text-[#5E17EB]">
+            <span className="absolute left-1/2 -translate-x-1/2 text-[#5E17EB] uppercase" style={{
+              fontFamily: "Lato, sans-serif",
+              fontWeight: 500,
+              fontSize: "12px",
+              letterSpacing: "0.1em",
+            }}>Before Your Stay</span>
+            <span className="ml-auto flex-shrink-0 text-[#5E17EB]">
               {openSection === "before" ? (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
@@ -460,22 +454,16 @@ Sri Lanka and beyond. </p>
         {/* ── During Your Stay ── */}
         <div id="during" className="border-b border-[#181818]/15">
           <button
-            className="w-full flex items-center justify-between py-7 text-left cursor-pointer"
+            className="w-full relative flex items-center py-7 cursor-pointer"
             onClick={() => toggleSection("during")}
           >
-            <div className="flex items-center gap-5">
-              {/* <span className="text-[#5E17EB] text-[11px] uppercase tracking-[0.3em]" style={{ fontFamily: "Lato, sans-serif" }}>02</span> */}
-              <span className="text-[#5E17EB] mb-4 uppercase px-4 sm:px-8 lg:px-12" style={{
-                fontFamily: "Lato, sans-serif",
-                fontWeight: 500,
-                fontSize: "16px",
-                lineHeight: "100%",
-                letterSpacing: "0.1em",
-                textAlign: "center",
-                textTransform: "uppercase",
-              }}>During Your Stay</span>
-            </div>
-            <span className="flex-shrink-0 text-[#5E17EB]">
+            <span className="absolute left-1/2 -translate-x-1/2 text-[#5E17EB] uppercase" style={{
+              fontFamily: "Lato, sans-serif",
+              fontWeight: 500,
+              fontSize: "12px",
+              letterSpacing: "0.1em",
+            }}>During Your Stay</span>
+            <span className="ml-auto flex-shrink-0 text-[#5E17EB]">
               {openSection === "during" ? (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
@@ -532,22 +520,16 @@ Sri Lanka and beyond. </p>
         {/* ── After Your Stay ── */}
         <div id="after" className="border-b border-[#181818]/15">
           <button
-            className="w-full flex items-center justify-between py-7 text-left cursor-pointer"
+            className="w-full relative flex items-center py-7 cursor-pointer"
             onClick={() => toggleSection("after")}
           >
-            <div className="flex items-center gap-5">
-              {/* <span className="text-[#5E17EB] text-[11px] uppercase tracking-[0.3em]" style={{ fontFamily: "Lato, sans-serif" }}>03</span> */}
-              <span className="text-[#5E17EB] mb-4 uppercase px-4 sm:px-8 lg:px-12" style={{
-                fontFamily: "Lato, sans-serif",
-                fontWeight: 500,
-                fontSize: "16px",
-                lineHeight: "100%",
-                letterSpacing: "0.1em",
-                textAlign: "center",
-                textTransform: "uppercase",
-              }}>After Your Stay</span>
-            </div>
-            <span className="flex-shrink-0 text-[#5E17EB]">
+            <span className="absolute left-1/2 -translate-x-1/2 text-[#5E17EB] uppercase" style={{
+              fontFamily: "Lato, sans-serif",
+              fontWeight: 500,
+              fontSize: "12px",
+              letterSpacing: "0.1em",
+            }}>After Your Stay</span>
+            <span className="ml-auto flex-shrink-0 text-[#5E17EB]">
               {openSection === "after" ? (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
