@@ -72,7 +72,7 @@ export default function FAQ() {
         <div className="mt-12 p-8 bg-[#EAE9E3] rounded-2xl text-center">
           <h3 className="text-2xl font-bold text-[#181818] mb-4">Still have questions?</h3>
           <p className="text-gray-700 mb-6">Our wellness experts are here to help!</p>
-          <a href="/contact" className="inline-block bg-[#5E17EB] hover:bg-[#4B12BD] text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+          <a href="/consultation" className="inline-block bg-[#5E17EB] hover:bg-[#4B12BD] text-white px-8 py-3 rounded-lg font-semibold transition-colors">
             Contact Us
           </a>
         </div>

@@ -123,7 +123,7 @@ export default function Navbar() {
 
   const isAboutActive = isActive("/about");
   const isGuideActive = location.pathname.startsWith("/ayurveda-guide");
-  const isServicesActive = isActive("/vouchers") || isActive("/contact");
+  const isServicesActive = isActive("/vouchers") || isActive("/consultation");
   const isBlogActive = isActive("/blogs") || isActive("/faq") || isActive("/guest-testimonies") || isActive("/newsletter");
   const isRetreatsActive =
     isActive("/retreats") ||

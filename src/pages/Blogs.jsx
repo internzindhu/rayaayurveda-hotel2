@@ -1,111 +1,15 @@
 import { useRef, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { blogs } from "../data/blogData";
 
 /* ─── data ─────────────────────────────────────────────────── */
 
-const heroPost = {
-  title: "A Day in an Ayurvedic Resort: What to Expect on Your Journey",
-  image:
-    "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=1600&q=80",
-};
+const heroPost = blogs[0];
 
-const featuredPosts = [
-  {
-    title: "The Ancient Wisdom of Ayurveda Help for the Modern World",
-    image:
-      "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=400&q=80",
-  },
-  {
-    title: "Top 7 Ayurvedic Treatments That Transform Your Health",
-    image:
-      "https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?auto=format&fit=crop&w=400&q=80",
-  },
-  {
-    title: "Ayurveda & Stress: Natural Ways to Find Inner Calm",
-    image:
-      "https://images.unsplash.com/photo-1531353826977-0941b4779a1c?auto=format&fit=crop&w=400&q=80",
-  },
-  {
-    title: "The Power of Ayurvedic Diet: Eating for Balance and Energy",
-    image:
-      "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=400&q=80",
-  },
-];
+const featuredPosts = blogs.map((b) => ({ title: b.title, image: b.image, slug: b.slug }));
 
-const gridPosts = [
-  {
-    title: "Shirodhara: Oil for the Mind & Soul",
-    excerpt:
-      "In today's fast-paced world, stress has become an unwelcome constant. Shirodhara, an ancient Ayurvedic technique, offers a profound path to deep relaxation.",
-    category: "Treatments",
-    image:
-      "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&w=600&q=80",
-    author: { name: "Anjali Pereira", avatar: "https://i.pravatar.cc/40?img=47", readTime: "3 min read" },
-  },
-  {
-    title: "Why Visit an Ayurvedic Retreat in Sri Lanka?",
-    excerpt:
-      "In today's fast-paced world, stress has become an unwelcome constant. Discover why Sri Lanka is the ideal destination for healing and total relaxation.",
-    category: "Retreats",
-    image:
-      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
-    author: { name: "Maya Sumayadis", avatar: "https://i.pravatar.cc/40?img=32", readTime: "11 min read" },
-  },
-  {
-    title: "Meet Our Ayurveda Experts",
-    excerpt:
-      "Get to know our practitioners and wellness educators who bring generations of knowledge and compassionate care to every guest.",
-    category: "Our Team",
-    image:
-      "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=600&q=80",
-    author: { name: "Anju Mishra", avatar: "https://i.pravatar.cc/40?img=28", readTime: "5 min read" },
-  },
-  {
-    title: "The 3 Doshas Explained: Vata, Pitta, Kapha",
-    excerpt:
-      "Understand your body's subtle energy constitution and see how small shifts in routine and nourishment can create lasting change.",
-    category: "Ayurveda Basics",
-    image:
-      "https://images.unsplash.com/photo-1593811167562-9cef47bfc4d7?auto=format&fit=crop&w=600&q=80",
-    author: { name: "Dr. Samara Jayawardena", avatar: "https://i.pravatar.cc/40?img=45", readTime: "8 min read" },
-  },
-  {
-    title: "Herbal Remedies for Everyday Wellness",
-    excerpt:
-      "A recipe for clarity, presence, and the art of living well. Herbs like ashwagandha and triphala can transform your daily routine.",
-    category: "Herbs & Remedies",
-    image:
-      "https://images.unsplash.com/photo-1550572017-edd951aa8f72?auto=format&fit=crop&w=600&q=80",
-    author: { name: "Nadia Abeyratne", avatar: "https://i.pravatar.cc/40?img=55", readTime: "10 min read" },
-  },
-  {
-    title: "The Science of Ayurvedic Massage",
-    excerpt:
-      "Experience how a well-crafted Ayurvedic massage can release tension, balance the nervous system, and heal the body from within.",
-    category: "Treatments",
-    image:
-      "https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?auto=format&fit=crop&w=600&q=80",
-    author: { name: "Zayan Mishra", avatar: "https://i.pravatar.cc/40?img=12", readTime: "5 min read" },
-  },
-  {
-    title: "Stress & Burnout Recovery",
-    excerpt:
-      "A topic often discussed but rarely addressed with depth. Ayurveda offers a complete framework for sustainable recovery from modern burnout.",
-    category: "Lifestyle",
-    image:
-      "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=600&q=80",
-    author: { name: "Anju Mishra", avatar: "https://i.pravatar.cc/40?img=28", readTime: "6 min read" },
-  },
-  {
-    title: "Digestive & Gut Health Programme",
-    excerpt:
-      "At Raya, we believe digestion is the cornerstone of all health. Discover our signature programme to restore your digestive fire.",
-    category: "Nutrition",
-    image:
-      "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=600&q=80",
-    author: { name: "Royan Mishra", avatar: "https://i.pravatar.cc/40?img=8", readTime: "5 min read" },
-  },
-];
+const gridPosts = blogs;
 
 /* ─── sub-components ────────────────────────────────────────── */
 
@@ -136,13 +40,13 @@ function BlogCard({ post, index }) {
         }`}
         style={{ transitionDelay: `${(index % 4) * 70}ms` }}
       >
-        <div className="mb-4">
+        <Link to={`/blogs/${post.slug}`} className="mb-4 block overflow-hidden rounded-lg">
           <img
             src={post.image}
             alt={post.title}
-            className="w-full aspect-[4/3] object-cover rounded-lg hover:scale-105 transition-transform duration-500"
+            className="w-full aspect-[4/3] object-cover hover:scale-105 transition-transform duration-500"
           />
-        </div>
+        </Link>
         <h3
           className="text-xl sm:text-2xl text-[#181818] mb-3"
           style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
@@ -151,12 +55,12 @@ function BlogCard({ post, index }) {
         </h3>
         <p
           className="text-sm text-[#181818] mb-4 leading-relaxed flex-1"
-          style={{ fontFamily: "Poppins, sans-serif" }}
+          style={{ fontFamily: "Lato, sans-serif" }}
         >
           {post.excerpt}
         </p>
-        <button
-          type="button"
+        <Link
+          to={`/blogs/${post.slug}`}
           className="text-[#5E17EB] hover:underline inline-block uppercase text-left"
           style={{
             fontFamily: "Lato, sans-serif",
@@ -166,7 +70,7 @@ function BlogCard({ post, index }) {
           }}
         >
           VIEW POST →
-        </button>
+        </Link>
       </article>
     </div>
   );
@@ -256,13 +160,13 @@ export default function Blogs() {
             >
               A journey through ancient healing rituals, mindful nourishment, and the restorative power of Ayurveda in one of the world's most serene settings.
             </p> */}
-            <button
-              type="button"
+            <Link
+              to={`/blogs/${heroPost.slug}`}
               className="text-[11px] text-[#5E17EB] tracking-[0.16em] uppercase hover:underline"
               style={{ fontFamily: "Lato, sans-serif" }}
             >
-              View retreat →
-            </button>
+              Read article →
+            </Link>
           </div>
         </div>
       </section>
@@ -312,7 +216,7 @@ export default function Blogs() {
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {featuredPosts.map((fp, i) => (
-              <button key={i} type="button" className="text-left group">
+              <Link key={i} to={`/blogs/${fp.slug}`} className="text-left group">
                 <div className="overflow-hidden rounded-sm mb-3">
                   <img
                     src={fp.image}
@@ -326,7 +230,7 @@ export default function Blogs() {
                 >
                   {fp.title}
                 </p>
-              </button>
+              </Link>
             ))}
           </div>
         </div>
@@ -359,20 +263,10 @@ export default function Blogs() {
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-12">
             {gridPosts.map((post, i) => (
-              <BlogCard key={post.title} post={post} index={i} />
+              <BlogCard key={post.title} post={post} index={i % 4} />
             ))}
           </div>
 
-          {/* CTA */}
-          <div className="mt-16 text-center">
-            <button
-              type="button"
-              className="text-sm text-[#5E17EB] tracking-[0.18em] uppercase hover:underline"
-              style={{ fontFamily: "Lato, sans-serif" }}
-            >
-              Discover all posts →
-            </button>
-          </div>
         </div>
       </section>
     </div>

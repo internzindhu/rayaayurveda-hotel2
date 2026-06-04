@@ -17,7 +17,7 @@ export default function ConsultationPopup({ isOpen, onClose }) {
 
   return (
     <div
-      className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-50 max-w-sm w-[calc(100%-32px)] sm:w-[320px] md:w-[380px] transition-all duration-500 ease-out"
+      className="fixed bottom-16 right-4 md:bottom-10 md:right-8 z-50 max-w-sm w-[calc(100%-32px)] sm:w-[320px] md:w-[380px] transition-all duration-500 ease-out"
       style={{
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.95)',

@@ -59,7 +59,7 @@ export default function Login() {
           <div className="mt-6 text-center">
             <p className="text-gray-600">
               Don't have an account?{' '}
-              <Link to="/contact" className="text-[#5E17EB] hover:text-[#4B12BD] font-semibold">
+              <Link to="/consultation" className="text-[#5E17EB] hover:text-[#4B12BD] font-semibold">
                 Contact us
               </Link>
             </p>

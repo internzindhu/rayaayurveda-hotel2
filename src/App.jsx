@@ -20,13 +20,13 @@ import GroupStaysIndia from './pages/GroupStaysIndia'
 import GroupStaysThailand from './pages/GroupStaysThailand'
 import Treatments from './pages/Treatments'
 import Blogs from './pages/Blogs'
+import BlogPost from './pages/BlogPost'
 import GuestTestimonials from './pages/GuestTestimonials'
 import Newsletter from './pages/Newsletter'
 import Shop from './pages/Shop'
 import Vouchers from './pages/Vouchers'
 import Policy from './pages/Policy'
 import Destinations from './pages/Destinations'
-import Login from './pages/Login'
 import AyurvedaGuide from './pages/AyurvedaGuide'
 import WhatIsAyurveda from './pages/WhatIsAyurveda'
 import AyurvedaDoshas from './pages/AyurvedaDoshas'
@@ -82,13 +82,13 @@ function App() {
         <Route path="/group-stays/thailand" element={<GroupStaysThailand />} />
         <Route path="/treatments" element={<Treatments />} />
         <Route path="/blogs" element={<Blogs />} />
+        <Route path="/blogs/:slug" element={<BlogPost />} />
         <Route path="/guest-testimonies" element={<GuestTestimonials />} />
         <Route path="/newsletter" element={<Newsletter />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/vouchers" element={<Vouchers />} />
         <Route path="/policy" element={<Policy />} />
         <Route path="/destinations" element={<Destinations />} />
-        <Route path="/login" element={<Login />} />
       </Routes>
       <Footer />
     </div>
