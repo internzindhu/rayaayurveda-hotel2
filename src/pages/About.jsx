@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import SEO from "../components/SEO";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 
 const WHY_ITEMS = [
@@ -125,6 +126,11 @@ export default function About() {
 
   return (
     <div className="landing-theme min-h-screen bg-[#FFFBF7] overflow-x-hidden">
+      <SEO
+        title="About Raya LongLife"
+        description="Learn about Raya LongLife — a curated Ayurveda and wellness retreat discovery platform connecting travelers with authentic healing experiences in Sri Lanka, India, and Thailand."
+        url="/about"
+      />
 
       {/* ── Hero ── */}
       <div className="relative min-h-[80svh] lg:h-[60vh] overflow-hidden">

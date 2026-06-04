@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import SEO from "../components/SEO";
 import { fetchHotelById, fetchRelatedHotels, submitInquiry } from "../lib/wellnessApi";
 
 /* ─── Helpers ──────────────────────────────────────────────────────────────── */
@@ -390,6 +391,15 @@ export default function HotelDetails() {
 
         return (
           <div className="bg-[#F5F1EC] pt-28 pb-0 px-4 sm:px-8">
+            <SEO
+              title={hotel.name}
+              description={
+                hotel.description
+                  ? hotel.description.slice(0, 155)
+                  : `Book an authentic Ayurveda and wellness retreat at ${hotel.name}. Discover healing programmes, treatments, and packages with Raya LongLife.`
+              }
+              url={`/book-hotel/${id}`}
+            />
             {/* Back link */}
             <button
               type="button"

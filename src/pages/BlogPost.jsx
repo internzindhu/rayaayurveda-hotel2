@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { getBlogBySlug, blogs } from "../data/blogData";
 import Navbar from "../components/Navbar";
+import SEO from "../components/SEO";
 
 function renderSection(section, i) {
   switch (section.type) {
@@ -77,6 +78,13 @@ export default function BlogPost() {
 
   return (
     <div className="min-h-screen bg-[#FFFBF7]">
+      <SEO
+        title={post.title}
+        description={post.excerpt ? post.excerpt.slice(0, 155) : undefined}
+        image={post.image}
+        url={`/blogs/${slug}`}
+        type="article"
+      />
       <Navbar />
 
       {/* Hero image */}

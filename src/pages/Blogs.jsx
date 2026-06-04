@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import SEO from "../components/SEO";
 import { blogs } from "../data/blogData";
 
 /* ─── data ─────────────────────────────────────────────────── */
@@ -103,6 +104,11 @@ export default function Blogs() {
 
   return (
     <div className="min-h-screen bg-[#FFFBF7]">
+      <SEO
+        title="Ayurveda & Wellness Blog"
+        description="Explore articles about Ayurveda, healing traditions, wellness retreats, and mindful travel across Sri Lanka, India, and Thailand on the Raya LongLife blog."
+        url="/blogs"
+      />
       <Navbar />
 
       {/* ── Hero ── */}

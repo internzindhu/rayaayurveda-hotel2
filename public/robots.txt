@@ -3,19 +3,16 @@
 User-agent: *
 Allow: /
 
-# Block any private or utility routes
 Disallow: /admin
 Disallow: /dashboard
 Disallow: /api/
 Disallow: /checkout
-Disallow: /*?* 
+Disallow: /*?*
 
-# Allow major crawlers explicitly
 User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
 Allow: /
 
-# Sitemap location
 Sitemap: https://www.rayalonglife.com/sitemap.xml

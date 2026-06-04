@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import SEO from "../components/SEO";
 
 export default function Questionnaire() {
   const [answers, setAnswers] = useState({});
@@ -190,6 +191,11 @@ export default function Questionnaire() {
 
   return (
     <div className="min-h-screen bg-cover bg-center relative" style={{ backgroundImage: 'url(/bg4.jpg)' }}>
+      <SEO
+        title="Dosha Quiz — Discover Your Ayurvedic Body Type"
+        description="Take our free Ayurveda dosha questionnaire to discover your unique Vata, Pitta, or Kapha constitution and find the ideal wellness retreat tailored to your needs."
+        url="/questionnaire"
+      />
       {/* <div className="absolute inset-0 bg-black/50"></div> */}
       <div className="relative z-10">
         <Navbar />

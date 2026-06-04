@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
+import SEO from "../components/SEO";
 import Navbar from "../components/Navbar";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import ScrollReveal from "@/components/lightswind/scroll-reveal";
@@ -220,6 +221,11 @@ export default function Home() {
 
   return (
     <div className="landing-theme overflow-x-hidden pb-[56px] md:pb-0">
+      <SEO
+        title="Ayurvedic Healing Retreats in Sri Lanka, India & Thailand"
+        description="Discover authentic Ayurveda retreats and wellness experiences in Sri Lanka, India, and Thailand. Book curated Ayurvedic healing journeys with Raya LongLife."
+        url="/"
+      />
       {/* Absolute Fullscreen Background Video - Only for Hero Section */}
       <div className="absolute top-0 left-0 right-0 w-full min-h-[100svh] lg:h-screen overflow-hidden">
         <video

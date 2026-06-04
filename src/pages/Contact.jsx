@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
+import SEO from "../components/SEO";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -18,6 +19,11 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-white">
+      <SEO
+        title="Contact Us — Plan Your Wellness Retreat"
+        description="Get in touch with the Raya LongLife team. We're here to help you plan your perfect Ayurveda and wellness retreat in Sri Lanka, India, or Thailand."
+        url="/contact"
+      />
       <Navbar />
 
       {/* Main content - white background */}

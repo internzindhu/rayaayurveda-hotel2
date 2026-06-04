@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import SEO from "../components/SEO";
 import RevealOnScroll from "../components/RevealOnScroll";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import { fetchWellnessHotels } from "../lib/wellnessApi";
@@ -187,6 +188,11 @@ export default function IndividualStays({ heroConfig = {} }) {
 
   return (
     <div className="landing-theme min-h-screen bg-[#FFFBF7] overflow-x-hidden">
+      <SEO
+        title="Individual Ayurveda & Wellness Stays"
+        description="Browse curated individual Ayurveda retreats and wellness stays in Sri Lanka, India, and Thailand. Find your ideal healing escape with Raya LongLife."
+        url="/individual-stays"
+      />
       {/* Hero Section */}
       <div className="relative min-h-[80svh] lg:h-[60vh] overflow-hidden">
         <div
