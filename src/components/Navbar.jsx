@@ -175,7 +175,7 @@ export default function Navbar() {
   return (
     <nav className={`w-full bg-[#5E17EB] fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ease-in-out ${isVisible ? "translate-y-0" : "-translate-y-full"} ${!isAtTop ? "backdrop-blur-sm" : ""}`}>
       <div className="relative">
-        <div className="relative z-10 h-16 sm:h-20 md:h-[93px] px-4 sm:px-6 pt-8 flex items-center">
+        <div className="relative z-10 h-20 sm:h-24 md:h-[109px] px-4 sm:px-6 pt-8 pb-4 flex items-center">
 
           {/* Desktop Navigation */}
           <div
