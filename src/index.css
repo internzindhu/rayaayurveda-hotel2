@@ -264,3 +264,23 @@ body {
   }
 }
 
+/* Success popup animations */
+@keyframes raya-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes raya-pop-in {
+  0%   { opacity: 0; transform: scale(0.85) translateY(20px); }
+  60%  { opacity: 1; transform: scale(1.03) translateY(-4px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.animate-fade-in {
+  animation: raya-fade-in 0.25s ease-out both;
+}
+
+.animate-pop-in {
+  animation: raya-pop-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+

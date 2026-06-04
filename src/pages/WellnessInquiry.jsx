@@ -234,32 +234,97 @@ export default function WellnessInquiry() {
 
       {showSuccessPopup && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in"
           onClick={() => setShowSuccessPopup(false)}
           role="dialog"
           aria-modal="true"
           aria-labelledby="success-popup-title"
         >
           <div
-            className="bg-[#F4F4F4] rounded-2xl shadow-xl max-w-lg w-full p-8 sm:p-10 text-center"
+            className="relative bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden animate-pop-in"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 id="success-popup-title" className="mb-6" style={{ fontFamily: "Sentient, serif" }}>
-              <span className="block text-2xl sm:text-3xl font-semibold text-[#181818]">Thank you</span>
-              <span className="block text-xl sm:text-2xl font-normal mt-1" style={{ fontStyle: "italic", color: "#5E17EB" }}>for your inquiry!</span>
-            </h2>
-            <div className="space-y-4 mb-8 text-sm text-[#181818] leading-relaxed" style={{ fontFamily: "Lato, sans-serif" }}>
-              <p>Congratulations, you&apos;ve taken the first step toward your Ayurvedic wellness journey. Our team is already preparing a personalized retreat offer based on your wishes.</p>
-              <p>You will usually receive your customized offer within 2 to 6 hours.</p>
-            </div>
+            {/* Decorative top gradient bar */}
+            <div className="h-2 bg-gradient-to-r from-[#5E17EB] via-[#E91E63] to-[#FFB300]" />
+
+            {/* Decorative floating dots */}
+            <span className="absolute top-8 left-8 w-3 h-3 rounded-full bg-[#FFB300] opacity-70" />
+            <span className="absolute top-16 right-10 w-2 h-2 rounded-full bg-[#E91E63] opacity-70" />
+            <span className="absolute top-24 left-16 w-2.5 h-2.5 rounded-full bg-[#5E17EB] opacity-70" />
+            <span className="absolute bottom-24 right-6 w-2 h-2 rounded-full bg-[#FFB300] opacity-60" />
+            <span className="absolute bottom-12 left-10 w-3 h-3 rounded-full bg-[#5E17EB] opacity-50" />
+            <span className="absolute bottom-32 right-16 w-2 h-2 rounded-full bg-[#E91E63] opacity-60" />
+
+            {/* Close X */}
             <button
               type="button"
-              onClick={() => { setShowSuccessPopup(false); navigate("/individual-stays"); }}
-              className="text-[#5E17EB] font-medium tracking-wide uppercase text-sm hover:underline inline-flex items-center gap-1"
-              style={{ fontFamily: "Lato, sans-serif" }}
+              onClick={() => setShowSuccessPopup(false)}
+              className="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/80 hover:bg-[#F4F4F4] text-[#181818] flex items-center justify-center transition-colors shadow-sm z-10"
+              aria-label="Close"
             >
-              CONTINUE →
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M6 6l12 12M6 18L18 6" strokeLinecap="round" />
+              </svg>
             </button>
+
+            <div className="px-8 sm:px-10 pt-10 pb-8 text-center relative">
+              {/* Logo */}
+              <img
+                src="/Raya_logo_new.png"
+                alt="RAYA Longlife"
+                className="h-12 sm:h-14 w-auto mx-auto mb-6"
+              />
+
+              {/* Animated check icon */}
+              <div className="relative mx-auto mb-6 w-20 h-20 rounded-full bg-gradient-to-br from-[#5E17EB] via-[#7B3FF2] to-[#E91E63] flex items-center justify-center shadow-lg">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#5E17EB] via-[#7B3FF2] to-[#E91E63] animate-ping opacity-25" />
+                <svg className="relative w-10 h-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                  <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+
+              <h2 id="success-popup-title" className="mb-4" style={{ fontFamily: "Sentient, serif" }}>
+                <span className="block text-3xl sm:text-4xl font-semibold bg-gradient-to-r from-[#5E17EB] via-[#9333EA] to-[#E91E63] bg-clip-text text-transparent">
+                  Thank you{fullName ? `, ${fullName.split(" ")[0]}` : ""}!
+                </span>
+                <span className="block text-lg sm:text-xl font-normal mt-2 text-[#181818]" style={{ fontStyle: "italic" }}>
+                  for your inquiry
+                </span>
+              </h2>
+
+              <div
+                className="space-y-3 mb-7 text-sm sm:text-base text-[#3a3a3a] leading-relaxed"
+                style={{ fontFamily: "Lato, sans-serif" }}
+              >
+                <p>
+                  Congratulations, you&apos;ve taken the first step toward your Ayurvedic wellness journey.
+                  Our team is already preparing a{" "}
+                  <span className="font-semibold text-[#5E17EB]">personalized retreat offer</span> based on your wishes.
+                </p>
+                <p className="text-[#666] text-sm">
+                  You will usually receive your customized offer within <strong className="text-[#181818]">2 to 6 hours</strong>.
+                  {email && (
+                    <>
+                      <br />
+                      A confirmation has been sent to{" "}
+                      <span className="font-semibold text-[#181818]">{email}</span>.
+                    </>
+                  )}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => { setShowSuccessPopup(false); navigate("/individual-stays"); }}
+                className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full bg-gradient-to-r from-[#5E17EB] to-[#E91E63] text-white text-sm font-semibold uppercase tracking-wider shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
+                style={{ fontFamily: "Lato, sans-serif" }}
+              >
+                CONTINUE
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       )}

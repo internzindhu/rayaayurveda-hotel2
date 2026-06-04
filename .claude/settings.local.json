@@ -12,7 +12,10 @@
       "Bash(Get-ChildItem -Path \"C:\\\\raya2\\\\rayaayurveda-hotel2\" -Force)",
       "Bash(Select-Object Name, PSIsContainer)",
       "Bash(npx tsc *)",
-      "Bash(npx vite *)"
+      "Bash(npx vite *)",
+      "Bash(curl -s -o nul -w \"Status: %{http_code}\\\\nTime: %{time_total}s\\\\n\" https://rayalonglifeweb-backend-production.up.railway.app/health)",
+      "Bash(xargs git show HEAD:)",
+      "Bash(awk '{print $5, $9}')"
     ],
     "additionalDirectories": [
       "c:\\raya2\\rayaayurveda-hotel2"
