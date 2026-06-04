@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
+import { submitConsultation } from "../lib/wellnessApi";
 
 export default function Consultation() {
   const [formData, setFormData] = useState({
@@ -16,24 +17,48 @@ export default function Consultation() {
     scheduleDateTime: "",
     comment: ""
   });
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Form submitted! (This is a demo - no backend connected)");
-    setFormData({
-      gender: "",
-      name: "",
-      country: "",
-      email: "",
-      mobile: "",
-      preferredContact: [],
-      travelMonth: "",
-      budget: "",
-      budgetCurrency: "USD",
-      numberOfNights: "",
-      scheduleDateTime: "",
-      comment: ""
-    });
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      await submitConsultation({
+        gender: formData.gender || undefined,
+        name: formData.name,
+        country: formData.country || undefined,
+        email: formData.email,
+        mobile: formData.mobile || undefined,
+        preferredContact: formData.preferredContact,
+        travelMonth: formData.travelMonth || undefined,
+        budget: formData.budget || undefined,
+        budgetCurrency: formData.budgetCurrency || undefined,
+        numberOfNights: formData.numberOfNights || undefined,
+        scheduleDateTime: formData.scheduleDateTime || undefined,
+        comment: formData.comment || undefined,
+      });
+      alert("Thank you! We've received your consultation request and will be in touch shortly.");
+      setFormData({
+        gender: "",
+        name: "",
+        country: "",
+        email: "",
+        mobile: "",
+        preferredContact: [],
+        travelMonth: "",
+        budget: "",
+        budgetCurrency: "USD",
+        numberOfNights: "",
+        scheduleDateTime: "",
+        comment: ""
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -282,10 +307,11 @@ export default function Consultation() {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-[#5E17EB] hover:bg-[#4B12BD] text-white py-4 px-6 rounded-lg font-semibold text-lg transition-colors"
+                disabled={submitting}
+                className="w-full bg-[#5E17EB] hover:bg-[#4B12BD] disabled:opacity-60 disabled:cursor-not-allowed text-white py-4 px-6 rounded-lg font-semibold text-lg transition-colors"
                 style={{ fontFamily: 'Poppins, sans-serif' }}
               >
-                SUBMIT
+                {submitting ? "SUBMITTING..." : "SUBMIT"}
               </button>
             </form>
           </div>

@@ -8,7 +8,11 @@
       "Bash(printf 'VITE_API_URL=http://localhost:3000\\\\r\\\\n' >> \"c:/raya2/rayaayurveda-hotel2/.env\")",
       "mcp__e45628be-0f36-4045-b678-9adc196cd1dd__list_projects",
       "mcp__e45628be-0f36-4045-b678-9adc196cd1dd__execute_sql",
-      "mcp__e45628be-0f36-4045-b678-9adc196cd1dd__list_tables"
+      "mcp__e45628be-0f36-4045-b678-9adc196cd1dd__list_tables",
+      "Bash(Get-ChildItem -Path \"C:\\\\raya2\\\\rayaayurveda-hotel2\" -Force)",
+      "Bash(Select-Object Name, PSIsContainer)",
+      "Bash(npx tsc *)",
+      "Bash(npx vite *)"
     ],
     "additionalDirectories": [
       "c:\\raya2\\rayaayurveda-hotel2"

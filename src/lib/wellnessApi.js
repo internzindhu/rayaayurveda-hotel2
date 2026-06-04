@@ -51,3 +51,16 @@ export async function submitInquiry(payload) {
   if (!res.ok) throw new Error(`Inquiry submission failed: ${res.status}`);
   return res.json();
 }
+
+export async function submitConsultation(payload) {
+  const res = await fetch(`${API_BASE}/api/consultations`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Consultation submission failed (${res.status}): ${text || res.statusText}`);
+  }
+  return res.json();
+}
