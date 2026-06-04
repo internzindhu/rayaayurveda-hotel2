@@ -73,8 +73,10 @@ export default function IndividualStaysSriLanka() {
   const [selectedPrice, setSelectedPrice] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeFilterParams, setActiveFilterParams] = useState({});
+  const [showBudgetSlider, setShowBudgetSlider] = useState(false);
 
   const searchRef = useRef(null);
+  const budgetLeaveTimer = useRef(null);
 
   const loadHotels = useCallback(async (extraParams = {}) => {
     try {
@@ -366,26 +368,70 @@ export default function IndividualStaysSriLanka() {
               </select>
             </div>
 
-            {/* Price Range */}
-            <div className="flex-[2] flex flex-col md:px-6">
+            {/* Budget */}
+            <div
+              className="flex-1 flex flex-col md:px-6 relative"
+              onMouseEnter={() => {
+                if (budgetLeaveTimer.current) clearTimeout(budgetLeaveTimer.current);
+                setShowBudgetSlider(true);
+              }}
+              onMouseLeave={() => {
+                budgetLeaveTimer.current = setTimeout(() => setShowBudgetSlider(false), 120);
+              }}
+            >
               <label
-                className="text-xs tracking-[0.16em] text-[#181818] mb-1 uppercase"
+                className="text-xs tracking-[0.16em] text-[#181818] mb-1 uppercase cursor-default"
                 style={{ fontFamily: "Lato, sans-serif" }}
               >
-                Price Range
+                Budget
               </label>
-              {priceBounds ? (
-                <PriceRangeSlider
-                  min={priceBounds.min}
-                  max={priceBounds.max}
-                  low={selectedPrice[0]}
-                  high={selectedPrice[1]}
-                  currency="USD"
-                  onChange={handlePriceChange}
-                />
-              ) : (
-                <div className="h-10 flex items-center">
-                  <span className="text-xs text-[#8C8C8C]" style={{ fontFamily: "Lato, sans-serif" }}>Loading…</span>
+              <span
+                className="text-sm text-[#8C8C8C] border-b border-[#E0D4C8] py-1 cursor-default"
+                style={{ fontFamily: "Lato, sans-serif" }}
+              >
+                {selectedPrice && priceBounds
+                  ? selectedPrice[0] <= priceBounds.min && selectedPrice[1] >= priceBounds.max
+                    ? "Any price"
+                    : `USD ${selectedPrice[0].toLocaleString()} – ${selectedPrice[1].toLocaleString()}+`
+                  : "Any price"}
+              </span>
+
+              {showBudgetSlider && priceBounds && (
+                <div className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-lg border border-[#E0D4C8] px-6 pt-5 pb-5 z-50 w-80">
+                  <p
+                    className="text-xs text-[#5C5C5C] leading-relaxed mb-1"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                  >
+                    Rates are estimates and may vary according to season, length of stay and services chosen.
+                  </p>
+                  <p
+                    className="text-xs text-[#8C8C8C] italic mb-4"
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                  >
+                    Move the slider to select your price budget
+                  </p>
+                  <div className="flex items-center gap-3 mb-4">
+                    <span
+                      className="text-xs tracking-[0.12em] uppercase text-[#181818]"
+                      style={{ fontFamily: "Lato, sans-serif" }}
+                    >
+                      Currency
+                    </span>
+                    <span
+                      className="text-xs border border-[#E0D4C8] rounded-full px-3 py-1 text-[#181818]"
+                      style={{ fontFamily: "Lato, sans-serif" }}
+                    >
+                      USD ($)
+                    </span>
+                  </div>
+                  <PriceRangeSlider
+                    min={priceBounds.min}
+                    max={priceBounds.max}
+                    low={selectedPrice[0]}
+                    high={selectedPrice[1]}
+                    currency="USD"
+                    onChange={handlePriceChange}
+                  />
                 </div>
               )}
             </div>
