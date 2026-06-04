@@ -187,7 +187,16 @@ export default function IndividualStays({ heroConfig = {} }) {
     })
     .slice(0, DROPDOWN_MAX);
 
-  const hotelsToShow = hotels.slice(0, displayCount);
+  const priceFilteredHotels = hotels.filter((hotel) => {
+    if (!selectedPrice || !priceBounds) return true;
+    if (selectedPrice[0] <= priceBounds.min && selectedPrice[1] >= priceBounds.max) return true;
+    const mp = getCurrentMonthPrice(hotel);
+    if (!mp) return true;
+    const price = Number(mp.price);
+    return price >= selectedPrice[0] && price <= selectedPrice[1];
+  });
+
+  const hotelsToShow = priceFilteredHotels.slice(0, displayCount);
 
   return (
     <div className="landing-theme min-h-screen bg-[#FFFBF7] overflow-x-hidden">
@@ -438,10 +447,10 @@ export default function IndividualStays({ heroConfig = {} }) {
           {error && (
             <p className="text-center text-red-600 py-12" style={{ fontFamily: "Lato, sans-serif" }}>Failed to load hotels: {error}</p>
           )}
-          {!loading && !error && hotels.length === 0 && (
+          {!loading && !error && priceFilteredHotels.length === 0 && (
             <p className="text-center text-[#181818] py-12" style={{ fontFamily: "Lato, sans-serif" }}>No hotels found. Try adjusting your filters.</p>
           )}
-          {!loading && !error && hotels.length > 0 && (
+          {!loading && !error && priceFilteredHotels.length > 0 && (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 items-start">
                 {hotelsToShow.map((hotel, index) => {
@@ -489,11 +498,11 @@ export default function IndividualStays({ heroConfig = {} }) {
                   );
                 })}
               </div>
-              {displayCount < hotels.length && (
+              {displayCount < priceFilteredHotels.length && (
                 <div className="text-center mt-24">
                   <button
                     type="button"
-                    onClick={() => setDisplayCount((prev) => Math.min(prev + INITIAL_DISPLAY, hotels.length))}
+                    onClick={() => setDisplayCount((prev) => Math.min(prev + INITIAL_DISPLAY, priceFilteredHotels.length))}
                     className="text-[#5E17EB] text-sm sm:text-base tracking-[0.1em] uppercase hover:underline px-6 py-6 rounded-lg transition-colors"
                     style={{ fontFamily: "Lato, sans-serif" }}
                   >

@@ -74,6 +74,7 @@ export default function IndividualStaysSriLanka() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeFilterParams, setActiveFilterParams] = useState({});
   const [showBudgetSlider, setShowBudgetSlider] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const searchRef = useRef(null);
   const budgetLeaveTimer = useRef(null);
@@ -119,6 +120,7 @@ export default function IndividualStaysSriLanka() {
     setSearchInput(hotel.name);
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
+    setHasSearched(true);
     loadHotels({ ...activeFilterParams, search: hotel.name });
   };
 
@@ -126,6 +128,7 @@ export default function IndividualStaysSriLanka() {
     setSearchInput(city);
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
+    setHasSearched(true);
     loadHotels({ ...activeFilterParams, location: city });
   };
 
@@ -152,12 +155,16 @@ export default function IndividualStaysSriLanka() {
   const handleSearchClick = () => {
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
+    if (searchInput.trim()) setHasSearched(true);
     loadHotels(buildParams({ price: selectedPrice }));
   };
 
   const handleSearchInputChange = (value) => {
     setSearchInput(value);
-    if (!value.trim()) loadHotels(buildParams({ search: "" }));
+    if (!value.trim()) {
+      setHasSearched(false);
+      loadHotels(buildParams({ search: "" }));
+    }
   };
 
   const handleMonthChange = (month) => {
@@ -185,7 +192,16 @@ export default function IndividualStaysSriLanka() {
     ? hotels.filter((h) => (h.name ?? "").toLowerCase().includes(q)).slice(0, 5)
     : [];
 
-  const hotelsToShow = hotels.slice(0, displayCount);
+  const priceFilteredHotels = hotels.filter((hotel) => {
+    if (!selectedPrice || !priceBounds) return true;
+    if (selectedPrice[0] <= priceBounds.min && selectedPrice[1] >= priceBounds.max) return true;
+    const mp = getCurrentMonthPrice(hotel);
+    if (!mp) return true;
+    const price = Number(mp.price);
+    return price >= selectedPrice[0] && price <= selectedPrice[1];
+  });
+
+  const hotelsToShow = priceFilteredHotels.slice(0, displayCount);
 
   return (
     <div className="landing-theme min-h-screen bg-[#FFFBF7] overflow-x-hidden">
@@ -337,7 +353,7 @@ export default function IndividualStaysSriLanka() {
             </div>
 
             {/* Month */}
-            <div className="flex-1 flex flex-col md:px-6">
+            <div className={`flex-1 flex flex-col md:px-6 transition-opacity duration-200 ${!hasSearched ? "opacity-35 pointer-events-none select-none" : ""}`}>
               <label
                 htmlFor="travel-month"
                 className="text-xs tracking-[0.16em] text-[#181818] mb-1 uppercase"
@@ -370,7 +386,7 @@ export default function IndividualStaysSriLanka() {
 
             {/* Budget */}
             <div
-              className="flex-1 flex flex-col md:px-6 relative"
+              className={`flex-1 flex flex-col md:px-6 relative transition-opacity duration-200 ${!hasSearched ? "opacity-35 pointer-events-none select-none" : ""}`}
               onMouseEnter={() => {
                 if (budgetLeaveTimer.current) clearTimeout(budgetLeaveTimer.current);
                 setShowBudgetSlider(true);
@@ -450,7 +466,7 @@ export default function IndividualStaysSriLanka() {
           </div>
 
           {/* Advanced Filters */}
-          <div className="border-t border-[#E0D4C8] pt-4">
+          <div className={`border-t border-[#E0D4C8] pt-4 transition-opacity duration-200 ${!hasSearched ? "opacity-35 pointer-events-none select-none" : ""}`}>
             <AdvancedFilters onApply={handleAdvancedFiltersApply} className="mb-0" />
           </div>
         </div>
@@ -469,12 +485,12 @@ export default function IndividualStaysSriLanka() {
               Failed to load hotels: {error}
             </p>
           )}
-          {!loading && !error && hotels.length === 0 && (
+          {!loading && !error && priceFilteredHotels.length === 0 && (
             <p className="text-center text-[#181818] py-12" style={{ fontFamily: "Lato, sans-serif" }}>
               No hotels found. Try adjusting your filters.
             </p>
           )}
-          {!loading && !error && hotels.length > 0 && (
+          {!loading && !error && priceFilteredHotels.length > 0 && (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 items-start">
                 {hotelsToShow.map((hotel, index) => {
@@ -533,11 +549,11 @@ export default function IndividualStaysSriLanka() {
                 })}
               </div>
 
-              {displayCount < hotels.length && (
+              {displayCount < priceFilteredHotels.length && (
                 <div className="text-center mt-24">
                   <button
                     type="button"
-                    onClick={() => setDisplayCount((prev) => Math.min(prev + INITIAL_DISPLAY, hotels.length))}
+                    onClick={() => setDisplayCount((prev) => Math.min(prev + INITIAL_DISPLAY, priceFilteredHotels.length))}
                     className="text-[#5E17EB] text-sm sm:text-base tracking-[0.1em] uppercase hover:underline px-6 py-6 rounded-lg transition-colors"
                     style={{ fontFamily: "Lato, sans-serif" }}
                   >

@@ -41,7 +41,6 @@ const navSections = [
     links: [
       { label: "Blog", to: "/blogs" },
       { label: "FAQ", to: "/faq" },
-      { label: "Guest Testimonies", to: "/guest-testimonies" },
       { label: "Newsletter", to: "/newsletter" },
     ],
   },

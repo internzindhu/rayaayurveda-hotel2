@@ -124,7 +124,7 @@ export default function Navbar() {
   const isAboutActive = isActive("/about");
   const isGuideActive = location.pathname.startsWith("/ayurveda-guide");
   const isServicesActive = isActive("/vouchers") || isActive("/consultation");
-  const isBlogActive = isActive("/blogs") || isActive("/faq") || isActive("/guest-testimonies") || isActive("/newsletter");
+  const isBlogActive = isActive("/blogs") || isActive("/faq") || isActive("/newsletter");
   const isRetreatsActive =
     isActive("/retreats") ||
     isActive("/individual-stays") ||
@@ -285,7 +285,6 @@ export default function Navbar() {
                 {isBlogOpen && (
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60] rounded-xl overflow-hidden">
                     <Link to="/faq" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsBlogOpen(false)}>FAQ</Link>
-                    <Link to="/guest-testimonies" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsBlogOpen(false)}>GUEST TESTIMONIES</Link>
                     <Link to="/blogs" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsBlogOpen(false)}>BLOG</Link>
                     <Link to="/newsletter" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsBlogOpen(false)}>NEWSLETTER</Link>
                   </div>
@@ -514,7 +513,6 @@ export default function Navbar() {
               {isBlogOpen && (
                 <div className="pb-4 animate-mobile-dropdown">
                   <MobileLink to="/faq" onClose={() => { setIsBlogOpen(false); setIsMobileMenuOpen(false); }}>FAQ</MobileLink>
-                  <MobileLink to="/guest-testimonies" onClose={() => { setIsBlogOpen(false); setIsMobileMenuOpen(false); }}>GUEST TESTIMONIES</MobileLink>
                   <MobileLink to="/blogs" onClose={() => { setIsBlogOpen(false); setIsMobileMenuOpen(false); }}>BLOG</MobileLink>
                   <MobileLink to="/newsletter" onClose={() => { setIsBlogOpen(false); setIsMobileMenuOpen(false); }}>NEWSLETTER</MobileLink>
                 </div>
