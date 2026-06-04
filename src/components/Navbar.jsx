@@ -212,8 +212,14 @@ export default function Navbar() {
                 </button>
                 {isRetreatsOpen && (
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60] rounded-xl overflow-hidden">
-                    <Link to="/individual-stays" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsRetreatsOpen(false)}>INDIVIDUAL STAYS</Link>
-                    <Link to="/group-stays" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsRetreatsOpen(false)}>GROUP STAYS</Link>
+                    <div className="px-4 py-2.5 text-sm text-white font-semibold">INDIVIDUAL STAYS</div>
+                    {stayCountries.map((country) => (
+                      <Link key={`desktop-retreats-individual-${country.slug}`} to={`/individual-stays/${country.slug}`} className="block pl-8 pr-4 py-2 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsRetreatsOpen(false)}>{country.label}</Link>
+                    ))}
+                    {/* <div className="px-4 pt-3 pb-2 text-sm text-white font-semibold border-t border-white/10 mt-1">GROUP STAYS</div> */}
+                    {/* {stayCountries.map((country) => (
+                      <Link key={`desktop-retreats-group-${country.slug}`} to={`/group-stays/${country.slug}`} className="block pl-8 pr-4 py-2 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsRetreatsOpen(false)}>{country.label}</Link>
+                    ))} */}
                   </div>
                 )}
               </div>
@@ -386,8 +392,18 @@ export default function Navbar() {
               </button>
               {isRetreatsOpen && (
                 <div className="pb-4 animate-mobile-dropdown">
-                  <MobileLink to="/individual-stays" onClose={() => { setIsRetreatsOpen(false); setIsMobileMenuOpen(false); }}>INDIVIDUAL STAYS</MobileLink>
-                  <MobileLink to="/group-stays" onClose={() => { setIsRetreatsOpen(false); setIsMobileMenuOpen(false); }}>GROUP STAYS</MobileLink>
+                  <CategoryLabel>Individual Stays</CategoryLabel>
+                  {stayCountries.map((country) => (
+                    <MobileLink key={`mobile-retreats-individual-${country.slug}`} to={`/individual-stays/${country.slug}`} indent onClose={() => { setIsRetreatsOpen(false); setIsMobileMenuOpen(false); }}>
+                      {country.label}
+                    </MobileLink>
+                  ))}
+                  {/* <CategoryLabel>Group Stays</CategoryLabel>
+                  {stayCountries.map((country) => (
+                    <MobileLink key={`mobile-retreats-group-${country.slug}`} to={`/group-stays/${country.slug}`} indent onClose={() => { setIsRetreatsOpen(false); setIsMobileMenuOpen(false); }}>
+                      {country.label}
+                    </MobileLink>
+                  ))} */}
                 </div>
               )}
             </div>
