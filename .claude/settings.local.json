@@ -15,7 +15,8 @@
       "Bash(npx vite *)",
       "Bash(curl -s -o nul -w \"Status: %{http_code}\\\\nTime: %{time_total}s\\\\n\" https://rayalonglifeweb-backend-production.up.railway.app/health)",
       "Bash(xargs git show HEAD:)",
-      "Bash(awk '{print $5, $9}')"
+      "Bash(awk '{print $5, $9}')",
+      "mcp__e45628be-0f36-4045-b678-9adc196cd1dd__apply_migration"
     ],
     "additionalDirectories": [
       "c:\\raya2\\rayaayurveda-hotel2"

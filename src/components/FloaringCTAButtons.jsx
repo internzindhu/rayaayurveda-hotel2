@@ -39,8 +39,8 @@ function PopupHeader({ onClose }) {
           <img src="/logo.png" alt="Raya Ayurveda" className="w-full h-full object-contain" />
         </div>
         <div>
-          <p className="text-white font-semibold text-sm leading-tight" style={PP}>Speak to a specialist</p>
-          <p className="text-white/70 text-xs leading-tight" style={PP}>we're here to help</p>
+          <p className="text-white font-semibold text-sm leading-tight" style={PP}>Speak to a Travel Advisor</p>
+          <p className="text-white/70 text-xs leading-tight" style={PP}>We're here to help</p>
         </div>
       </div>
       <button onClick={onClose} className="text-white/70 hover:text-white transition-colors ml-2 flex-shrink-0 p-1" aria-label="Close">
@@ -63,7 +63,7 @@ function FormView({ onSuccess, onSchedule }) {
     <>
       <div className="bg-white px-4 py-4">
         <p className="text-gray-500 text-xs mb-4 leading-relaxed" style={PP}>
-          Planning your Ayurvedic retreat? Share your number and one of our wellness advisors will reach out to you shortly.
+          Let's Find Your Perfect Retreat. Whether you're looking for Ayurveda, yoga, meditation, detox, or relaxation, our team is here to guide you every step of the way. Share your number and one of our wellness advisors will reach out to you.
         </p>
         <form onSubmit={(e) => { e.preventDefault(); if (ready) onSuccess(); }} className="space-y-3">
           <div className="flex items-center gap-2 border-b-2 border-gray-200 pb-1.5 focus-within:border-[#5E17EB] transition-colors">
@@ -108,7 +108,7 @@ function FormView({ onSuccess, onSchedule }) {
         </form>
       </div>
       <div className="bg-gray-50 px-4 py-2 border-t border-gray-100">
-        <p className="text-gray-400 text-[10px]" style={PP}>We're ⚡ by Raya Ayurveda</p>
+        <p className="text-gray-400 text-[10px]" style={PP}>Trusted Wellness Guidance by Raya Long Life</p>
       </div>
     </>
   );
