@@ -74,7 +74,6 @@ export default function IndividualStaysSriLanka() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeFilterParams, setActiveFilterParams] = useState({});
   const [showBudgetSlider, setShowBudgetSlider] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
 
   const searchRef = useRef(null);
   const budgetLeaveTimer = useRef(null);
@@ -120,7 +119,6 @@ export default function IndividualStaysSriLanka() {
     setSearchInput(hotel.name);
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
-    setHasSearched(true);
     loadHotels({ ...activeFilterParams, search: hotel.name });
   };
 
@@ -128,7 +126,6 @@ export default function IndividualStaysSriLanka() {
     setSearchInput(city);
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
-    setHasSearched(true);
     loadHotels({ ...activeFilterParams, location: city });
   };
 
@@ -155,14 +152,12 @@ export default function IndividualStaysSriLanka() {
   const handleSearchClick = () => {
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
-    if (searchInput.trim()) setHasSearched(true);
     loadHotels(buildParams({ price: selectedPrice }));
   };
 
   const handleSearchInputChange = (value) => {
     setSearchInput(value);
     if (!value.trim()) {
-      setHasSearched(false);
       loadHotels(buildParams({ search: "" }));
     }
   };
@@ -353,7 +348,7 @@ export default function IndividualStaysSriLanka() {
             </div>
 
             {/* Month */}
-            <div className={`flex-1 flex flex-col md:px-6 transition-opacity duration-200 ${!hasSearched ? "opacity-35 pointer-events-none select-none" : ""}`}>
+            <div className="flex-1 flex flex-col md:px-6 transition-opacity duration-200">
               <label
                 htmlFor="travel-month"
                 className="text-xs tracking-[0.16em] text-[#181818] mb-1 uppercase"
@@ -386,7 +381,7 @@ export default function IndividualStaysSriLanka() {
 
             {/* Budget */}
             <div
-              className={`flex-1 flex flex-col md:px-6 relative transition-opacity duration-200 ${!hasSearched ? "opacity-35 pointer-events-none select-none" : ""}`}
+              className="flex-1 flex flex-col md:px-6 relative transition-opacity duration-200"
               onMouseEnter={() => {
                 if (budgetLeaveTimer.current) clearTimeout(budgetLeaveTimer.current);
                 setShowBudgetSlider(true);
@@ -466,7 +461,7 @@ export default function IndividualStaysSriLanka() {
           </div>
 
           {/* Advanced Filters */}
-          <div className={`border-t border-[#E0D4C8] pt-4 transition-opacity duration-200 ${!hasSearched ? "opacity-35 pointer-events-none select-none" : ""}`}>
+          <div className="border-t border-[#E0D4C8] pt-4 transition-opacity duration-200">
             <AdvancedFilters onApply={handleAdvancedFiltersApply} className="mb-0" />
           </div>
         </div>

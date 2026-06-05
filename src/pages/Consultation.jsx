@@ -370,7 +370,7 @@ export default function Consultation() {
             <h3 className="text-base font-bold text-[#181818] mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
               General Enquiries
             </h3>
-            <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>rayalonglife@gmail.com</p>
+            <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>hello@rayalonglife.com</p>
             <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>+94 71 366 7946</p>
           </div>
 
@@ -379,7 +379,7 @@ export default function Consultation() {
             <h3 className="text-base font-bold text-[#181818] mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
               Customer support
             </h3>
-            <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>rayalonglife@gmail.com</p>
+            <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>healing@rayalonglife.com</p>
             <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>+94 71 366 7946</p>
           </div>
 

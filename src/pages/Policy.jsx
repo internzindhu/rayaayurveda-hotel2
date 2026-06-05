@@ -20,7 +20,7 @@ export default function Policy() {
               <h2 className="text-2xl font-bold text-gray-800 mb-4">1. How to Submit a Complaint</h2>
               <p className="text-gray-700 leading-relaxed mb-3">You may contact us through any of the following methods:</p>
               <ul className="list-disc list-inside text-gray-700 space-y-1 mb-4">
-                <li>Email: <a href="mailto:support@rayalonglife.com" className="text-emerald-600 hover:underline">support@rayalonglife.com</a></li>
+                <li>Email: <a href="mailto:healing@rayalonglife.com" className="text-emerald-600 hover:underline">healing@rayalonglife.com</a></li>
                 <li>Online Complaint Form</li>
                 <li>Phone / WhatsApp</li>
               </ul>

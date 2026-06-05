@@ -16,7 +16,12 @@
       "Bash(curl -s -o nul -w \"Status: %{http_code}\\\\nTime: %{time_total}s\\\\n\" https://rayalonglifeweb-backend-production.up.railway.app/health)",
       "Bash(xargs git show HEAD:)",
       "Bash(awk '{print $5, $9}')",
-      "mcp__e45628be-0f36-4045-b678-9adc196cd1dd__apply_migration"
+      "mcp__e45628be-0f36-4045-b678-9adc196cd1dd__apply_migration",
+      "Bash(Get-ChildItem \"C:\\\\Users\\\\perer\\\\Downloads\\\\new hotel images\" -Recurse)",
+      "Bash(Select-Object FullName, Length, PSIsContainer)",
+      "Bash(Format-Table -AutoSize)",
+      "mcp__e45628be-0f36-4045-b678-9adc196cd1dd__get_project_url",
+      "mcp__e45628be-0f36-4045-b678-9adc196cd1dd__get_publishable_keys"
     ],
     "additionalDirectories": [
       "c:\\raya2\\rayaayurveda-hotel2"
