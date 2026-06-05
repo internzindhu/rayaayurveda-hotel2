@@ -62,7 +62,7 @@ function FormView({ onSuccess, onSchedule }) {
   return (
     <>
       <div className="bg-white px-4 py-4">
-        <p className="text-gray-500 text-xs mb-4 leading-relaxed" style={PP}>
+        <p className="text-black text-xs mb-4 leading-relaxed" style={PP}>
           Let's Find Your Perfect Retreat. Whether you're looking for Ayurveda, yoga, meditation, detox, or relaxation, our team is here to guide you every step of the way. Share your number and one of our wellness advisors will reach out to you.
         </p>
         <form onSubmit={(e) => { e.preventDefault(); if (ready) onSuccess(); }} className="space-y-3">
