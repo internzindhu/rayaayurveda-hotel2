@@ -35,7 +35,7 @@ function PopupHeader({ onClose }) {
   return (
     <div className="bg-[#5E17EB] px-4 py-3 flex items-center justify-between">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center flex-shrink-0 overflow-hidden p-1">
+        <div className="w-10 h-10 rounded-full border border-white flex items-center justify-center flex-shrink-0 overflow-hidden p-1">
           <img src="/logo.png" alt="Raya Ayurveda" className="w-full h-full object-contain" />
         </div>
         <div>

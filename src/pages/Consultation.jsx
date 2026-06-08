@@ -226,13 +226,36 @@ export default function Consultation() {
                   <label className="block text-gray-700 font-medium mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
                     Travel Month
                   </label>
-                  <input
-                    type="month"
-                    value={formData.travelMonth}
-                    onChange={(e) => setFormData({ ...formData, travelMonth: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent transition-all"
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
-                  />
+                  <div className="flex gap-2">
+                    <select
+                      value={formData.travelMonth ? formData.travelMonth.split('-')[1] : ''}
+                      onChange={(e) => {
+                        const year = formData.travelMonth ? formData.travelMonth.split('-')[0] : new Date().getFullYear();
+                        setFormData({ ...formData, travelMonth: e.target.value ? `${year}-${e.target.value}` : '' });
+                      }}
+                      className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent transition-all bg-white"
+                      style={{ fontFamily: 'Poppins, sans-serif' }}
+                    >
+                      <option value="">Month</option>
+                      {['January','February','March','April','May','June','July','August','September','October','November','December'].map((m, i) => (
+                        <option key={m} value={String(i + 1).padStart(2, '0')}>{m}</option>
+                      ))}
+                    </select>
+                    <select
+                      value={formData.travelMonth ? formData.travelMonth.split('-')[0] : ''}
+                      onChange={(e) => {
+                        const month = formData.travelMonth ? formData.travelMonth.split('-')[1] : '01';
+                        setFormData({ ...formData, travelMonth: e.target.value ? `${e.target.value}-${month}` : '' });
+                      }}
+                      className="w-28 px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent transition-all bg-white"
+                      style={{ fontFamily: 'Poppins, sans-serif' }}
+                    >
+                      <option value="">Year</option>
+                      {Array.from({ length: 6 }, (_, i) => new Date().getFullYear() + i).map((y) => (
+                        <option key={y} value={y}>{y}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
                 {/* Number of Nights */}
@@ -389,7 +412,7 @@ export default function Consultation() {
               Address
             </h3>
             <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              Raya Longlife, Suite 5, Enterprise House, Moorgate Point, Moorgate Rd, Sri Lanka.
+            No. 37, 33 Bullers Ln, Colombo 00700
             </p>
           </div>
 
@@ -467,7 +490,7 @@ export default function Consultation() {
             <div className="px-8 sm:px-10 pt-10 pb-8 text-center relative">
               {/* Logo */}
               <img
-                src="/Raya_logo_new.png"
+                src="/logo.png"
                 alt="RAYA Longlife"
                 className="h-12 sm:h-14 w-auto mx-auto mb-6"
               />

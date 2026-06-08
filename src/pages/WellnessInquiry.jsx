@@ -270,7 +270,7 @@ export default function WellnessInquiry() {
             <div className="px-8 sm:px-10 pt-10 pb-8 text-center relative">
               {/* Logo */}
               <img
-                src="/Raya_logo_new.png"
+                src="/logo.png"
                 alt="RAYA Longlife"
                 className="h-12 sm:h-14 w-auto mx-auto mb-6"
               />

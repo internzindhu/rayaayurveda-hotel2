@@ -313,7 +313,7 @@ export default function Navbar() {
           <div className="lg:hidden flex items-center justify-between w-full">
             <div className="w-10" />
             <Link to="/">
-              <img src="/Raya_logo_new.png" alt="RAYA Logo" className="w-32 sm:w-40 h-auto" />
+              <img src="/logo.png" alt="RAYA Logo" className="w-32 sm:w-40 h-auto" />
             </Link>
             <button
               onClick={toggleMobileMenu}

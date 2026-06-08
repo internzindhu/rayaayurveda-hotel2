@@ -147,10 +147,10 @@ export default function Footer() {
           <div className="flex justify-center items-start">
             <Link to="/">
               <img
-                src="/Raya_logo_new.png"
+                src="/logo.png"
                 alt="Raya Longlife Logo"
                 className="h-auto w-28 sm:w-32 hover:opacity-80 transition-opacity duration-300"
-                style={{ filter: "brightness(0) invert(1)" }}
+                
               />
             </Link>
           </div>

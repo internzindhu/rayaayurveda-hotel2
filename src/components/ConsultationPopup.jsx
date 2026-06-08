@@ -60,14 +60,8 @@ export default function ConsultationPopup({ isOpen, onClose }) {
             {/* Overlay Box - positioned in bottom right quadrant */}
             <div className="absolute bottom-3 right-3 bg-white rounded-lg shadow-xl p-3 max-w-[200px] sm:max-w-[220px]">
               <div className="space-y-0.5 mb-3">
-                <p className="text-[#5E17EB] font-semibold text-sm sm:text-base leading-tight">
-                  15 minutes consultation
-                </p>
                 <p className="text-[#181818] font-serif text-xs sm:text-sm leading-tight">
-                  with Ayurvedic doctor
-                </p>
-                <p className="text-[#5E17EB] font-semibold text-sm sm:text-base leading-tight">
-                  for Free
+                  Get Expert &amp; personalized advice for your stay.
                 </p>
               </div>
               <Link
