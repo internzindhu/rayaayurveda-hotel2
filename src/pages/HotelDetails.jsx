@@ -556,7 +556,7 @@ export default function HotelDetails() {
       })()}
 
       {/* ── Main content ── */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <div className="flex flex-col lg:flex-row gap-10 items-start">
 
           {/* ════ LEFT — all hotel details ════ */}
@@ -688,7 +688,7 @@ export default function HotelDetails() {
           </div>
 
           {/* ════ RIGHT — sticky booking form ════ */}
-          <div className="w-full lg:w-[340px] lg:sticky lg:top-8 lg:self-start shrink-0">
+          <div className="w-full lg:w-[410px] lg:sticky lg:top-8 lg:self-start shrink-0">
             <aside className="bg-white border border-[#F0EBE4] rounded-xl p-6 shadow-sm">
               <h2
                 className="text-lg text-[#181818] mb-3"
@@ -741,111 +741,85 @@ export default function HotelDetails() {
 
               <div className="space-y-4 text-sm">
 
-                {/* Arrival date */}
-                <div>
-                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>
-                    Arrival Date
-                  </label>
-                  <input
-                    type="date"
-                    value={dateFrom}
-                    min={new Date().toISOString().slice(0, 10)}
-                    onChange={(e) => {
-                      setDateFrom(e.target.value);
-                      setFormErrors((prev) => ({ ...prev, dateFrom: undefined, dateTo: undefined }));
-                      // If departure is now invalid (before new arrival or below min nights), clear it
-                      if (dateTo && hotel.min_nights) {
-                        const newNights = Math.round((new Date(dateTo) - new Date(e.target.value)) / 86400000);
-                        if (newNights < hotel.min_nights) setDateTo("");
-                      } else if (dateTo && e.target.value > dateTo) {
-                        setDateTo("");
-                      }
-                    }}
-                    className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.dateFrom ? "border-red-400" : "border-[#E0D4C8]"}`}
-                  />
-                  {formErrors.dateFrom && <p className="text-red-500 text-[10px] mt-1">{formErrors.dateFrom}</p>}
+                {/* Arrival + Departure dates — side by side */}
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>
+                      Arrival
+                    </label>
+                    <input
+                      type="date"
+                      value={dateFrom}
+                      min={new Date().toISOString().slice(0, 10)}
+                      onChange={(e) => {
+                        setDateFrom(e.target.value);
+                        setFormErrors((prev) => ({ ...prev, dateFrom: undefined, dateTo: undefined }));
+                        if (dateTo && hotel.min_nights) {
+                          const newNights = Math.round((new Date(dateTo) - new Date(e.target.value)) / 86400000);
+                          if (newNights < hotel.min_nights) setDateTo("");
+                        } else if (dateTo && e.target.value > dateTo) {
+                          setDateTo("");
+                        }
+                      }}
+                      className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.dateFrom ? "border-red-400" : "border-[#E0D4C8]"}`}
+                    />
+                    {formErrors.dateFrom && <p className="text-red-500 text-[10px] mt-1">{formErrors.dateFrom}</p>}
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>
+                      Departure
+                    </label>
+                    <input
+                      type="date"
+                      value={dateTo}
+                      min={earliestDeparture}
+                      onChange={(e) => {
+                        setDateTo(e.target.value);
+                        setFormErrors((prev) => ({ ...prev, dateTo: undefined }));
+                      }}
+                      className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.dateTo ? "border-red-400" : "border-[#E0D4C8]"}`}
+                    />
+                    {formErrors.dateTo && <p className="text-red-500 text-[10px] mt-1">{formErrors.dateTo}</p>}
+                  </div>
                 </div>
 
-                {/* Departure date */}
-                <div>
-                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>
-                    Departure Date
-                  </label>
-                  <input
-                    type="date"
-                    value={dateTo}
-                    min={earliestDeparture}
-                    onChange={(e) => {
-                      setDateTo(e.target.value);
-                      setFormErrors((prev) => ({ ...prev, dateTo: undefined }));
-                    }}
-                    className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.dateTo ? "border-red-400" : "border-[#E0D4C8]"}`}
-                  />
-                  {formErrors.dateTo && <p className="text-red-500 text-[10px] mt-1">{formErrors.dateTo}</p>}
+                {/* Room type + Guests — side by side */}
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Room type</label>
+                    <select value={roomType} onChange={(e) => setRoomType(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
+                      <option>Single</option>
+                      <option>Double</option>
+                    </select>
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Guests</label>
+                    <div className="flex items-center border border-[#E0D4C8] rounded-lg w-full">
+                      <button type="button" onClick={() => setPeople((p) => Math.max(1, p - 1))} className="px-3 py-2 text-base hover:bg-[#F0EBE4]/50 rounded-l-lg transition-colors leading-none flex-shrink-0">−</button>
+                      <span className="flex-1 py-2 text-xs border-l border-r border-[#E0D4C8] text-center" style={{ fontFamily: "Lato, sans-serif" }}>{people}</span>
+                      <button type="button" onClick={() => setPeople((p) => p + 1)} className="px-3 py-2 text-base hover:bg-[#F0EBE4]/50 rounded-r-lg transition-colors leading-none flex-shrink-0">+</button>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Room type */}
+                {/* Room category — dropdown */}
                 <div>
-                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Room type</label>
-                  <select value={roomType} onChange={(e) => setRoomType(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]">
-                    <option>Single</option>
-                    <option>Double</option>
+                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Room Category</label>
+                  <select value={roomCategory} onChange={(e) => setRoomCategory(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
+                    <option value="base">Base category</option>
+                    <option value="higher">Open to look for higher options</option>
                   </select>
                 </div>
 
-                {/* Guests */}
+                {/* Transport — dropdown */}
                 <div>
-                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Guests</label>
-                  <div className="inline-flex items-center border border-[#E0D4C8] rounded-lg">
-                    <button type="button" onClick={() => setPeople((p) => Math.max(1, p - 1))} className="px-3 py-2 text-base hover:bg-[#F0EBE4]/50 rounded-l-lg transition-colors leading-none">−</button>
-                    <span className="px-4 py-2 text-xs border-l border-r border-[#E0D4C8] min-w-[40px] text-center" style={{ fontFamily: "Lato, sans-serif" }}>{people}</span>
-                    <button type="button" onClick={() => setPeople((p) => p + 1)} className="px-3 py-2 text-base hover:bg-[#F0EBE4]/50 rounded-r-lg transition-colors leading-none">+</button>
-                  </div>
-                </div>
-
-                {/* Room category */}
-                <div>
-                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "Lato, sans-serif" }}>Room Category</label>
-                  <div className="flex flex-col gap-2">
-                    {[
-                      { value: "base", label: "Base category" },
-                      { value: "higher", label: "Open to look for higher options" },
-                    ].map((opt) => (
-                      <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="roomCategory"
-                          value={opt.value}
-                          checked={roomCategory === opt.value}
-                          onChange={() => setRoomCategory(opt.value)}
-                          className="w-3.5 h-3.5 text-[#5E17EB] border-[#E0D4C8] focus:ring-[#5E17EB]"
-                        />
-                        <span className="text-xs text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>{opt.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Transport */}
-                <div>
-                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "Lato, sans-serif" }}>Transport</label>
-                  <div className="flex gap-2">
-                    {["Yes", "No", "Maybe"].map((opt) => (
-                      <button
-                        key={opt}
-                        type="button"
-                        onClick={() => setTransportMode(transportMode === opt ? "" : opt)}
-                        className={`flex-1 py-2 text-xs border transition-all ${
-                          transportMode === opt
-                            ? "border-[#181818] bg-white text-[#181818] font-medium"
-                            : "border-[#E0D4C8] bg-white text-[#181818] hover:border-[#181818]"
-                        }`}
-                        style={{ fontFamily: "Lato, sans-serif" }}
-                      >
-                        {opt}
-                      </button>
-                    ))}
-                  </div>
+                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Transport</label>
+                  <select value={transportMode} onChange={(e) => setTransportMode(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
+                    <option value="">Select...</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                    <option value="Maybe">Maybe</option>
+                  </select>
                 </div>
 
                 {/* Price display */}
