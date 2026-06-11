@@ -78,6 +78,19 @@ export async function submitCallExpert(payload) {
   return res.json();
 }
 
+export async function submitNewsletter(email) {
+  const res = await fetch(`${API_BASE}/api/newsletter`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Newsletter subscription failed (${res.status}): ${text || res.statusText}`);
+  }
+  return res.json();
+}
+
 export async function submitQuestionnaireResults(payload) {
   const res = await fetch(`${API_BASE}/api/questionnaire`, {
     method: "POST",

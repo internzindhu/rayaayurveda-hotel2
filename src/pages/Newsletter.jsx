@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import { submitNewsletter } from "../lib/wellnessApi";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 const pastIssues = [
   {
@@ -146,7 +149,9 @@ function IssueCard({ issue, index }) {
 
 export default function Newsletter() {
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const benefitsRef = useRef(null);
   const archiveRef = useRef(null);
   const ctaRef = useRef(null);
@@ -170,9 +175,31 @@ export default function Newsletter() {
     return () => { o1?.disconnect(); o2?.disconnect(); o3?.disconnect(); };
   }, []);
 
-  const handleSubmit = (e) => {
+  const validateEmail = (value) => {
+    if (!value.trim()) return "Email address is required.";
+    if (!EMAIL_REGEX.test(value.trim())) return "Please enter a valid email address.";
+    return "";
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    if (emailError) setEmailError(validateEmail(e.target.value));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (email.trim()) setSubmitted(true);
+    const err = validateEmail(email);
+    if (err) { setEmailError(err); return; }
+    setEmailError("");
+    setSubmitting(true);
+    try {
+      await submitNewsletter(email.trim());
+      setSubmitted(true);
+    } catch {
+      setEmailError("Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -225,24 +252,36 @@ export default function Newsletter() {
           {!submitted ? (
             <form
               onSubmit={handleSubmit}
-              className="flex flex-col sm:flex-row items-center gap-3 justify-center max-w-md mx-auto"
+              className="flex flex-col items-center gap-2 justify-center max-w-md mx-auto w-full"
+              noValidate
             >
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Your email address"
-                className="w-full sm:flex-1 px-5 py-3.5 rounded-lg border border-[#181818] text-[#181818] placeholder-[#888] focus:outline-none focus:ring-1 focus:ring-[#5E17EB] text-sm"
-                style={{ fontFamily: "Lato, sans-serif" }}
-              />
-              <button
-                type="submit"
-                className="w-full sm:w-auto px-7 py-3.5 bg-[#5E17EB] hover:bg-[#4B12BD] text-white font-bold uppercase tracking-widest text-sm rounded-lg transition-colors duration-200 flex-shrink-0"
-                style={{ fontFamily: "Lato, sans-serif" }}
-              >
-                Subscribe Free
-              </button>
+              <div className="flex flex-col sm:flex-row items-start gap-3 w-full">
+                <div className="flex flex-col w-full sm:flex-1">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={handleEmailChange}
+                    placeholder="Your email address"
+                    className={`w-full px-5 py-3.5 rounded-lg border text-[#181818] placeholder-[#888] focus:outline-none focus:ring-1 focus:ring-[#5E17EB] text-sm ${
+                      emailError ? "border-red-400" : "border-[#181818]"
+                    }`}
+                    style={{ fontFamily: "Lato, sans-serif" }}
+                  />
+                  {emailError && (
+                    <p className="text-red-500 text-xs mt-1 text-left" style={{ fontFamily: "Lato, sans-serif" }}>
+                      {emailError}
+                    </p>
+                  )}
+                </div>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full sm:w-auto px-7 py-3.5 bg-[#5E17EB] hover:bg-[#4B12BD] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold uppercase tracking-widest text-sm rounded-lg transition-colors duration-200 flex-shrink-0"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  {submitting ? "Subscribing..." : "Subscribe Free"}
+                </button>
+              </div>
             </form>
           ) : (
             <div className="inline-flex items-center gap-3 bg-[#EAE9E3] border border-[#5E17EB]/20 rounded-lg px-7 py-4">
