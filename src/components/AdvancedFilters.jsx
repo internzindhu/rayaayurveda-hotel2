@@ -299,8 +299,14 @@ const STATIC_ACTIVITIES = [
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export default function AdvancedFilters({ onApply, className = "mb-8" }) {
-  const [open, setOpen] = useState(false);
+export default function AdvancedFilters({ onApply, className = "mb-8", open: openProp, onOpenChange }) {
+  const [openInternal, setOpenInternal] = useState(false);
+  const open = openProp !== undefined ? openProp : openInternal;
+  const setOpen = (v) => {
+    const next = typeof v === "function" ? v(open) : v;
+    if (onOpenChange) onOpenChange(next);
+    else setOpenInternal(next);
+  };
   const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [lookups, setLookups] = useState(null);
   const [lookupsLoading, setLookupsLoading] = useState(false);

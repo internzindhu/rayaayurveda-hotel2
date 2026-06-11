@@ -6,6 +6,9 @@ import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import { fetchWellnessHotels } from "../lib/wellnessApi";
 import AdvancedFilters from "../components/AdvancedFilters";
 import PriceRangeSlider from "../components/PriceRangeSlider";
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/style.css";
+import { format, parseISO } from "date-fns";
 
 const INITIAL_DISPLAY = 8;
 
@@ -42,6 +45,25 @@ function getCurrentMonthPrice(hotel) {
   return [...hotel.monthly_prices].sort((a, b) => Number(a.price) - Number(b.price))[0] ?? null;
 }
 
+function getBestPrice(hotel, arrivalDate) {
+  if (!hotel.monthly_prices?.length) return null;
+  const candidates = arrivalDate
+    ? hotel.monthly_prices.filter((mp) => {
+        const from = parseISO(mp.valid_from);
+        const to = parseISO(mp.valid_to);
+        return arrivalDate >= from && arrivalDate <= to;
+      })
+    : hotel.monthly_prices;
+  if (!candidates.length) return null;
+  return candidates.sort((a, b) => {
+    const priorityDiff = (b.priority ?? 0) - (a.priority ?? 0);
+    if (priorityDiff !== 0) return priorityDiff;
+    const aLen = parseISO(a.valid_to) - parseISO(a.valid_from);
+    const bLen = parseISO(b.valid_to) - parseISO(b.valid_from);
+    return aLen - bLen;
+  })[0];
+}
+
 function formatMonthlyPrice(mp) {
   if (!mp) return null;
   const price = Number(mp.price);
@@ -68,14 +90,18 @@ export default function IndividualStaysSriLanka() {
   const [error, setError] = useState(null);
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY);
   const [searchInput, setSearchInput] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState("");
+  const [dateRange, setDateRange] = useState({ from: undefined, to: undefined });
+  const [pendingRange, setPendingRange] = useState({ from: undefined, to: undefined });
+  const [showCalendar, setShowCalendar] = useState(false);
   const [priceBounds, setPriceBounds] = useState(null);
   const [selectedPrice, setSelectedPrice] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeFilterParams, setActiveFilterParams] = useState({});
   const [showBudgetSlider, setShowBudgetSlider] = useState(false);
+  const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false);
 
   const searchRef = useRef(null);
+  const calendarRef = useRef(null);
   const budgetLeaveTimer = useRef(null);
 
   const loadHotels = useCallback(async (extraParams = {}) => {
@@ -110,6 +136,9 @@ export default function IndividualStaysSriLanka() {
       if (searchRef.current && !searchRef.current.contains(e.target)) {
         setShowDropdown(false);
       }
+      if (calendarRef.current && !calendarRef.current.contains(e.target)) {
+        setShowCalendar(false);
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -137,11 +166,10 @@ export default function IndividualStaysSriLanka() {
     else params.search = q;
   };
 
-  // price is only applied on explicit Search click, not on other filter changes
-  const buildParams = ({ month = selectedMonth, price = null, filters = activeFilterParams, search = searchInput } = {}) => {
+  const buildParams = ({ price = null, filters = activeFilterParams, search = searchInput } = {}) => {
     const params = { ...filters };
     applySearchInput(search, params);
-    if (month) params.month = month;
+    if (dateRange.from) params.dateFrom = format(dateRange.from, "yyyy-MM-dd");
     if (price) {
       params.min_price = price[0];
       params.max_price = price[1];
@@ -152,6 +180,7 @@ export default function IndividualStaysSriLanka() {
   const handleSearchClick = () => {
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
+    setAdvancedFiltersOpen(false);
     loadHotels(buildParams({ price: selectedPrice }));
   };
 
@@ -160,12 +189,6 @@ export default function IndividualStaysSriLanka() {
     if (!value.trim()) {
       loadHotels(buildParams({ search: "" }));
     }
-  };
-
-  const handleMonthChange = (month) => {
-    setSelectedMonth(month);
-    setDisplayCount(INITIAL_DISPLAY);
-    loadHotels(buildParams({ month }));
   };
 
   const handlePriceChange = ([low, high]) => {
@@ -188,12 +211,28 @@ export default function IndividualStaysSriLanka() {
     : [];
 
   const priceFilteredHotels = hotels.filter((hotel) => {
-    if (!selectedPrice || !priceBounds) return true;
-    if (selectedPrice[0] <= priceBounds.min && selectedPrice[1] >= priceBounds.max) return true;
-    const mp = getCurrentMonthPrice(hotel);
-    if (!mp) return true;
-    const price = Number(mp.price);
-    return price >= selectedPrice[0] && price <= selectedPrice[1];
+    if (dateRange.from) {
+      const arrival = dateRange.from;
+      const hasCoveringPrice = hotel.monthly_prices?.some((mp) => {
+        const from = parseISO(mp.valid_from);
+        const to = parseISO(mp.valid_to);
+        return arrival >= from && arrival <= to;
+      });
+      if (!hasCoveringPrice) return false;
+    }
+    if (dateRange.from && dateRange.to && hotel.min_nights) {
+      const nights = Math.round((dateRange.to - dateRange.from) / 86400000);
+      if (nights < hotel.min_nights) return false;
+    }
+    if (selectedPrice && priceBounds) {
+      if (!(selectedPrice[0] <= priceBounds.min && selectedPrice[1] >= priceBounds.max)) {
+        const mp = getBestPrice(hotel, dateRange.from);
+        if (!mp) return true;
+        const price = Number(mp.price);
+        if (price < selectedPrice[0] || price > selectedPrice[1]) return false;
+      }
+    }
+    return true;
   });
 
   const hotelsToShow = priceFilteredHotels.slice(0, displayCount);
@@ -275,10 +314,9 @@ export default function IndividualStaysSriLanka() {
       {/* Page Content */}
       <div className="max-w-7xl mx-auto px-4 py-16">
 
-        {/* Search Bar — single line */}
+        {/* Search Bar */}
         <div className="w-full bg-[#FFF8F2] rounded-xl shadow-sm border border-[#FFF0E0] px-6 sm:px-10 py-6 sm:py-8 mb-6 flex flex-col gap-4">
 
-          {/* One unified bar: destination | month | price | search */}
           <div className="flex flex-col md:flex-row items-stretch md:items-end gap-4 md:gap-0 md:divide-x md:divide-[#E0D4C8]">
 
             {/* Destination or Hotel */}
@@ -347,36 +385,87 @@ export default function IndividualStaysSriLanka() {
               )}
             </div>
 
-            {/* Month */}
-            <div className="flex-1 flex flex-col md:px-6 transition-opacity duration-200">
+            {/* Travel Period */}
+            <div className="flex-1 flex flex-col md:px-6 relative" ref={calendarRef}>
               <label
-                htmlFor="travel-month"
                 className="text-xs tracking-[0.16em] text-[#181818] mb-1 uppercase"
                 style={{ fontFamily: "Lato, sans-serif" }}
               >
-                Month
+                Travel Period
               </label>
-              <select
-                id="travel-month"
-                value={selectedMonth}
-                onChange={(e) => handleMonthChange(e.target.value)}
-                className="w-full text-sm text-[#181818] bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB] appearance-none cursor-pointer"
-                style={{ fontFamily: "Lato, sans-serif" }}
+              <button
+                type="button"
+                onClick={() => {
+                  if (!showCalendar) setPendingRange(dateRange);
+                  setShowCalendar((v) => !v);
+                }}
+                className="w-full text-left text-sm bg-transparent border-b border-[#E0D4C8] py-1 focus:outline-none focus:border-[#5E17EB]"
+                style={{ fontFamily: "Lato, sans-serif", color: dateRange.from ? "#181818" : "#8C8C8C" }}
               >
-                <option value="">Any month</option>
-                <option value="January">January</option>
-                <option value="February">February</option>
-                <option value="March">March</option>
-                <option value="April">April</option>
-                <option value="May">May</option>
-                <option value="June">June</option>
-                <option value="July">July</option>
-                <option value="August">August</option>
-                <option value="September">September</option>
-                <option value="October">October</option>
-                <option value="November">November</option>
-                <option value="December">December</option>
-              </select>
+                {dateRange.from
+                  ? dateRange.to
+                    ? `${format(dateRange.from, "d MMM")} – ${format(dateRange.to, "d MMM yyyy")}`
+                    : format(dateRange.from, "d MMM yyyy")
+                  : "When & how long"}
+              </button>
+
+              {showCalendar && (
+                <div className="raya-calendar absolute left-0 top-full mt-2 z-50 bg-white rounded-xl shadow-xl border border-[#E0D4C8] p-4 w-max">
+                  <DayPicker
+                    mode="range"
+                    selected={pendingRange}
+                    onSelect={(range) => {
+                      if (!range || (!range.from && !range.to)) {
+                        setPendingRange({ from: undefined, to: undefined });
+                        return;
+                      }
+                      if (range.from && !range.to) {
+                        if (pendingRange.from && !pendingRange.to) {
+                          setPendingRange({ from: range.from, to: pendingRange.from });
+                        } else {
+                          setPendingRange({ from: range.from, to: undefined });
+                        }
+                        return;
+                      }
+                      setPendingRange(range);
+                    }}
+                    disabled={{ before: new Date() }}
+                    startMonth={new Date()}
+                    numberOfMonths={2}
+                    styles={{ months: { display: "flex", flexDirection: "row", gap: "24px" } }}
+                  />
+                  <div className="flex items-center justify-between mt-3 px-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPendingRange({ from: undefined, to: undefined });
+                        setDateRange({ from: undefined, to: undefined });
+                        setShowCalendar(false);
+                      }}
+                      className="text-xs text-[#8C8C8C] hover:text-[#181818] transition-colors"
+                      style={{ fontFamily: "Lato, sans-serif" }}
+                    >
+                      Clear
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!pendingRange.from || !pendingRange.to}
+                      onClick={() => {
+                        setDateRange(pendingRange);
+                        setShowCalendar(false);
+                      }}
+                      className={`text-xs px-4 py-2 rounded-lg transition-colors ${
+                        pendingRange.from && pendingRange.to
+                          ? "bg-[#5E17EB] text-white hover:bg-[#4B12BD] cursor-pointer"
+                          : "bg-[#E0D4C8] text-[#8C8C8C] cursor-not-allowed"
+                      }`}
+                      style={{ fontFamily: "Lato, sans-serif" }}
+                    >
+                      {pendingRange.from && pendingRange.to ? "Confirm dates" : "Select end date"}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Budget */}
@@ -462,7 +551,7 @@ export default function IndividualStaysSriLanka() {
 
           {/* Advanced Filters */}
           <div className="border-t border-[#E0D4C8] pt-4 transition-opacity duration-200">
-            <AdvancedFilters onApply={handleAdvancedFiltersApply} className="mb-0" />
+            <AdvancedFilters onApply={handleAdvancedFiltersApply} className="mb-0" open={advancedFiltersOpen} onOpenChange={setAdvancedFiltersOpen} />
           </div>
         </div>
 
@@ -489,7 +578,7 @@ export default function IndividualStaysSriLanka() {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 items-start">
                 {hotelsToShow.map((hotel, index) => {
-                  const monthlyPrice = getCurrentMonthPrice(hotel);
+                  const monthlyPrice = getBestPrice(hotel, dateRange.from);
                   const priceDisplay = formatMonthlyPrice(monthlyPrice) ?? hotel.price ?? null;
                   return (
                     <RevealOnScroll key={hotel.id} delay={(index % 4) * 70} className="flex flex-col">
@@ -533,7 +622,13 @@ export default function IndividualStaysSriLanka() {
                         </div>
                       )}
                       <Link
-                        to={`/book-hotel/${hotel.id}`}
+                          to={`/book-hotel/${hotel.id}${
+                            dateRange.from
+                              ? `?from=${format(dateRange.from, "yyyy-MM-dd")}${
+                                  dateRange.to ? `&to=${format(dateRange.to, "yyyy-MM-dd")}` : ""
+                                }`
+                              : ""
+                          }`}
                         className="text-[#5E17EB] hover:underline inline-block uppercase mt-6"
                         style={{ fontFamily: "Lato", fontWeight: "500", fontStyle: "normal", fontSize: "14px", lineHeight: "100%", letterSpacing: "0.1em", textTransform: "uppercase" }}
                       >

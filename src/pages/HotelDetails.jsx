@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import SEO from "../components/SEO";
 import { fetchHotelById, fetchRelatedHotels, submitInquiry } from "../lib/wellnessApi";
@@ -12,8 +12,6 @@ function na(value) {
   return value;
 }
 
-// Extract [{name, description}] from a hotel relation array
-// e.g. hotel.activities → [{activity_id, activity: {name, description}}]
 function extractItems(arr, key) {
   if (!Array.isArray(arr) || arr.length === 0) return [];
   return arr
@@ -24,18 +22,15 @@ function extractItems(arr, key) {
     .filter((item) => item.name);
 }
 
-// Extract just the names
 function extractNames(arr, key) {
   return extractItems(arr, key).map((i) => i.name);
 }
 
-// Parse a comma-separated raw string into an array of name-only items
 function parseRaw(str) {
   if (!str || typeof str !== "string") return [];
   return str.split(",").map((s) => s.trim()).filter(Boolean).map((name) => ({ name, description: null }));
 }
 
-// Use structured array if populated, otherwise parse the _raw fallback string
 function getItems(arr, key, rawStr) {
   const structured = extractItems(arr, key);
   return structured.length > 0 ? structured : parseRaw(rawStr);
@@ -59,7 +54,6 @@ function SectionHeading({ children }) {
   );
 }
 
-// Mock images used when the hotel has no images yet
 const MOCK_SLIDES = ["/hotel.png", "/hotel.png", "/hotel.png", "/hotel.png"];
 
 function StarRating({ rating }) {
@@ -137,28 +131,6 @@ function ItemList({ items }) {
   );
 }
 
-function ActivityGrid({ items }) {
-  if (!items.length) return null;
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      {items.map((item, i) => (
-        <div key={i} className="border border-[#F0EBE4] rounded-lg p-3">
-          <p className="text-sm text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>
-            {item.name}
-          </p>
-          {item.description && (
-            <p
-              className="text-xs text-[#8C8C8C] mt-1 leading-relaxed"
-              style={{ fontFamily: "Lato, sans-serif" }}
-            >
-              {item.description}
-            </p>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
 
 function AccordionSection({ id, title, openAccordion, onToggle, children }) {
   const isOpen = openAccordion === id;
@@ -197,6 +169,7 @@ function AccordionSection({ id, title, openAccordion, onToggle, children }) {
 export default function HotelDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [hotel, setHotel] = useState(null);
   const [otherHotels, setOtherHotels] = useState([]);
@@ -207,11 +180,19 @@ export default function HotelDetails() {
   const [openAccordion, setOpenAccordion] = useState(null);
   const toggleAccordion = (id) => setOpenAccordion((prev) => (prev === id ? null : id));
 
-  // Booking form
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo] = useState("");
+  // Booking form — pre-populate from URL params if coming from listing page
+  const [dateFrom, setDateFrom] = useState(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get("from") ?? "";
+  });
+  const [dateTo, setDateTo] = useState(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get("to") ?? "";
+  });
   const [roomType, setRoomType] = useState("Double");
   const [people, setPeople] = useState(2);
+  const [bookingStatus, setBookingStatus] = useState("");
+  const [roomCategory, setRoomCategory] = useState("base");
   const [transportMode, setTransportMode] = useState("");
   const [flightIncluded, setFlightIncluded] = useState("");
   const [formErrors, setFormErrors] = useState({});
@@ -249,9 +230,20 @@ export default function HotelDetails() {
     const errors = {};
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const currentMonth = new Date().toISOString().slice(0, 7);
-    if (!dateFrom) errors.dateFrom = "Please select a travel month.";
-    else if (dateFrom < currentMonth) errors.dateFrom = "Travel month cannot be in the past.";
+    if (!dateFrom) errors.dateFrom = "Please select your arrival date.";
+    else {
+      const arrival = new Date(dateFrom);
+      arrival.setHours(0, 0, 0, 0);
+      if (arrival < today) errors.dateFrom = "Arrival date cannot be in the past.";
+    }
+    if (!dateTo) errors.dateTo = "Please select your departure date.";
+    else if (dateFrom && dateTo) {
+      const nights = Math.round((new Date(dateTo) - new Date(dateFrom)) / 86400000);
+      if (nights < 1) errors.dateTo = "Departure must be after arrival.";
+      else if (hotel.min_nights && nights < hotel.min_nights) {
+        errors.dateTo = `This retreat requires a minimum stay of ${hotel.min_nights} nights.`;
+      }
+    }
     if (!fullName) errors.fullName = "Full name is required.";
     if (!email) errors.email = "Email is required.";
     if (!country) errors.country = "Country is required.";
@@ -261,7 +253,7 @@ export default function HotelDetails() {
     try {
       setSubmitting(true);
       await submitInquiry({
-        booking: { dateFrom, dateTo, roomType, people, transportMode, flightIncluded },
+        booking: { dateFrom, dateTo, roomType, people, roomCategory, transportMode, flightIncluded, bookingStatus },
         personal: { gender, fullName, email, country, mobile, comment },
         hotelName: hotel.name,
       });
@@ -279,10 +271,7 @@ export default function HotelDetails() {
       <div className="min-h-screen bg-[#FFFBF7]">
         <Navbar />
         <main className="max-w-6xl mx-auto px-4 pt-32 pb-20 text-center">
-          <p
-            className="text-[#181818] animate-pulse"
-            style={{ fontFamily: "Lato, sans-serif" }}
-          >
+          <p className="text-[#181818] animate-pulse" style={{ fontFamily: "Lato, sans-serif" }}>
             Loading retreat…
           </p>
         </main>
@@ -295,10 +284,7 @@ export default function HotelDetails() {
       <div className="min-h-screen bg-[#FFFBF7]">
         <Navbar />
         <main className="max-w-6xl mx-auto px-4 pt-32 pb-20 text-center">
-          <p
-            className="text-red-600 mb-4"
-            style={{ fontFamily: "Lato, sans-serif" }}
-          >
+          <p className="text-red-600 mb-4" style={{ fontFamily: "Lato, sans-serif" }}>
             {error || "Retreat not found."}
           </p>
           <button
@@ -323,6 +309,7 @@ export default function HotelDetails() {
     : hotel.images
     ? [typeof hotel.images === "string" ? hotel.images : hotel.images?.url]
     : [];
+
   const facilities     = getNames(hotel.facilities,          "facility",          hotel.facilities_raw);
   const activities     = getItems(hotel.activities,          "activity",          hotel.activities_raw);
   const mealPlans      = getItems(hotel.meal_plans,          "meal_plan",         hotel.meal_plan_raw);
@@ -332,45 +319,51 @@ export default function HotelDetails() {
   const roomFeatures   = getNames(hotel.room_features,       "room_feature",      null);
   const restrictions   = getNames(hotel.restrictions,        "restriction",       hotel.restrictions_raw);
 
-  // When a month is selected: return the row(s) valid for that month.
-  // When no month selected: return the single lowest-price row so the hero card
-  // shows a clean "From USD X / night" instead of dumping every month's price.
+  // Compute the earliest valid departure date based on min_nights
+  const earliestDeparture = (() => {
+    if (!dateFrom) return new Date().toISOString().slice(0, 10);
+    const earliest = new Date(dateFrom);
+    earliest.setDate(earliest.getDate() + (hotel.min_nights || 1));
+    return earliest.toISOString().slice(0, 10);
+  })();
+
+  // Best price for the selected arrival date, with priority logic.
+  // Falls back to lowest base price when no date selected.
   const pricingForMonth = (() => {
     if (!hotel.monthly_prices?.length) return [];
     if (!dateFrom) {
       const sorted = [...hotel.monthly_prices].sort((a, b) => Number(a.price) - Number(b.price));
       return [sorted[0]];
     }
-    const [year, month] = dateFrom.split("-").map(Number);
-    const probe = new Date(year, month - 1, 15);
-    const filtered = hotel.monthly_prices.filter(
-      (mp) => new Date(mp.valid_from) <= probe && probe <= new Date(mp.valid_to)
+    const arrival = new Date(dateFrom);
+    const candidates = hotel.monthly_prices.filter(
+      (mp) => new Date(mp.valid_from) <= arrival && arrival <= new Date(mp.valid_to)
     );
-    return filtered.length > 0 ? filtered : [];
+    if (!candidates.length) return [];
+    const best = candidates.sort((a, b) => {
+      const pd = (b.priority ?? 0) - (a.priority ?? 0);
+      if (pd !== 0) return pd;
+      return (new Date(a.valid_to) - new Date(a.valid_from)) - (new Date(b.valid_to) - new Date(b.valid_from));
+    })[0];
+    return [best];
   })();
 
-  // Property type: try structured array first, fall back to raw string
   const propertyType =
     hotel.property_types?.length > 0
       ? hotel.property_types.map((pt) => pt?.name ?? pt).join(", ")
       : na(hotel.property_type_raw) ?? na(hotel.property_type);
 
-  // Unique features / highlights (plain text string)
   const uniqueFeatures = na(hotel.unique_features);
 
   const doctorsValue =
-    hotel.doctors_available === "yes" || hotel.doctors_available === true
-      ? "Yes"
-      : hotel.doctors_available === "no" || hotel.doctors_available === false
-      ? "No"
-      : null;
+    hotel.doctors_available === "yes" || hotel.doctors_available === true ? "Yes"
+    : hotel.doctors_available === "no" || hotel.doctors_available === false ? "No"
+    : null;
 
   const medicalValue =
-    hotel.medical_report_support === "yes" || hotel.medical_report_support === true
-      ? "Yes"
-      : hotel.medical_report_support === "no" || hotel.medical_report_support === false
-      ? "No"
-      : null;
+    hotel.medical_report_support === "yes" || hotel.medical_report_support === true ? "Yes"
+    : hotel.medical_report_support === "no" || hotel.medical_report_support === false ? "No"
+    : null;
 
   const poolValue =
     hotel.swimming_pool === true ? "Yes" : hotel.swimming_pool === false ? "No" : null;
@@ -400,7 +393,6 @@ export default function HotelDetails() {
               }
               url={`/book-hotel/${id}`}
             />
-            {/* Back link */}
             <button
               type="button"
               onClick={() => navigate(-1)}
@@ -425,10 +417,7 @@ export default function HotelDetails() {
                 </h1>
 
                 {na(hotel.price) && (
-                  <p
-                    className="text-xl text-[#5E17EB] mb-3"
-                    style={{ fontFamily: "Sentient, serif" }}
-                  >
+                  <p className="text-xl text-[#5E17EB] mb-3" style={{ fontFamily: "Sentient, serif" }}>
                     {hotel.price}
                   </p>
                 )}
@@ -438,19 +427,19 @@ export default function HotelDetails() {
                 </div>
 
                 {na(hotel.location) && (
-                  <p
-                    className="text-sm text-[#181818] mb-1"
-                    style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
-                  >
+                  <p className="text-sm text-[#181818] mb-1" style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}>
                     {hotel.location}
                   </p>
                 )}
 
+                {hotel.min_nights && (
+                  <p className="text-xs text-[#5E17EB] mb-1" style={{ fontFamily: "Lato, sans-serif" }}>
+                    Minimum stay: {hotel.min_nights} nights
+                  </p>
+                )}
+
                 {na(hotel.slogan_line) && (
-                  <p
-                    className="text-xs text-[#555] leading-relaxed mb-6"
-                    style={{ fontFamily: "Lato, sans-serif" }}
-                  >
+                  <p className="text-xs text-[#555] leading-relaxed mb-6" style={{ fontFamily: "Lato, sans-serif" }}>
                     {hotel.slogan_line}
                   </p>
                 )}
@@ -462,7 +451,7 @@ export default function HotelDetails() {
                       style={{ fontFamily: "Lato, sans-serif" }}
                     >
                       {dateFrom
-                        ? new Date(dateFrom + "-01").toLocaleString("default", { month: "long", year: "numeric" })
+                        ? new Date(dateFrom).toLocaleDateString("default", { day: "numeric", month: "long", year: "numeric" })
                         : "Starting from"}
                     </p>
                     <div className="flex flex-col gap-1.5">
@@ -485,17 +474,6 @@ export default function HotelDetails() {
                 )}
 
                 <div className="flex items-center gap-5 mt-auto">
-                  {/* <button
-                    type="button"
-                    className="flex items-center gap-1.5 text-xs text-[#181818] hover:text-[#5E17EB] transition-colors"
-                    style={{ fontFamily: "Lato, sans-serif" }}
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                    </svg>
-                    Wishlist
-                  </button> */}
-
                   {na(hotel.google_maps_url) ? (
                     <a
                       href={hotel.google_maps_url}
@@ -597,18 +575,12 @@ export default function HotelDetails() {
                   </p>
                 )}
                 {uniqueFeatures && (
-                  <p
-                    className="text-sm text-[#181818] leading-relaxed"
-                    style={{ fontFamily: "Lato, sans-serif" }}
-                  >
+                  <p className="text-sm text-[#181818] leading-relaxed" style={{ fontFamily: "Lato, sans-serif" }}>
                     {uniqueFeatures}
                   </p>
                 )}
               </section>
             )}
-
-            
-            
 
             {/* Wellness Offerings */}
             {wellnessItems.length > 0 && (
@@ -634,12 +606,13 @@ export default function HotelDetails() {
             {activities.length > 0 && (
               <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
                 <SectionHeading>Activities &amp; Experiences</SectionHeading>
-                <ActivityGrid items={activities} />
+                <div className="flex flex-wrap gap-2">
+                  {activities.map((item) => (
+                    <Chip key={item.name}>{item.name}</Chip>
+                  ))}
+                </div>
               </section>
             )}
-
-           
-            
 
             {/* Dining */}
             {(cuisineTypes.length > 0 || diningFeatures.length > 0) && (
@@ -686,11 +659,6 @@ export default function HotelDetails() {
                   <InfoRow label="Medical Report Assistance" value={medicalValue} />
                 </AccordionSection>
               )}
-              {/* {mealPlans.length > 0 && (
-                <AccordionSection id="meal-plans" title="Meal Plans" openAccordion={openAccordion} onToggle={toggleAccordion}>
-                  <ItemList className="ml-12" items={mealPlans} />
-                </AccordionSection>
-              )} */}
               {roomFeatures.length > 0 && (
                 <AccordionSection id="room-features" title="Room Features" openAccordion={openAccordion} onToggle={toggleAccordion}>
                   <div className="flex flex-wrap gap-2">
@@ -723,30 +691,97 @@ export default function HotelDetails() {
           <div className="w-full lg:w-[340px] lg:sticky lg:top-8 lg:self-start shrink-0">
             <aside className="bg-white border border-[#F0EBE4] rounded-xl p-6 shadow-sm">
               <h2
-                className="text-lg text-[#181818] mb-1"
+                className="text-lg text-[#181818] mb-3"
                 style={{ fontFamily: "Sentient, serif" }}
               >
-                Inquire about this retreat
+                Book Your Stay
               </h2>
               <p
-                className="text-xs text-[#8C8C8C] mb-6"
+                className="text-xs text-[#8C8C8C] mb-6 leading-relaxed"
                 style={{ fontFamily: "Lato, sans-serif" }}
               >
-                Fill in your preferences and we'll get back to you.
+                Share your travel details below and our Wellness Advisors will assist you in planning your personalised Ayurveda and wellness retreat. Your enquiry is free and non-binding.
               </p>
 
+              {/* Min stay banner */}
+              {hotel.min_nights && (
+                <div className="bg-[#F3F0FF] rounded-lg px-3 py-2 mb-4 flex items-center gap-2">
+                  <svg className="w-3.5 h-3.5 text-[#5E17EB] shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p className="text-[11px] text-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
+                    Minimum stay: <span className="font-semibold">{hotel.min_nights} nights</span>
+                  </p>
+                </div>
+              )}
+
+              {/* Booking Status */}
+              <div className="mb-5">
+                <p className="text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "Lato, sans-serif" }}>Booking Status</p>
+                <div className="flex flex-col gap-2">
+                  {[
+                    { value: "ready", label: "I'm ready to book" },
+                    { value: "explore", label: "I'd like to explore my options" },
+                    { value: "help", label: "I need help choosing the right retreat" },
+                  ].map((opt) => (
+                    <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="bookingStatus"
+                        value={opt.value}
+                        checked={bookingStatus === opt.value}
+                        onChange={() => setBookingStatus(opt.value)}
+                        className="w-3.5 h-3.5 text-[#5E17EB] border-[#E0D4C8] focus:ring-[#5E17EB]"
+                      />
+                      <span className="text-xs text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>{opt.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
               <div className="space-y-4 text-sm">
-                {/* Month to travel */}
+
+                {/* Arrival date */}
                 <div>
-                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>The month you plan to travel</label>
+                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>
+                    Arrival Date
+                  </label>
                   <input
-                    type="month"
+                    type="date"
                     value={dateFrom}
-                    min={new Date().toISOString().slice(0, 7)}
-                    onChange={(e) => { setDateFrom(e.target.value); setFormErrors((prev) => ({ ...prev, dateFrom: undefined })); }}
+                    min={new Date().toISOString().slice(0, 10)}
+                    onChange={(e) => {
+                      setDateFrom(e.target.value);
+                      setFormErrors((prev) => ({ ...prev, dateFrom: undefined, dateTo: undefined }));
+                      // If departure is now invalid (before new arrival or below min nights), clear it
+                      if (dateTo && hotel.min_nights) {
+                        const newNights = Math.round((new Date(dateTo) - new Date(e.target.value)) / 86400000);
+                        if (newNights < hotel.min_nights) setDateTo("");
+                      } else if (dateTo && e.target.value > dateTo) {
+                        setDateTo("");
+                      }
+                    }}
                     className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.dateFrom ? "border-red-400" : "border-[#E0D4C8]"}`}
                   />
                   {formErrors.dateFrom && <p className="text-red-500 text-[10px] mt-1">{formErrors.dateFrom}</p>}
+                </div>
+
+                {/* Departure date */}
+                <div>
+                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>
+                    Departure Date
+                  </label>
+                  <input
+                    type="date"
+                    value={dateTo}
+                    min={earliestDeparture}
+                    onChange={(e) => {
+                      setDateTo(e.target.value);
+                      setFormErrors((prev) => ({ ...prev, dateTo: undefined }));
+                    }}
+                    className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.dateTo ? "border-red-400" : "border-[#E0D4C8]"}`}
+                  />
+                  {formErrors.dateTo && <p className="text-red-500 text-[10px] mt-1">{formErrors.dateTo}</p>}
                 </div>
 
                 {/* Room type */}
@@ -758,7 +793,7 @@ export default function HotelDetails() {
                   </select>
                 </div>
 
-                {/* People */}
+                {/* Guests */}
                 <div>
                   <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Guests</label>
                   <div className="inline-flex items-center border border-[#E0D4C8] rounded-lg">
@@ -768,25 +803,52 @@ export default function HotelDetails() {
                   </div>
                 </div>
 
-                {/* Flight */}
-                {/* <div>
-                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Flight</label>
-                  <select value={flightIncluded} onChange={(e) => setFlightIncluded(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]">
-                    <option value="">Not included</option>
-                    <option value="included">Included</option>
-                  </select>
-                </div> */}
+                {/* Room category */}
+                <div>
+                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "Lato, sans-serif" }}>Room Category</label>
+                  <div className="flex flex-col gap-2">
+                    {[
+                      { value: "base", label: "Base category" },
+                      { value: "higher", label: "Open to look for higher options" },
+                    ].map((opt) => (
+                      <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="roomCategory"
+                          value={opt.value}
+                          checked={roomCategory === opt.value}
+                          onChange={() => setRoomCategory(opt.value)}
+                          className="w-3.5 h-3.5 text-[#5E17EB] border-[#E0D4C8] focus:ring-[#5E17EB]"
+                        />
+                        <span className="text-xs text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>{opt.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
 
                 {/* Transport */}
                 <div>
-                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Transport</label>
-                  <select value={transportMode} onChange={(e) => setTransportMode(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]">
-                    <option value="">Select</option>
-                    <option>Car</option>
-                    <option>Van</option>
-                  </select>
+                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "Lato, sans-serif" }}>Transport</label>
+                  <div className="flex gap-2">
+                    {["Yes", "No", "Maybe"].map((opt) => (
+                      <button
+                        key={opt}
+                        type="button"
+                        onClick={() => setTransportMode(transportMode === opt ? "" : opt)}
+                        className={`flex-1 py-2 text-xs border transition-all ${
+                          transportMode === opt
+                            ? "border-[#181818] bg-white text-[#181818] font-medium"
+                            : "border-[#E0D4C8] bg-white text-[#181818] hover:border-[#181818]"
+                        }`}
+                        style={{ fontFamily: "Lato, sans-serif" }}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
+                {/* Price display */}
                 {pricingForMonth.length > 0 && (
                   <div className="bg-[#F3F0FF] rounded-lg px-4 py-3">
                     <p className="text-[10px] text-[#5E17EB] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "Lato, sans-serif" }}>
@@ -801,7 +863,7 @@ export default function HotelDetails() {
                   </div>
                 )}
 
-                {/* Divider */}
+                {/* Personal details */}
                 <div className="border-t border-[#F0EBE4] pt-4">
                   <p className="text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-4" style={{ fontFamily: "Lato, sans-serif" }}>Personal Details</p>
 
@@ -852,9 +914,9 @@ export default function HotelDetails() {
                     {formErrors.mobile && <p className="text-red-500 text-[10px] mt-1">{formErrors.mobile}</p>}
                   </div>
 
-                  {/* Comment */}
+                  {/* Remark */}
                   <div>
-                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Comment</label>
+                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Remark</label>
                     <textarea placeholder="Any additional wishes..." value={comment} onChange={(e) => setComment(e.target.value)} rows={3} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] resize-y" style={{ fontFamily: "Lato, sans-serif" }} />
                   </div>
                 </div>
@@ -877,10 +939,7 @@ export default function HotelDetails() {
         {otherHotels.length > 0 && (
           <section className="mt-20">
             <div className="text-center mb-12">
-              <p
-                className="text-[10px] tracking-[0.22em] text-[#5E17EB] uppercase mb-3"
-                style={{ fontFamily: "Lato, sans-serif" }}
-              >
+              <p className="text-[10px] tracking-[0.22em] text-[#5E17EB] uppercase mb-3" style={{ fontFamily: "Lato, sans-serif" }}>
                 Raya Wellbeing
               </p>
               <h2
@@ -904,13 +963,7 @@ export default function HotelDetails() {
                   return (
                     <div
                       key={h.id}
-                      className={`flex flex-col ${
-                        index === 1
-                          ? "lg:mt-[60px]"
-                          : index === 2
-                          ? "lg:mt-[100px]"
-                          : ""
-                      }`}
+                      className={`flex flex-col ${index === 1 ? "lg:mt-[60px]" : index === 2 ? "lg:mt-[100px]" : ""}`}
                     >
                       <img
                         src={img || "/hotel.png"}
@@ -924,17 +977,11 @@ export default function HotelDetails() {
                         {h.name}
                       </h3>
                       {h.slogan_line && (
-                        <p
-                          className="text-sm text-[#5E17EB] mb-1"
-                          style={{ fontFamily: "Lato, sans-serif" }}
-                        >
+                        <p className="text-sm text-[#5E17EB] mb-1" style={{ fontFamily: "Lato, sans-serif" }}>
                           {h.slogan_line}
                         </p>
                       )}
-                      <p
-                        className="text-xs text-[#8C8C8C] mb-4"
-                        style={{ fontFamily: "Lato, sans-serif" }}
-                      >
+                      <p className="text-xs text-[#8C8C8C] mb-4" style={{ fontFamily: "Lato, sans-serif" }}>
                         {h.location}
                       </p>
                       <Link
