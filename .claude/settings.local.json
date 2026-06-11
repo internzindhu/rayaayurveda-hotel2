@@ -21,7 +21,16 @@
       "Bash(Select-Object FullName, Length, PSIsContainer)",
       "Bash(Format-Table -AutoSize)",
       "mcp__e45628be-0f36-4045-b678-9adc196cd1dd__get_project_url",
-      "mcp__e45628be-0f36-4045-b678-9adc196cd1dd__get_publishable_keys"
+      "mcp__e45628be-0f36-4045-b678-9adc196cd1dd__get_publishable_keys",
+      "Bash(Get-ChildItem -Path \"C:\\\\raya2\\\\rayaayurveda-hotel2\\\\src\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\raya2\\\\backend- raya\" -Recurse)",
+      "Bash(Select-Object FullName)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\raya2\\\\rayaayurveda-hotel2\\\\src\" -Recurse -Directory | ForEach-Object { $_.FullName })",
+      "Bash(find \"C:\\\\\\\\raya2\\\\\\\\backend- raya\" -type f -name \"*.js\" -o -name \"*.json\")",
+      "Bash(ls -la \"C:\\\\\\\\raya2\\\\\\\\backend- raya\")",
+      "Bash(find \"C:\\\\\\\\raya2\\\\\\\\backend- raya\\\\\\\\src\" -type f \\\\\\( -name \"*.ts\" -o -name \"*.js\" \\\\\\))",
+      "Bash(npx prisma *)"
     ],
     "additionalDirectories": [
       "c:\\raya2\\rayaayurveda-hotel2"

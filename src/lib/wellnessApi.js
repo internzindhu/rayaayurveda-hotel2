@@ -64,3 +64,29 @@ export async function submitConsultation(payload) {
   }
   return res.json();
 }
+
+export async function submitCallExpert(payload) {
+  const res = await fetch(`${API_BASE}/api/call-expert`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Call expert submission failed (${res.status}): ${text || res.statusText}`);
+  }
+  return res.json();
+}
+
+export async function submitQuestionnaireResults(payload) {
+  const res = await fetch(`${API_BASE}/api/questionnaire`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Questionnaire submission failed (${res.status}): ${text || res.statusText}`);
+  }
+  return res.json();
+}

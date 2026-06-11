@@ -256,6 +256,7 @@ export default function HotelDetails() {
         booking: { dateFrom, dateTo, roomType, people, roomCategory, transportMode, flightIncluded, bookingStatus },
         personal: { gender, fullName, email, country, mobile, comment },
         hotelName: hotel.name,
+        recipientEmail: "hod@rayalonglife.com",
       });
       setShowSuccessPopup(true);
     } catch {
@@ -688,16 +689,16 @@ export default function HotelDetails() {
           </div>
 
           {/* ════ RIGHT — sticky booking form ════ */}
-          <div className="w-full lg:w-[410px] lg:sticky lg:top-8 lg:self-start shrink-0">
-            <aside className="bg-white border border-[#F0EBE4] rounded-xl p-6 shadow-sm">
+          <div className="w-full lg:w-[540px] lg:sticky lg:top-8 lg:self-start shrink-0">
+            <aside className="bg-white border border-[#F0EBE4] rounded-xl p-7 shadow-sm">
               <h2
-                className="text-lg text-[#181818] mb-3"
+                className="text-xl text-[#181818] mb-3"
                 style={{ fontFamily: "Sentient, serif" }}
               >
                 Book Your Stay
               </h2>
               <p
-                className="text-xs text-[#8C8C8C] mb-6 leading-relaxed"
+                className="text-sm text-[#8C8C8C] mb-6 leading-relaxed"
                 style={{ fontFamily: "Lato, sans-serif" }}
               >
                 Share your travel details below and our Wellness Advisors will assist you in planning your personalised Ayurveda and wellness retreat. Your enquiry is free and non-binding.
@@ -706,10 +707,10 @@ export default function HotelDetails() {
               {/* Min stay banner */}
               {hotel.min_nights && (
                 <div className="bg-[#F3F0FF] rounded-lg px-3 py-2 mb-4 flex items-center gap-2">
-                  <svg className="w-3.5 h-3.5 text-[#5E17EB] shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-[#5E17EB] shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <p className="text-[11px] text-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
+                  <p className="text-xs text-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
                     Minimum stay: <span className="font-semibold">{hotel.min_nights} nights</span>
                   </p>
                 </div>
@@ -717,7 +718,7 @@ export default function HotelDetails() {
 
               {/* Booking Status */}
               <div className="mb-5">
-                <p className="text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "Lato, sans-serif" }}>Booking Status</p>
+                <p className="text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "Lato, sans-serif" }}>Booking Status</p>
                 <div className="flex flex-col gap-2">
                   {[
                     { value: "ready", label: "I'm ready to book" },
@@ -731,20 +732,20 @@ export default function HotelDetails() {
                         value={opt.value}
                         checked={bookingStatus === opt.value}
                         onChange={() => setBookingStatus(opt.value)}
-                        className="w-3.5 h-3.5 text-[#5E17EB] border-[#E0D4C8] focus:ring-[#5E17EB]"
+                        className="w-4 h-4 text-[#5E17EB] border-[#E0D4C8] focus:ring-[#5E17EB]"
                       />
-                      <span className="text-xs text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>{opt.label}</span>
+                      <span className="text-sm text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>{opt.label}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
-              <div className="space-y-4 text-sm">
+              <div className="space-y-4">
 
                 {/* Arrival + Departure dates — side by side */}
                 <div className="flex gap-3">
                   <div className="flex-1">
-                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>
+                    <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>
                       Arrival
                     </label>
                     <input
@@ -761,12 +762,12 @@ export default function HotelDetails() {
                           setDateTo("");
                         }
                       }}
-                      className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.dateFrom ? "border-red-400" : "border-[#E0D4C8]"}`}
+                      className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.dateFrom ? "border-red-400" : "border-[#E0D4C8]"}`}
                     />
-                    {formErrors.dateFrom && <p className="text-red-500 text-[10px] mt-1">{formErrors.dateFrom}</p>}
+                    {formErrors.dateFrom && <p className="text-red-500 text-xs mt-1">{formErrors.dateFrom}</p>}
                   </div>
                   <div className="flex-1">
-                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>
+                    <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>
                       Departure
                     </label>
                     <input
@@ -777,35 +778,35 @@ export default function HotelDetails() {
                         setDateTo(e.target.value);
                         setFormErrors((prev) => ({ ...prev, dateTo: undefined }));
                       }}
-                      className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.dateTo ? "border-red-400" : "border-[#E0D4C8]"}`}
+                      className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.dateTo ? "border-red-400" : "border-[#E0D4C8]"}`}
                     />
-                    {formErrors.dateTo && <p className="text-red-500 text-[10px] mt-1">{formErrors.dateTo}</p>}
+                    {formErrors.dateTo && <p className="text-red-500 text-xs mt-1">{formErrors.dateTo}</p>}
                   </div>
                 </div>
 
                 {/* Room type + Guests — side by side */}
                 <div className="flex gap-3">
                   <div className="flex-1">
-                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Room type</label>
-                    <select value={roomType} onChange={(e) => setRoomType(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
+                    <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Room type</label>
+                    <select value={roomType} onChange={(e) => setRoomType(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
                       <option>Single</option>
                       <option>Double</option>
                     </select>
                   </div>
                   <div className="flex-1">
-                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Guests</label>
+                    <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Guests</label>
                     <div className="flex items-center border border-[#E0D4C8] rounded-lg w-full">
-                      <button type="button" onClick={() => setPeople((p) => Math.max(1, p - 1))} className="px-3 py-2 text-base hover:bg-[#F0EBE4]/50 rounded-l-lg transition-colors leading-none flex-shrink-0">−</button>
-                      <span className="flex-1 py-2 text-xs border-l border-r border-[#E0D4C8] text-center" style={{ fontFamily: "Lato, sans-serif" }}>{people}</span>
-                      <button type="button" onClick={() => setPeople((p) => p + 1)} className="px-3 py-2 text-base hover:bg-[#F0EBE4]/50 rounded-r-lg transition-colors leading-none flex-shrink-0">+</button>
+                      <button type="button" onClick={() => setPeople((p) => Math.max(1, p - 1))} className="px-3 py-2.5 text-base hover:bg-[#F0EBE4]/50 rounded-l-lg transition-colors leading-none flex-shrink-0">−</button>
+                      <span className="flex-1 py-2.5 text-sm border-l border-r border-[#E0D4C8] text-center" style={{ fontFamily: "Lato, sans-serif" }}>{people}</span>
+                      <button type="button" onClick={() => setPeople((p) => p + 1)} className="px-3 py-2.5 text-base hover:bg-[#F0EBE4]/50 rounded-r-lg transition-colors leading-none flex-shrink-0">+</button>
                     </div>
                   </div>
                 </div>
 
                 {/* Room category — dropdown */}
                 <div>
-                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Room Category</label>
-                  <select value={roomCategory} onChange={(e) => setRoomCategory(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
+                  <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Room Category</label>
+                  <select value={roomCategory} onChange={(e) => setRoomCategory(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
                     <option value="base">Base category</option>
                     <option value="higher">Open to look for higher options</option>
                   </select>
@@ -813,8 +814,8 @@ export default function HotelDetails() {
 
                 {/* Transport — dropdown */}
                 <div>
-                  <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Transport</label>
-                  <select value={transportMode} onChange={(e) => setTransportMode(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
+                  <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Transport</label>
+                  <select value={transportMode} onChange={(e) => setTransportMode(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
                     <option value="">Select...</option>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
@@ -825,11 +826,11 @@ export default function HotelDetails() {
                 {/* Price display */}
                 {pricingForMonth.length > 0 && (
                   <div className="bg-[#F3F0FF] rounded-lg px-4 py-3">
-                    <p className="text-[10px] text-[#5E17EB] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "Lato, sans-serif" }}>
+                    <p className="text-xs text-[#5E17EB] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "Lato, sans-serif" }}>
                       {dateFrom ? "Estimated price" : "Starting from"}
                     </p>
                     {pricingForMonth.map((mp) => (
-                      <div key={mp.id} className="flex justify-between items-center text-xs" style={{ fontFamily: "Lato, sans-serif" }}>
+                      <div key={mp.id} className="flex justify-between items-center text-sm" style={{ fontFamily: "Lato, sans-serif" }}>
                         <span className="text-[#555] capitalize">{mp.occupancy || "per night"}</span>
                         <span className="font-medium text-[#181818]">{mp.currency} {Number(mp.price).toLocaleString()}</span>
                       </div>
@@ -839,36 +840,36 @@ export default function HotelDetails() {
 
                 {/* Personal details */}
                 <div className="border-t border-[#F0EBE4] pt-4">
-                  <p className="text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-4" style={{ fontFamily: "Lato, sans-serif" }}>Personal Details</p>
+                  <p className="text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-4" style={{ fontFamily: "Lato, sans-serif" }}>Personal Details</p>
 
                   {/* Gender */}
                   <div className="flex flex-wrap gap-4 mb-4">
                     {[{ value: "female", label: "Female" }, { value: "male", label: "Male" }, { value: "prefer-not", label: "Other" }].map((opt) => (
                       <label key={opt.value} className="flex items-center gap-1.5 cursor-pointer">
-                        <input type="radio" name="gender" value={opt.value} checked={gender === opt.value} onChange={() => setGender(opt.value)} className="w-3.5 h-3.5 text-[#5E17EB] border-[#E0D4C8] focus:ring-[#5E17EB]" />
-                        <span className="text-xs text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>{opt.label}</span>
+                        <input type="radio" name="gender" value={opt.value} checked={gender === opt.value} onChange={() => setGender(opt.value)} className="w-4 h-4 text-[#5E17EB] border-[#E0D4C8] focus:ring-[#5E17EB]" />
+                        <span className="text-sm text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>{opt.label}</span>
                       </label>
                     ))}
                   </div>
 
                   {/* Full Name */}
                   <div className="mb-3">
-                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Full Name*</label>
-                    <input type="text" placeholder="Enter full name" value={fullName} onChange={(e) => { setFullName(e.target.value); setFormErrors((p) => ({ ...p, fullName: undefined })); }} className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] ${formErrors.fullName ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }} />
-                    {formErrors.fullName && <p className="text-red-500 text-[10px] mt-1">{formErrors.fullName}</p>}
+                    <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Full Name*</label>
+                    <input type="text" placeholder="Enter full name" value={fullName} onChange={(e) => { setFullName(e.target.value); setFormErrors((p) => ({ ...p, fullName: undefined })); }} className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] ${formErrors.fullName ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }} />
+                    {formErrors.fullName && <p className="text-red-500 text-xs mt-1">{formErrors.fullName}</p>}
                   </div>
 
                   {/* Email */}
                   <div className="mb-3">
-                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Email*</label>
-                    <input type="email" placeholder="Enter email" value={email} onChange={(e) => { setEmail(e.target.value); setFormErrors((p) => ({ ...p, email: undefined })); }} className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] ${formErrors.email ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }} />
-                    {formErrors.email && <p className="text-red-500 text-[10px] mt-1">{formErrors.email}</p>}
+                    <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Email*</label>
+                    <input type="email" placeholder="Enter email" value={email} onChange={(e) => { setEmail(e.target.value); setFormErrors((p) => ({ ...p, email: undefined })); }} className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] ${formErrors.email ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }} />
+                    {formErrors.email && <p className="text-red-500 text-xs mt-1">{formErrors.email}</p>}
                   </div>
 
                   {/* Country */}
                   <div className="mb-3">
-                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Country*</label>
-                    <select value={country} onChange={(e) => { setCountry(e.target.value); setFormErrors((p) => ({ ...p, country: undefined })); }} className={`w-full border rounded-lg px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.country ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }}>
+                    <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Country*</label>
+                    <select value={country} onChange={(e) => { setCountry(e.target.value); setFormErrors((p) => ({ ...p, country: undefined })); }} className={`w-full border rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.country ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }}>
                       <option value="">Select country</option>
                       <option value="AT">Austria</option>
                       <option value="DE">Germany</option>
@@ -878,20 +879,20 @@ export default function HotelDetails() {
                       <option value="IN">India</option>
                       <option value="LK">Sri Lanka</option>
                     </select>
-                    {formErrors.country && <p className="text-red-500 text-[10px] mt-1">{formErrors.country}</p>}
+                    {formErrors.country && <p className="text-red-500 text-xs mt-1">{formErrors.country}</p>}
                   </div>
 
                   {/* Mobile */}
                   <div className="mb-3">
-                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Mobile*</label>
-                    <input type="tel" placeholder="Enter mobile number" value={mobile} onChange={(e) => { setMobile(e.target.value); setFormErrors((p) => ({ ...p, mobile: undefined })); }} className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] ${formErrors.mobile ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }} />
-                    {formErrors.mobile && <p className="text-red-500 text-[10px] mt-1">{formErrors.mobile}</p>}
+                    <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Mobile*</label>
+                    <input type="tel" placeholder="Enter mobile number" value={mobile} onChange={(e) => { setMobile(e.target.value); setFormErrors((p) => ({ ...p, mobile: undefined })); }} className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] ${formErrors.mobile ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }} />
+                    {formErrors.mobile && <p className="text-red-500 text-xs mt-1">{formErrors.mobile}</p>}
                   </div>
 
                   {/* Remark */}
                   <div>
-                    <label className="block text-[10px] text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Remark</label>
-                    <textarea placeholder="Any additional wishes..." value={comment} onChange={(e) => setComment(e.target.value)} rows={3} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] resize-y" style={{ fontFamily: "Lato, sans-serif" }} />
+                    <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Remark</label>
+                    <textarea placeholder="Any additional wishes..." value={comment} onChange={(e) => setComment(e.target.value)} rows={3} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] resize-y" style={{ fontFamily: "Lato, sans-serif" }} />
                   </div>
                 </div>
               </div>
@@ -900,7 +901,7 @@ export default function HotelDetails() {
                 type="button"
                 onClick={handleInquire}
                 disabled={submitting}
-                className="mt-6 w-full py-3 bg-[#5E17EB] text-white text-[10px] tracking-[0.22em] uppercase rounded-lg hover:bg-[#4B12BD] transition-colors disabled:opacity-60"
+                className="mt-6 w-full py-3.5 bg-[#5E17EB] text-white text-xs tracking-[0.22em] uppercase rounded-lg hover:bg-[#4B12BD] transition-colors disabled:opacity-60"
                 style={{ fontFamily: "Lato, sans-serif" }}
               >
                 {submitting ? "Sending…" : "Send Inquiry →"}

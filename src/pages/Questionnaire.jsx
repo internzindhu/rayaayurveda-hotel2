@@ -2,10 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import SEO from "../components/SEO";
+import { submitQuestionnaireResults } from "../lib/wellnessApi";
 
 export default function Questionnaire() {
   const [answers, setAnswers] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
+  const [userEmail, setUserEmail] = useState("");
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const questions = [
@@ -167,9 +171,26 @@ export default function Questionnaire() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Navigate to results page with answers
+    setSubmitting(true);
+    try {
+      const formatted = questions.map((q) => ({
+        question: q.question,
+        answer: Array.isArray(answers[q.id])
+          ? answers[q.id].join(", ")
+          : answers[q.id] ?? "—",
+      }));
+      await submitQuestionnaireResults({
+        email: userEmail,
+        answers: formatted,
+        recipientEmail: "hod@rayalonglife.com",
+      });
+    } catch {
+      // Non-blocking — still show results even if submission fails
+    } finally {
+      setSubmitting(false);
+    }
     navigate("/questionnaire/results", { state: { answers } });
   };
 
@@ -205,23 +226,62 @@ export default function Questionnaire() {
               Is Ayurveda For Me?
             </h1>
             <p className="text-xl text-grey/90">Let's find out together</p>
-            <div className="mt-4">
-              <div className="flex justify-center items-center gap-2">
-                {Array.from({ length: totalPages }, (_, i) => (
-                  <div
-                    key={i + 1}
-                    className={`h-2 w-8 rounded-full transition-all ${i + 1 <= currentPage ? 'bg-[#5E17EB]' : 'bg-white/30'
-                      }`}
-                  />
-                ))}
+            {emailSubmitted && (
+              <div className="mt-4">
+                <div className="flex justify-center items-center gap-2">
+                  {Array.from({ length: totalPages }, (_, i) => (
+                    <div
+                      key={i + 1}
+                      className={`h-2 w-8 rounded-full transition-all ${i + 1 <= currentPage ? 'bg-[#5E17EB]' : 'bg-white/30'}`}
+                    />
+                  ))}
+                </div>
+                <p className="text-grey/80 mt-2 text-sm">
+                  Page {currentPage} of {totalPages}
+                </p>
               </div>
-              <p className="text-grey/80 mt-2 text-sm">
-                Page {currentPage} of {totalPages}
-              </p>
-            </div>
+            )}
           </div>
 
-          <div className="bg-white/0  p-8">
+          {/* Email gate — shown before questions */}
+          {!emailSubmitted && (
+            <div className="bg-white/90 rounded-2xl p-8 shadow-sm">
+              <p className="text-[#181818] text-base mb-6 leading-relaxed" style={{ fontFamily: 'Lato, sans-serif' }}>
+                We'll send your personalised results to your email. Please enter your address to begin.
+              </p>
+              <form
+                onSubmit={(e) => { e.preventDefault(); if (userEmail) setEmailSubmitted(true); }}
+                className="space-y-4"
+              >
+                <div>
+                  <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: 'Lato, sans-serif' }}>
+                    Your Email*
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={userEmail}
+                    onChange={(e) => setUserEmail(e.target.value)}
+                    placeholder="Enter your email address"
+                    className="w-full border border-[#E0D4C8] rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA]"
+                    style={{ fontFamily: 'Lato, sans-serif' }}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-[#5E17EB] hover:bg-[#4B12BD] text-white text-xs tracking-[0.22em] uppercase rounded-lg transition-colors"
+                  style={{ fontFamily: 'Lato, sans-serif' }}
+                >
+                  Start Questionnaire →
+                </button>
+              </form>
+            </div>
+          )}
+
+          {/* Questions */}
+          {emailSubmitted && (
+
+          <div className="bg-white/0 p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               {currentQuestions.map((q) => (
                 <div
@@ -298,9 +358,10 @@ export default function Questionnaire() {
                 {isLastPage ? (
                   <button
                     type="submit"
-                    className="px-6 py-2 bg-[#5E17EB] hover:bg-[#4B12BD] text-white rounded-lg font-semibold transition-colors"
+                    disabled={submitting}
+                    className="px-6 py-2 bg-[#5E17EB] hover:bg-[#4B12BD] disabled:opacity-60 text-white rounded-lg font-semibold transition-colors"
                   >
-                    Submit Questionnaire
+                    {submitting ? "Submitting…" : "Submit Questionnaire"}
                   </button>
                 ) : (
                   <button
@@ -314,6 +375,7 @@ export default function Questionnaire() {
               </div>
             </form>
           </div>
+          )}
         </div>
       </div>
     </div>

@@ -40,6 +40,7 @@ export default function Consultation() {
         numberOfNights: formData.numberOfNights || undefined,
         scheduleDateTime: formData.scheduleDateTime || undefined,
         comment: formData.comment || undefined,
+        recipientEmail: "hod@rayalonglife.com",
       });
       setSubmittedName(formData.name);
       setSubmittedEmail(formData.email);

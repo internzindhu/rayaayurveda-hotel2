@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
+import { submitCallExpert } from "../lib/wellnessApi";
 
 const KEYFRAMES = `
   @keyframes raya-scale-in {
@@ -56,8 +57,24 @@ function FormView({ onSuccess, onSchedule }) {
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  const ready = true;
+  const ready = !submitting;
+  const canSchedule = ready && phone.trim() && name.trim() && email.trim();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!ready) return;
+    setSubmitting(true);
+    try {
+      await submitCallExpert({ phone, name, email, recipientEmail: "hod@rayalonglife.com" });
+      onSuccess();
+    } catch {
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <>
@@ -65,7 +82,7 @@ function FormView({ onSuccess, onSchedule }) {
         <p className="text-black text-xs mb-4 leading-relaxed" style={PP}>
           Let's Find Your Perfect Retreat. Whether you're looking for Ayurveda, yoga, meditation, detox, or relaxation, our team is here to guide you every step of the way. Share your number and one of our wellness advisors will reach out to you.
         </p>
-        <form onSubmit={(e) => { e.preventDefault(); if (ready) onSuccess(); }} className="space-y-3">
+        <form onSubmit={handleSubmit} className="space-y-3">
           <div className="flex items-center gap-2 border-b-2 border-gray-200 pb-1.5 focus-within:border-[#5E17EB] transition-colors">
             <span className="text-[#5E17EB] text-xs font-semibold flex-shrink-0" style={PP}>+94</span>
             <div className="w-px h-3.5 bg-gray-300 flex-shrink-0" />
@@ -92,9 +109,9 @@ function FormView({ onSuccess, onSchedule }) {
               </svg>
               Connect now
             </button>
-            <button type="button" disabled={!ready} onClick={() => ready && onSchedule()}
+            <button type="button" disabled={!canSchedule} onClick={() => canSchedule && onSchedule({ phone, name, email })}
               className={`flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold py-2.5 px-3 rounded-lg border-2 transition-all ${
-                ready
+                canSchedule
                   ? "border-[#5E17EB] text-[#5E17EB] hover:bg-[#5E17EB] hover:text-white cursor-pointer"
                   : "border-gray-200 text-gray-900 cursor-not-allowed"
               }`} style={PP}>
@@ -246,6 +263,7 @@ function CallExpertPopup({ onClose }) {
   const [view, setView] = useState("form"); // form | success | schedule | booked
   const [bookedDate, setBookedDate] = useState("");
   const [bookedSlot, setBookedSlot] = useState("");
+  const [contactInfo, setContactInfo] = useState({ phone: "", name: "", email: "" });
 
   useEffect(() => {
     const onKey = (e) => { if (e.key === "Escape") onClose(); };
@@ -253,10 +271,25 @@ function CallExpertPopup({ onClose }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  const handleBooked = (date, slot) => {
+  const handleSchedule = (info) => {
+    setContactInfo(info);
+    setView("schedule");
+  };
+
+  const handleBooked = async (date, slot) => {
     setBookedDate(date);
     setBookedSlot(slot);
     setView("booked");
+    try {
+      await submitCallExpert({
+        ...contactInfo,
+        scheduled_date: date,
+        scheduled_slot: slot,
+        recipientEmail: "hod@rayalonglife.com",
+      });
+    } catch {
+      // Non-blocking — booking view already shown
+    }
   };
 
   return createPortal(
@@ -270,7 +303,7 @@ function CallExpertPopup({ onClose }) {
           onClick={(e) => e.stopPropagation()}
         >
           <PopupHeader onClose={onClose} />
-          {view === "form"     && <FormView onSuccess={() => setView("success")} onSchedule={() => setView("schedule")} />}
+          {view === "form"     && <FormView onSuccess={() => setView("success")} onSchedule={handleSchedule} />}
           {view === "success"  && <SuccessView onClose={onClose} />}
           {view === "schedule" && <ScheduleView onBooked={handleBooked} onBack={() => setView("form")} />}
           {view === "booked"   && <BookedView date={bookedDate} slot={bookedSlot} onClose={onClose} />}
