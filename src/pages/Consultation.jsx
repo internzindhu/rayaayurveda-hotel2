@@ -394,7 +394,7 @@ export default function Consultation() {
               General Enquiries
             </h3>
             <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>hello@rayalonglife.com</p>
-            <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>+94 74 413 5359</p>
+            <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>+94 74 413 5358</p>
           </div>
 
           {/* Customer Support */}
@@ -403,7 +403,7 @@ export default function Consultation() {
               Customer support
             </h3>
             <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>healing@rayalonglife.com</p>
-            <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>+94 74 413 5359</p>
+            <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>+94 74 413 5357</p>
           </div>
 
           {/* Address */}
