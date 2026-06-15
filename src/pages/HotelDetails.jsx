@@ -91,75 +91,42 @@ function Chip({ children }) {
   );
 }
 
-function InfoRow({ label, value }) {
-  if (!value) return null;
+function Caption({ children }) {
   return (
-    <div className="flex items-start gap-4 py-3 border-b border-[#F0EBE4] last:border-0">
-      <span
-        className="text-xs text-[#8C8C8C] min-w-[180px] shrink-0"
-        style={{ fontFamily: "Lato, sans-serif" }}
-      >
-        {label}
-      </span>
-      <span className="text-xs text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>
-        {value}
-      </span>
-    </div>
+    <p
+      className="text-[10px] text-[#8C8C8C] uppercase tracking-[0.18em] mb-3"
+      style={{ fontFamily: "Lato, sans-serif" }}
+    >
+      {children}
+    </p>
   );
 }
 
-function ItemList({ items }) {
-  if (!items.length) return null;
+function InfoChip({ label, value }) {
   return (
-    <div className="space-y-3">
-      {items.map((item, i) => (
-        <div key={i} className="border-b border-[#F0EBE4] pb-3 last:border-0 last:pb-0">
-          <p className="text-sm text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>
-            {item.name}
-          </p>
-          {item.description && (
-            <p
-              className="text-xs text-[#8C8C8C] mt-0.5 leading-relaxed"
-              style={{ fontFamily: "Lato, sans-serif" }}
-            >
-              {item.description}
-            </p>
-          )}
+    <div>
+      <Caption>{label}</Caption>
+      {value ? (
+        <div
+          className="inline-block bg-[#F3F0FF] text-[#5E17EB] text-sm px-4 py-2 rounded"
+          style={{ fontFamily: "Lato, sans-serif" }}
+        >
+          {value}
         </div>
-      ))}
-    </div>
-  );
-}
-
-
-function AccordionSection({ id, title, openAccordion, onToggle, children }) {
-  const isOpen = openAccordion === id;
-  return (
-    <div className="border-b border-[#181818]/10 last:border-0">
-      <button
-        type="button"
-        className="w-full flex items-center justify-between px-6 py-5 text-left cursor-pointer"
-        onClick={() => onToggle(id)}
-      >
-        <span className="text-sm text-[#181818] pr-6 leading-snug" style={{ fontFamily: "Lato, sans-serif" }}>
-          {title}
-        </span>
-        <span className="flex-shrink-0 text-[#5E17EB]">
-          <svg
-            className={`w-4 h-4 transition-transform duration-200 ${isOpen ? "" : "-rotate-90"}`}
-            fill="none" stroke="currentColor" viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
-          </svg>
-        </span>
-      </button>
-      {isOpen && (
-        <div className="px-6 pb-6 bg-[#F9F7FF] border-t border-[#EDE8FF]">
-          <div className="pt-4">
-            {children}
-          </div>
-        </div>
+      ) : (
+        <Placeholder text="To be added" />
       )}
+    </div>
+  );
+}
+
+function Placeholder({ text }) {
+  return (
+    <div
+      className="inline-block border border-dashed border-[#D5CFC9] text-[#8C8C8C] text-xs italic px-3 py-2 rounded"
+      style={{ fontFamily: "Lato, sans-serif" }}
+    >
+      — {text} —
     </div>
   );
 }
@@ -177,9 +144,6 @@ export default function HotelDetails() {
   const [error, setError] = useState(null);
   const [lightboxImg, setLightboxImg] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [openAccordion, setOpenAccordion] = useState(null);
-  const toggleAccordion = (id) => setOpenAccordion((prev) => (prev === id ? null : id));
-
   // Booking form — pre-populate from URL params if coming from listing page
   const [dateFrom, setDateFrom] = useState(() => {
     const params = new URLSearchParams(location.search);
@@ -356,18 +320,13 @@ export default function HotelDetails() {
 
   const uniqueFeatures = na(hotel.unique_features);
 
-  const doctorsValue =
-    hotel.doctors_available === "yes" || hotel.doctors_available === true ? "Yes"
-    : hotel.doctors_available === "no" || hotel.doctors_available === false ? "No"
-    : null;
-
   const medicalValue =
     hotel.medical_report_support === "yes" || hotel.medical_report_support === true ? "Yes"
     : hotel.medical_report_support === "no" || hotel.medical_report_support === false ? "No"
     : null;
 
-  const poolValue =
-    hotel.swimming_pool === true ? "Yes" : hotel.swimming_pool === false ? "No" : null;
+  const kidFriendlyValue =
+    hotel.kid_friendly === true ? "Yes" : hotel.kid_friendly === false ? "No" : null;
 
   /* ── Render ── */
   return (
@@ -563,129 +522,234 @@ export default function HotelDetails() {
           {/* ════ LEFT — all hotel details ════ */}
           <div className="flex-1 space-y-8 min-w-0">
 
-            {/* About */}
-            {(na(hotel.description) || uniqueFeatures) && (
-              <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
-                <SectionHeading>About this retreat</SectionHeading>
-                {na(hotel.description) && (
-                  <p
-                    className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap mb-4"
-                    style={{ fontFamily: "Lato, sans-serif" }}
-                  >
-                    {hotel.description}
-                  </p>
-                )}
-                {uniqueFeatures && (
-                  <p className="text-sm text-[#181818] leading-relaxed" style={{ fontFamily: "Lato, sans-serif" }}>
-                    {uniqueFeatures}
-                  </p>
-                )}
-              </section>
-            )}
-
-            {/* Wellness Offerings */}
-            {wellnessItems.length > 0 && (
-              <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
-                <SectionHeading>Wellness Offerings</SectionHeading>
-                <ItemList items={wellnessItems} />
-              </section>
-            )}
-
-            {/* Facilities */}
-            {facilities.length > 0 && (
-              <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
-                <SectionHeading>Facilities</SectionHeading>
-                <div className="flex flex-wrap gap-2">
-                  {facilities.map((name) => (
-                    <Chip key={name}>{name}</Chip>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Activities */}
-            {activities.length > 0 && (
-              <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
-                <SectionHeading>Activities &amp; Experiences</SectionHeading>
-                <div className="flex flex-wrap gap-2">
-                  {activities.map((item) => (
-                    <Chip key={item.name}>{item.name}</Chip>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Dining */}
-            {(cuisineTypes.length > 0 || diningFeatures.length > 0) && (
-              <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
-                <SectionHeading>Dining</SectionHeading>
-                {cuisineTypes.length > 0 && (
-                  <div className="mb-6">
-                    <p
-                      className="text-[10px] text-[#8C8C8C] uppercase tracking-[0.18em] mb-3"
-                      style={{ fontFamily: "Lato, sans-serif" }}
-                    >
-                      Cuisine Types
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {cuisineTypes.map((item) => (
-                        <Chip key={item.name}>{item.name}</Chip>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {diningFeatures.length > 0 && (
-                  <div>
-                    <p
-                      className="text-[10px] text-[#8C8C8C] uppercase tracking-[0.18em] mb-3"
-                      style={{ fontFamily: "Lato, sans-serif" }}
-                    >
-                      Dining Features
-                    </p>
-                    <ItemList items={diningFeatures} />
-                  </div>
-                )}
-              </section>
-            )}
-
-            {/* ── Accordion sections ── */}
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-              {(propertyType || na(hotel.min_nights) || na(hotel.max_occupancy) || poolValue || doctorsValue || medicalValue) && (
-                <AccordionSection id="key-details" title="Key Details" openAccordion={openAccordion} onToggle={toggleAccordion}>
-                  <InfoRow label="Property Type"             value={propertyType} />
-                  <InfoRow label="Minimum Stay"              value={hotel.min_nights ? `${hotel.min_nights} nights` : null} />
-                  <InfoRow label="Max Occupancy Per Room"    value={hotel.max_occupancy ? `${hotel.max_occupancy} person(s)` : null} />
-                  <InfoRow label="Swimming Pool"             value={poolValue} />
-                  <InfoRow label="Doctors On-Site"           value={doctorsValue} />
-                  <InfoRow label="Medical Report Assistance" value={medicalValue} />
-                </AccordionSection>
+            {/* 1 ─ About this retreat */}
+            <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
+              <SectionHeading>About this retreat</SectionHeading>
+              {na(hotel.description) ? (
+                <p
+                  className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap mb-6"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  {hotel.description}
+                </p>
+              ) : (
+                <div className="mb-6"><Placeholder text="Description to be added" /></div>
               )}
-              {roomFeatures.length > 0 && (
-                <AccordionSection id="room-features" title="Room Features" openAccordion={openAccordion} onToggle={toggleAccordion}>
-                  <div className="flex flex-wrap gap-2">
-                    {roomFeatures.map((name) => <Chip key={name}>{name}</Chip>)}
-                  </div>
-                </AccordionSection>
+              {uniqueFeatures && (
+                <p
+                  className="text-sm text-[#181818] leading-relaxed mb-6"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  {uniqueFeatures}
+                </p>
               )}
-              {restrictions.length > 0 && (
-                <AccordionSection id="restrictions" title="Restrictions & Policies" openAccordion={openAccordion} onToggle={toggleAccordion}>
+              <div className="border-t border-[#F0EBE4] pt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
+                <InfoChip label="Type of hotel"      value={propertyType} />
+                <InfoChip label="Minimum night stay" value={hotel.min_nights ? `${hotel.min_nights} nights` : null} />
+                <InfoChip label="Number of rooms"    value={hotel.rooms_count ? `${hotel.rooms_count} rooms` : null} />
+                <InfoChip label="Kid friendly"       value={kidFriendlyValue} />
+              </div>
+              <div className="border-t border-[#F0EBE4] mt-6 pt-6">
+                <Caption>Restrictions</Caption>
+                {restrictions.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {restrictions.map((name) => <Chip key={name}>{name}</Chip>)}
                   </div>
-                </AccordionSection>
+                ) : (
+                  <Placeholder text="To be added" />
+                )}
+              </div>
+            </section>
+
+            {/* 2 ─ Ayurveda & Wellness */}
+            <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
+              <SectionHeading>Ayurveda &amp; Wellness</SectionHeading>
+              <div className="mb-6"><Placeholder text="Ayurveda & wellness description to be added" /></div>
+              <div className="border-t border-[#F0EBE4] pt-6 space-y-6">
+                <div>
+                  <Caption>Ayurveda / Wellness offering</Caption>
+                  {wellnessItems.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {wellnessItems.map((item) => <Chip key={item.name}>{item.name}</Chip>)}
+                    </div>
+                  ) : (
+                    <Placeholder text="To be added" />
+                  )}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
+                  <InfoChip
+                    label="Number of doctors available on-site"
+                    value={hotel.doctors_count ? `${hotel.doctors_count} doctors` : null}
+                  />
+                  <InfoChip label="Assistance with medical reports" value={medicalValue} />
+                </div>
+                <div>
+                  <Caption>Activities &amp; experiences</Caption>
+                  {activities.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {activities.map((item) => <Chip key={item.name}>{item.name}</Chip>)}
+                    </div>
+                  ) : (
+                    <Placeholder text="To be added" />
+                  )}
+                </div>
+              </div>
+            </section>
+
+            {/* 3 ─ Package breakdown */}
+            <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
+              <SectionHeading>Package breakdown</SectionHeading>
+              <Placeholder text="Packages to be added" />
+            </section>
+
+            {/* 4 ─ What is included */}
+            <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
+              <SectionHeading>What is included in your stay</SectionHeading>
+              <Placeholder text="Inclusions to be added" />
+            </section>
+
+            {/* 5 ─ Charged separately */}
+            <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
+              <SectionHeading>Charged separately</SectionHeading>
+              <Placeholder text="Exclusions to be added" />
+            </section>
+
+            {/* 6 ─ Dining */}
+            <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
+              <SectionHeading>Dining</SectionHeading>
+              <div className="mb-6"><Placeholder text="Dining description to be added" /></div>
+              <div className="border-t border-[#F0EBE4] pt-6 space-y-6">
+                <div>
+                  <Caption>Ayurveda / Wellness dining features</Caption>
+                  {diningFeatures.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {diningFeatures.map((item) => <Chip key={item.name}>{item.name}</Chip>)}
+                    </div>
+                  ) : (
+                    <Placeholder text="To be added" />
+                  )}
+                </div>
+                <div>
+                  <Caption>Meal plan</Caption>
+                  {mealPlans.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {mealPlans.map((item) => <Chip key={item.name}>{item.name}</Chip>)}
+                    </div>
+                  ) : (
+                    <Placeholder text="To be added" />
+                  )}
+                </div>
+                <div>
+                  <Caption>Type of cuisine</Caption>
+                  {cuisineTypes.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {cuisineTypes.map((item) => <Chip key={item.name}>{item.name}</Chip>)}
+                    </div>
+                  ) : (
+                    <Placeholder text="To be added" />
+                  )}
+                </div>
+              </div>
+            </section>
+
+            {/* 7 ─ Accommodation */}
+            <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
+              <SectionHeading>Accommodation</SectionHeading>
+              <div className="mb-6"><Placeholder text="Accommodation description to be added" /></div>
+              <div className="border-t border-[#F0EBE4] pt-6 space-y-6">
+                <div>
+                  <Caption>Room types</Caption>
+                  <Placeholder text="Room types to be added" />
+                </div>
+                <div>
+                  <Caption>Room features</Caption>
+                  {roomFeatures.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {roomFeatures.map((name) => <Chip key={name}>{name}</Chip>)}
+                    </div>
+                  ) : (
+                    <Placeholder text="To be added" />
+                  )}
+                </div>
+                <InfoChip
+                  label="Maximum occupancy per room"
+                  value={hotel.max_occupancy ? `${hotel.max_occupancy} guests per room` : null}
+                />
+              </div>
+            </section>
+
+            {/* 8 ─ Facilities */}
+            <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
+              <SectionHeading>Facilities</SectionHeading>
+              {facilities.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {facilities.map((name) => <Chip key={name}>{name}</Chip>)}
+                </div>
+              ) : (
+                <Placeholder text="To be added" />
               )}
-              {images.length > 0 && (
-                <AccordionSection id="gallery" title="Gallery" openAccordion={openAccordion} onToggle={toggleAccordion}>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {images.map((img, i) => (
-                      <button key={i} type="button" onClick={() => setLightboxImg(img)} className="aspect-[4/3] rounded-lg overflow-hidden focus:outline-none focus:ring-2 focus:ring-[#5E17EB]">
-                        <img src={img} alt={`${hotel.name} – photo ${i + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
-                      </button>
-                    ))}
-                  </div>
-                </AccordionSection>
+            </section>
+
+            {/* 9 ─ Location & Getting There */}
+            <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
+              <SectionHeading>Location &amp; getting there</SectionHeading>
+              {na(hotel.location) ? (
+                <p
+                  className="text-sm text-[#181818] leading-relaxed mb-4"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  {hotel.location}
+                </p>
+              ) : (
+                <div className="mb-4"><Placeholder text="Location description to be added" /></div>
               )}
-            </div>
+              <div className="mb-4"><Placeholder text="Nearest airport, distance & transfer cost to be added" /></div>
+              <Placeholder text="Beach access & sister resort info to be added" />
+            </section>
+
+            {/* 10 ─ Good to know */}
+            <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
+              <SectionHeading>Good to know</SectionHeading>
+              <ul
+                className="space-y-3 text-sm text-[#181818]"
+                style={{ fontFamily: "Lato, sans-serif" }}
+              >
+                {hotel.min_nights ? (
+                  <li className="flex gap-3">
+                    <span className="text-[#5E17EB] mt-0.5">•</span>
+                    <span>Minimum stay is {hotel.min_nights} nights.</span>
+                  </li>
+                ) : (
+                  <li><Placeholder text="Minimum stay note to be added" /></li>
+                )}
+                <li><Placeholder text="Initial consultation note to be added" /></li>
+                <li><Placeholder text="Cancellation policy to be added" /></li>
+                <li><Placeholder text="Check-in / check-out times to be added" /></li>
+              </ul>
+            </section>
+
+            {/* Gallery */}
+            {images.length > 0 && (
+              <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
+                <SectionHeading>Gallery</SectionHeading>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {images.map((img, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setLightboxImg(img)}
+                      className="aspect-[4/3] rounded-lg overflow-hidden focus:outline-none focus:ring-2 focus:ring-[#5E17EB]"
+                    >
+                      <img
+                        src={img}
+                        alt={`${hotel.name} – photo ${i + 1}`}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
 
           {/* ════ RIGHT — sticky booking form ════ */}
