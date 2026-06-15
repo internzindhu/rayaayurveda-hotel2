@@ -23,6 +23,72 @@ const SRI_LANKA_CITIES = [
   "Waikkal", "Weligama", "Yala",
 ].sort();
 
+function applyAdvancedFilters(hotels, filters) {
+  if (!filters) return hotels;
+  return hotels.filter((hotel) => {
+    if (filters.propertyTypes?.length > 0 && hotel.property_types != null) {
+      const hotelTypeNames = hotel.property_types.map((pt) => pt.property_type?.name).filter(Boolean);
+      if (!filters.propertyTypes.some((t) => hotelTypeNames.includes(t))) return false;
+    }
+    if (filters.minNights && filters.minNights !== "Other" && hotel.min_nights != null) {
+      if (hotel.min_nights > parseInt(filters.minNights)) return false;
+    }
+    if (filters.maxOccupancy && filters.maxOccupancy !== "Other" && hotel.max_occupancy != null) {
+      if (hotel.max_occupancy < parseInt(filters.maxOccupancy)) return false;
+    }
+    if (filters.doctorsAvailable && hotel.doctors_available != null) {
+      if (filters.doctorsAvailable === "yes" && !hotel.doctors_available) return false;
+      if (filters.doctorsAvailable === "no" && hotel.doctors_available) return false;
+    }
+    if (filters.medicalReportSupport && hotel.medical_report_support != null) {
+      if (filters.medicalReportSupport === "yes" && !hotel.medical_report_support) return false;
+      if (filters.medicalReportSupport === "no" && hotel.medical_report_support) return false;
+    }
+    if (filters.kidFriendly && hotel.kid_friendly != null) {
+      if (!hotel.kid_friendly) return false;
+    }
+    if (filters.swimmingPool && hotel.facilities != null) {
+      const hasPool = hotel.facilities.some((f) =>
+        f.facility?.name?.toLowerCase().includes("swimming pool")
+      );
+      if (!hasPool) return false;
+    }
+    if (filters.facilityIds?.length > 0 && hotel.facilities != null) {
+      const hotelIds = new Set(hotel.facilities.map((f) => f.facility_id));
+      if (!filters.facilityIds.some((id) => hotelIds.has(id))) return false;
+    }
+    if (filters.activityIds?.length > 0 && hotel.activities != null) {
+      const hotelIds = new Set(hotel.activities.map((a) => a.activity_id ?? a.id));
+      if (!filters.activityIds.some((id) => hotelIds.has(id))) return false;
+    }
+    if (filters.mealPlanIds?.length > 0 && hotel.meal_plans != null) {
+      const hotelIds = new Set(hotel.meal_plans.map((m) => m.meal_plan_id ?? m.id));
+      if (!filters.mealPlanIds.some((id) => hotelIds.has(id))) return false;
+    }
+    if (filters.cuisineTypeIds?.length > 0 && hotel.cuisine_types != null) {
+      const hotelIds = new Set(hotel.cuisine_types.map((c) => c.cuisine_type_id ?? c.id));
+      if (!filters.cuisineTypeIds.some((id) => hotelIds.has(id))) return false;
+    }
+    if (filters.diningFeatureIds?.length > 0 && hotel.dining_features != null) {
+      const hotelIds = new Set(hotel.dining_features.map((d) => d.dining_feature_id ?? d.id));
+      if (!filters.diningFeatureIds.some((id) => hotelIds.has(id))) return false;
+    }
+    if (filters.roomFeatureIds?.length > 0 && hotel.room_features != null) {
+      const hotelIds = new Set(hotel.room_features.map((r) => r.room_feature_id ?? r.id));
+      if (!filters.roomFeatureIds.some((id) => hotelIds.has(id))) return false;
+    }
+    if (filters.restrictionIds?.length > 0 && hotel.restrictions != null) {
+      const hotelIds = new Set(hotel.restrictions.map((r) => r.restriction_id ?? r.id));
+      if (!filters.restrictionIds.some((id) => hotelIds.has(id))) return false;
+    }
+    if (filters.wellnessOfferingIds?.length > 0 && hotel.wellness_offerings != null) {
+      const hotelIds = new Set(hotel.wellness_offerings.map((w) => w.wellness_offering_id ?? w.id));
+      if (!filters.wellnessOfferingIds.some((id) => hotelIds.has(id))) return false;
+    }
+    return true;
+  });
+}
+
 function getPrimaryImage(images) {
   if (!images) return null;
   if (typeof images === "string") return images || null;
@@ -96,7 +162,8 @@ export default function IndividualStaysSriLanka() {
   const [priceBounds, setPriceBounds] = useState(null);
   const [selectedPrice, setSelectedPrice] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [activeFilterParams, setActiveFilterParams] = useState({});
+  const [activeFilterParams, setActiveFilterParams] = useState(null);
+  const [hasSearched, setHasSearched] = useState(false);
   const [showBudgetSlider, setShowBudgetSlider] = useState(false);
   const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false);
 
@@ -145,17 +212,19 @@ export default function IndividualStaysSriLanka() {
   }, []);
 
   const handleSelectHotel = (hotel) => {
+    setHasSearched(true);
     setSearchInput(hotel.name);
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
-    loadHotels({ ...activeFilterParams, search: hotel.name });
+    loadHotels({ search: hotel.name });
   };
 
   const handleSelectCity = (city) => {
+    setHasSearched(true);
     setSearchInput(city);
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
-    loadHotels({ ...activeFilterParams, location: city });
+    loadHotels({ location: city });
   };
 
   const applySearchInput = (input, params) => {
@@ -166,8 +235,8 @@ export default function IndividualStaysSriLanka() {
     else params.search = q;
   };
 
-  const buildParams = ({ price = null, filters = activeFilterParams, search = searchInput } = {}) => {
-    const params = { ...filters };
+  const buildParams = ({ price = null, search = searchInput } = {}) => {
+    const params = {};
     applySearchInput(search, params);
     if (dateRange.from) params.dateFrom = format(dateRange.from, "yyyy-MM-dd");
     if (price) {
@@ -178,6 +247,7 @@ export default function IndividualStaysSriLanka() {
   };
 
   const handleSearchClick = () => {
+    setHasSearched(true);
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
     setAdvancedFiltersOpen(false);
@@ -198,10 +268,9 @@ export default function IndividualStaysSriLanka() {
   const handleInputFocus = () => setShowDropdown(true);
   const handleInputBlur = () => setTimeout(() => setShowDropdown(false), 150);
 
-  const handleAdvancedFiltersApply = (filterParams) => {
-    setActiveFilterParams(filterParams);
+  const handleAdvancedFiltersApply = (rawFilters) => {
+    setActiveFilterParams(rawFilters);
     setDisplayCount(INITIAL_DISPLAY);
-    loadHotels(buildParams({ filters: filterParams }));
   };
 
   const q = searchInput.trim().toLowerCase();
@@ -210,7 +279,9 @@ export default function IndividualStaysSriLanka() {
     ? hotels.filter((h) => (h.name ?? "").toLowerCase().includes(q)).slice(0, 5)
     : [];
 
-  const priceFilteredHotels = hotels.filter((hotel) => {
+  const advancedFilteredHotels = applyAdvancedFilters(hotels, activeFilterParams);
+
+  const priceFilteredHotels = advancedFilteredHotels.filter((hotel) => {
     if (dateRange.from) {
       const arrival = dateRange.from;
       const hasCoveringPrice = hotel.monthly_prices?.some((mp) => {
@@ -551,7 +622,7 @@ export default function IndividualStaysSriLanka() {
 
           {/* Advanced Filters */}
           <div className="border-t border-[#E0D4C8] pt-4 transition-opacity duration-200">
-            <AdvancedFilters onApply={handleAdvancedFiltersApply} className="mb-0" open={advancedFiltersOpen} onOpenChange={setAdvancedFiltersOpen} />
+            <AdvancedFilters onApply={handleAdvancedFiltersApply} className="mb-0" open={advancedFiltersOpen} onOpenChange={setAdvancedFiltersOpen} disabled={!hasSearched} />
           </div>
         </div>
 
@@ -582,7 +653,7 @@ export default function IndividualStaysSriLanka() {
                   const priceDisplay = formatMonthlyPrice(monthlyPrice) ?? hotel.price ?? null;
                   return (
                     <RevealOnScroll key={hotel.id} delay={(index % 4) * 70} className="flex flex-col">
-                      <div className={`mb-4 ${index === 1 ? "lg:mt-[60px]" : index === 2 ? "lg:mt-[100px]" : ""}`}>
+                      <div className={`mb-4 ${index % 4 === 1 ? "lg:mt-[60px]" : index % 4 === 2 ? "lg:mt-[100px]" : ""}`}>
                         <img
                           src={getPrimaryImage(hotel.images) || "/hotel.png"}
                           alt={hotel.name}

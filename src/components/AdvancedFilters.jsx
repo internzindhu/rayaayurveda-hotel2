@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { SlidersHorizontal, ChevronDown, ChevronUp } from "lucide-react";
+import { SlidersHorizontal, ChevronDown, ChevronUp, Info } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { fetchLookups } from "../lib/wellnessApi";
 
@@ -27,6 +27,11 @@ const INITIAL_FILTERS = {
   restrictionIds: [],
   wellnessOfferingIds: [],
   swimmingPool: false,
+  kidFriendly: false,
+};
+
+const MEAL_PLAN_INFO = {
+  "AI Ayurveda": "AI Ayurveda — Accommodation + 3 meals + Ayurveda treatments + Selected wellness activities",
 };
 
 function countActive(f) {
@@ -37,6 +42,7 @@ function countActive(f) {
     (f.doctorsAvailable ? 1 : 0) +
     (f.medicalReportSupport ? 1 : 0) +
     (f.swimmingPool ? 1 : 0) +
+    (f.kidFriendly ? 1 : 0) +
     f.facilityIds.length +
     f.activityIds.length +
     f.mealPlanIds.length +
@@ -87,7 +93,8 @@ function SectionDivider() {
   return <div className="my-6 border-b border-[#D5CFC9]" />;
 }
 
-function CheckboxItem({ label, description, checked, onChange }) {
+function CheckboxItem({ label, description, info, checked, onChange }) {
+  const [showInfo, setShowInfo] = useState(false);
   return (
     <label className="flex items-start gap-2.5 cursor-pointer group mb-3 last:mb-0">
       <div className="relative flex-shrink-0 mt-[3px]">
@@ -112,12 +119,31 @@ function CheckboxItem({ label, description, checked, onChange }) {
           )}
         </div>
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col min-w-0">
         <span
-          className="text-sm text-[#181818] leading-snug"
+          className="text-sm text-[#181818] leading-snug inline-flex items-center gap-1.5"
           style={{ fontFamily: "Lato, sans-serif" }}
         >
           {label}
+          {info && (
+            <span
+              className="relative inline-flex"
+              onMouseEnter={() => setShowInfo(true)}
+              onMouseLeave={() => setShowInfo(false)}
+              onClick={(e) => e.preventDefault()}
+            >
+              <Info size={13} className="text-[#8C8C8C] hover:text-[#5E17EB] transition-colors" />
+              {showInfo && (
+                <span
+                  role="tooltip"
+                  className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 z-50 w-56 px-3 py-2 rounded bg-[#181818] text-white text-xs leading-relaxed shadow-lg"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  {info}
+                </span>
+              )}
+            </span>
+          )}
         </span>
         {description && (
           <span
@@ -181,7 +207,7 @@ function YesNoButtons({ value, onChange }) {
   );
 }
 
-function LookupCheckboxList({ items, selectedIds, onToggle, loading }) {
+function LookupCheckboxList({ items, selectedIds, onToggle, loading, infoMap }) {
   if (loading)
     return (
       <p className="text-xs text-[#8C8C8C]" style={{ fontFamily: "Lato" }}>
@@ -201,6 +227,7 @@ function LookupCheckboxList({ items, selectedIds, onToggle, loading }) {
           key={item.id}
           label={item.name}
           description={item.description}
+          info={infoMap?.[item.name]}
           checked={selectedIds.includes(item.id)}
           onChange={() => onToggle(item.id)}
         />
@@ -299,7 +326,7 @@ const STATIC_ACTIVITIES = [
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export default function AdvancedFilters({ onApply, className = "mb-8", open: openProp, onOpenChange }) {
+export default function AdvancedFilters({ onApply, className = "mb-8", open: openProp, onOpenChange, disabled = false }) {
   const [openInternal, setOpenInternal] = useState(false);
   const open = openProp !== undefined ? openProp : openInternal;
   const setOpen = (v) => {
@@ -322,14 +349,13 @@ export default function AdvancedFilters({ onApply, className = "mb-8", open: ope
       .finally(() => setLookupsLoading(false));
   }, [open, lookups]);
 
-  // Auto-apply with debounce
+  // Notify parent of filter changes for client-side filtering — no API call
   useEffect(() => {
-    if (!open) return;
     const timer = setTimeout(() => {
-      if (onApplyRef.current) onApplyRef.current(buildApiParams(filters));
-    }, 400);
+      if (onApplyRef.current) onApplyRef.current(filters);
+    }, 150);
     return () => clearTimeout(timer);
-  }, [filters, open]);
+  }, [filters]);
 
   const activeCount = countActive(filters);
 
@@ -371,25 +397,29 @@ export default function AdvancedFilters({ onApply, className = "mb-8", open: ope
       <div className="flex items-center justify-between">
         <button
           type="button"
-          onClick={() => setOpen((v) => !v)}
-          className="flex items-center gap-2.5 text-sm text-[#181818] hover:text-[#5E17EB] transition-colors group"
+          onClick={() => !disabled && setOpen((v) => !v)}
+          disabled={disabled}
+          title={disabled ? "Search first to enable filters" : undefined}
+          className={`flex items-center gap-2.5 text-sm transition-colors group ${
+            disabled ? "opacity-40 cursor-not-allowed" : "text-[#181818] hover:text-[#5E17EB]"
+          }`}
           style={{ fontFamily: "Lato, sans-serif" }}
         >
           <SlidersHorizontal
             size={16}
-            className="text-[#5E17EB] group-hover:scale-110 transition-transform"
+            className={disabled ? "text-[#AAAAAA]" : "text-[#5E17EB] group-hover:scale-110 transition-transform"}
           />
           <span className="tracking-[0.12em] uppercase text-xs font-medium">Advanced Filters</span>
-          {activeCount > 0 && (
+          {!disabled && activeCount > 0 && (
             <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#5E17EB] text-white text-[10px] font-bold">
               {activeCount}
             </span>
           )}
-          {open ? (
+          {!disabled && (open ? (
             <ChevronUp size={14} className="text-[#5E17EB]" />
           ) : (
             <ChevronDown size={14} className="text-[#5E17EB]" />
-          )}
+          ))}
         </button>
       </div>
 
@@ -519,6 +549,7 @@ export default function AdvancedFilters({ onApply, className = "mb-8", open: ope
                     selectedIds={filters.mealPlanIds}
                     onToggle={toggleId("mealPlanIds")}
                     loading={lookupsLoading}
+                    infoMap={MEAL_PLAN_INFO}
                   />
 
                   <SectionDivider />
@@ -558,15 +589,19 @@ export default function AdvancedFilters({ onApply, className = "mb-8", open: ope
                 {/* ── Right Column ── */}
                 <div className="pt-8 lg:pt-0 lg:pl-8">
 
-                  {/* Facilities — "Swimming Pool" is a plain label, rest are checkboxes */}
+                  {/* Facilities */}
                   <SectionTitle>Facilities</SectionTitle>
                   <div className="mb-3">
-                    <span
-                      className="text-sm text-[#181818] leading-snug"
-                      style={{ fontFamily: "Lato, sans-serif" }}
-                    >
-                      Swimming Pool
-                    </span>
+                    <CheckboxItem
+                      label="Swimming Pool"
+                      checked={filters.swimmingPool}
+                      onChange={() => set("swimmingPool")(!filters.swimmingPool)}
+                    />
+                    <CheckboxItem
+                      label="Kid Friendly"
+                      checked={filters.kidFriendly}
+                      onChange={() => set("kidFriendly")(!filters.kidFriendly)}
+                    />
                   </div>
                   <LookupCheckboxList
                     items={facilities}

@@ -39,7 +39,8 @@ export async function fetchRelatedHotels(id) {
 export async function fetchLookups() {
   const res = await fetch(`${API_BASE}/api/lookups`);
   if (!res.ok) throw new Error(`Lookups fetch failed: ${res.status}`);
-  return res.json();
+  const json = await res.json();
+  return json?.data ?? json;
 }
 
 export async function submitInquiry(payload) {

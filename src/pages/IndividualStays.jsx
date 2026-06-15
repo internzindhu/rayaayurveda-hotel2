@@ -11,6 +11,72 @@ import PriceRangeSlider from "../components/PriceRangeSlider";
 const INITIAL_DISPLAY = 4;
 const DROPDOWN_MAX = 8;
 
+function applyAdvancedFilters(hotels, filters) {
+  if (!filters) return hotels;
+  return hotels.filter((hotel) => {
+    if (filters.propertyTypes?.length > 0 && hotel.property_types != null) {
+      const hotelTypeNames = hotel.property_types.map((pt) => pt.property_type?.name).filter(Boolean);
+      if (!filters.propertyTypes.some((t) => hotelTypeNames.includes(t))) return false;
+    }
+    if (filters.minNights && filters.minNights !== "Other" && hotel.min_nights != null) {
+      if (hotel.min_nights > parseInt(filters.minNights)) return false;
+    }
+    if (filters.maxOccupancy && filters.maxOccupancy !== "Other" && hotel.max_occupancy != null) {
+      if (hotel.max_occupancy < parseInt(filters.maxOccupancy)) return false;
+    }
+    if (filters.doctorsAvailable && hotel.doctors_available != null) {
+      if (filters.doctorsAvailable === "yes" && !hotel.doctors_available) return false;
+      if (filters.doctorsAvailable === "no" && hotel.doctors_available) return false;
+    }
+    if (filters.medicalReportSupport && hotel.medical_report_support != null) {
+      if (filters.medicalReportSupport === "yes" && !hotel.medical_report_support) return false;
+      if (filters.medicalReportSupport === "no" && hotel.medical_report_support) return false;
+    }
+    if (filters.kidFriendly && hotel.kid_friendly != null) {
+      if (!hotel.kid_friendly) return false;
+    }
+    if (filters.swimmingPool && hotel.facilities != null) {
+      const hasPool = hotel.facilities.some((f) =>
+        f.facility?.name?.toLowerCase().includes("swimming pool")
+      );
+      if (!hasPool) return false;
+    }
+    if (filters.facilityIds?.length > 0 && hotel.facilities != null) {
+      const hotelIds = new Set(hotel.facilities.map((f) => f.facility_id));
+      if (!filters.facilityIds.some((id) => hotelIds.has(id))) return false;
+    }
+    if (filters.activityIds?.length > 0 && hotel.activities != null) {
+      const hotelIds = new Set(hotel.activities.map((a) => a.activity_id ?? a.id));
+      if (!filters.activityIds.some((id) => hotelIds.has(id))) return false;
+    }
+    if (filters.mealPlanIds?.length > 0 && hotel.meal_plans != null) {
+      const hotelIds = new Set(hotel.meal_plans.map((m) => m.meal_plan_id ?? m.id));
+      if (!filters.mealPlanIds.some((id) => hotelIds.has(id))) return false;
+    }
+    if (filters.cuisineTypeIds?.length > 0 && hotel.cuisine_types != null) {
+      const hotelIds = new Set(hotel.cuisine_types.map((c) => c.cuisine_type_id ?? c.id));
+      if (!filters.cuisineTypeIds.some((id) => hotelIds.has(id))) return false;
+    }
+    if (filters.diningFeatureIds?.length > 0 && hotel.dining_features != null) {
+      const hotelIds = new Set(hotel.dining_features.map((d) => d.dining_feature_id ?? d.id));
+      if (!filters.diningFeatureIds.some((id) => hotelIds.has(id))) return false;
+    }
+    if (filters.roomFeatureIds?.length > 0 && hotel.room_features != null) {
+      const hotelIds = new Set(hotel.room_features.map((r) => r.room_feature_id ?? r.id));
+      if (!filters.roomFeatureIds.some((id) => hotelIds.has(id))) return false;
+    }
+    if (filters.restrictionIds?.length > 0 && hotel.restrictions != null) {
+      const hotelIds = new Set(hotel.restrictions.map((r) => r.restriction_id ?? r.id));
+      if (!filters.restrictionIds.some((id) => hotelIds.has(id))) return false;
+    }
+    if (filters.wellnessOfferingIds?.length > 0 && hotel.wellness_offerings != null) {
+      const hotelIds = new Set(hotel.wellness_offerings.map((w) => w.wellness_offering_id ?? w.id));
+      if (!filters.wellnessOfferingIds.some((id) => hotelIds.has(id))) return false;
+    }
+    return true;
+  });
+}
+
 function getPrimaryImage(images) {
   if (!images) return null;
   if (typeof images === "string") return images || null;
@@ -72,7 +138,8 @@ export default function IndividualStays({ heroConfig = {} }) {
   const [priceBounds, setPriceBounds] = useState(null);
   const [selectedPrice, setSelectedPrice] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [activeFilterParams, setActiveFilterParams] = useState({});
+  const [activeFilterParams, setActiveFilterParams] = useState(null);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const [showBudgetSlider, setShowBudgetSlider] = useState(false);
 
@@ -123,15 +190,15 @@ export default function IndividualStays({ heroConfig = {} }) {
   }, []);
 
   const handleSelectHotel = (hotel) => {
+    setHasSearched(true);
     setSearchInput(hotel.name);
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
-    loadHotels({ ...activeFilterParams, location: hotel.name });
+    loadHotels({ location: hotel.name });
   };
 
-  // price is only applied on explicit Search click, not on other filter changes
-  const buildParams = ({ month = selectedMonth, price = null, filters = activeFilterParams, search = searchInput } = {}) => {
-    const params = { ...filters };
+  const buildParams = ({ month = selectedMonth, price = null, search = searchInput } = {}) => {
+    const params = {};
     if (search.trim()) params.location = search.trim();
     if (month) params.month = month;
     if (price) {
@@ -142,6 +209,7 @@ export default function IndividualStays({ heroConfig = {} }) {
   };
 
   const handleSearchClick = () => {
+    setHasSearched(true);
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
     loadHotels(buildParams({ price: selectedPrice }));
@@ -153,6 +221,7 @@ export default function IndividualStays({ heroConfig = {} }) {
   };
 
   const handleMonthChange = (month) => {
+    setHasSearched(true);
     setSelectedMonth(month);
     setDisplayCount(INITIAL_DISPLAY);
     loadHotels(buildParams({ month }));
@@ -170,10 +239,9 @@ export default function IndividualStays({ heroConfig = {} }) {
     if (dropdownCloseTimer.current) clearTimeout(dropdownCloseTimer.current);
   };
 
-  const handleAdvancedFiltersApply = (filterParams) => {
-    setActiveFilterParams(filterParams);
+  const handleAdvancedFiltersApply = (rawFilters) => {
+    setActiveFilterParams(rawFilters);
     setDisplayCount(INITIAL_DISPLAY);
-    loadHotels(buildParams({ filters: filterParams }));
   };
 
   const dropdownHotels = hotels
@@ -187,7 +255,9 @@ export default function IndividualStays({ heroConfig = {} }) {
     })
     .slice(0, DROPDOWN_MAX);
 
-  const priceFilteredHotels = hotels.filter((hotel) => {
+  const advancedFilteredHotels = applyAdvancedFilters(hotels, activeFilterParams);
+
+  const priceFilteredHotels = advancedFilteredHotels.filter((hotel) => {
     if (!selectedPrice || !priceBounds) return true;
     if (selectedPrice[0] <= priceBounds.min && selectedPrice[1] >= priceBounds.max) return true;
     const mp = getCurrentMonthPrice(hotel);
@@ -433,7 +503,7 @@ export default function IndividualStays({ heroConfig = {} }) {
 
           {/* Advanced Filters */}
           <div className="border-t border-[#E0D4C8] pt-4">
-            <AdvancedFilters onApply={handleAdvancedFiltersApply} className="mb-0" />
+            <AdvancedFilters onApply={handleAdvancedFiltersApply} className="mb-0" disabled={!hasSearched} />
           </div>
         </div>
 

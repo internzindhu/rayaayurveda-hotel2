@@ -803,24 +803,24 @@ export default function HotelDetails() {
                   </div>
                 </div>
 
-                {/* Room category — dropdown */}
-                <div>
-                  <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Room Category</label>
-                  <select value={roomCategory} onChange={(e) => setRoomCategory(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
-                    <option value="base">Base category</option>
-                    <option value="higher">Open to look for higher options</option>
-                  </select>
-                </div>
-
-                {/* Transport — dropdown */}
-                <div>
-                  <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Transport</label>
-                  <select value={transportMode} onChange={(e) => setTransportMode(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
-                    <option value="">Select...</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                    <option value="Maybe">Maybe</option>
-                  </select>
+                {/* Room category + Transport — side by side */}
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Room Category</label>
+                    <select value={roomCategory} onChange={(e) => setRoomCategory(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
+                      <option value="base">Base category</option>
+                      <option value="higher">Open to look for higher options</option>
+                    </select>
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Transport</label>
+                    <select value={transportMode} onChange={(e) => setTransportMode(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
+                      <option value="">Select...</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                      <option value="Maybe">Maybe</option>
+                    </select>
+                  </div>
                 </div>
 
                 {/* Price display */}
