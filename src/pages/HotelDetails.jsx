@@ -315,7 +315,10 @@ export default function HotelDetails() {
 
   const propertyType =
     hotel.property_types?.length > 0
-      ? hotel.property_types.map((pt) => pt?.name ?? pt).join(", ")
+      ? hotel.property_types
+          .map((pt) => pt?.property_type?.name ?? pt?.name ?? null)
+          .filter(Boolean)
+          .join(", ") || null
       : na(hotel.property_type_raw) ?? na(hotel.property_type);
 
   const uniqueFeatures = na(hotel.unique_features);
@@ -356,10 +359,11 @@ export default function HotelDetails() {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="mb-6 text-[10px] tracking-[0.22em] uppercase text-[#8C8C8C] hover:text-[#181818] transition-colors inline-flex items-center gap-1.5"
+              className="mb-6 cursor-pointer text-[10px] tracking-[0.22em] uppercase text-[#8C8C8C] hover:text-[#181818] transition-colors inline-flex items-center gap-2"
               style={{ fontFamily: "Lato, sans-serif" }}
             >
-              ← Back to retreats
+              <span>←</span>
+              <span>Back to retreats</span>
             </button>
 
             <div className="relative mx-auto flex flex-col md:block w-full md:w-[70%] md:h-[420px]">
@@ -1039,10 +1043,11 @@ export default function HotelDetails() {
                 <button
                   type="button"
                   onClick={() => navigate(-1)}
-                  className="text-[#5E17EB] text-sm tracking-[0.1em] uppercase hover:underline"
+                  className="cursor-pointer text-[#5E17EB] text-sm tracking-[0.1em] uppercase hover:underline inline-flex items-center gap-2"
                   style={{ fontFamily: "Lato, sans-serif" }}
                 >
-                  ← Back to all retreats
+                  <span>←</span>
+                  <span>Back to all retreats</span>
                 </button>
               </div>
             </div>
