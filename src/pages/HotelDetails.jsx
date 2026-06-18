@@ -568,7 +568,16 @@ export default function HotelDetails() {
             {/* 2 ─ Ayurveda & Wellness */}
             <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
               <SectionHeading>Ayurveda &amp; Wellness</SectionHeading>
-              <div className="mb-6"><Placeholder text="Ayurveda & wellness description to be added" /></div>
+              {na(hotel.ayurveda_description) ? (
+                <p
+                  className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap mb-6"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  {hotel.ayurveda_description}
+                </p>
+              ) : (
+                <div className="mb-6"><Placeholder text="Ayurveda & wellness description to be added" /></div>
+              )}
               <div className="border-t border-[#F0EBE4] pt-6 space-y-6">
                 <div>
                   <Caption>Ayurveda / Wellness offering</Caption>
@@ -603,13 +612,31 @@ export default function HotelDetails() {
             {/* 3 ─ Package breakdown */}
             <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
               <SectionHeading>Package breakdown</SectionHeading>
-              <Placeholder text="Packages to be added" />
+              {na(hotel.package_breakdown) ? (
+                <p
+                  className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  {hotel.package_breakdown}
+                </p>
+              ) : (
+                <Placeholder text="Packages to be added" />
+              )}
             </section>
 
             {/* 4 ─ What is included */}
             <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
               <SectionHeading>What is included in your stay</SectionHeading>
-              <Placeholder text="Inclusions to be added" />
+              {na(hotel.inclusions) ? (
+                <p
+                  className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  {hotel.inclusions}
+                </p>
+              ) : (
+                <Placeholder text="Inclusions to be added" />
+              )}
             </section>
 
             {/* 5 ─ Charged separately */}
@@ -621,7 +648,16 @@ export default function HotelDetails() {
             {/* 6 ─ Dining */}
             <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
               <SectionHeading>Dining</SectionHeading>
-              <div className="mb-6"><Placeholder text="Dining description to be added" /></div>
+              {na(hotel.dining_description) ? (
+                <p
+                  className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap mb-6"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  {hotel.dining_description}
+                </p>
+              ) : (
+                <div className="mb-6"><Placeholder text="Dining description to be added" /></div>
+              )}
               <div className="border-t border-[#F0EBE4] pt-6 space-y-6">
                 <div>
                   <Caption>Ayurveda / Wellness dining features</Caption>
@@ -659,11 +695,29 @@ export default function HotelDetails() {
             {/* 7 ─ Accommodation */}
             <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
               <SectionHeading>Accommodation</SectionHeading>
-              <div className="mb-6"><Placeholder text="Accommodation description to be added" /></div>
+              {na(hotel.accommodation_description) ? (
+                <p
+                  className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap mb-6"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  {hotel.accommodation_description}
+                </p>
+              ) : (
+                <div className="mb-6"><Placeholder text="Accommodation description to be added" /></div>
+              )}
               <div className="border-t border-[#F0EBE4] pt-6 space-y-6">
                 <div>
                   <Caption>Room types</Caption>
-                  <Placeholder text="Room types to be added" />
+                  {na(hotel.room_categories) ? (
+                    <p
+                      className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap"
+                      style={{ fontFamily: "Lato, sans-serif" }}
+                    >
+                      {hotel.room_categories}
+                    </p>
+                  ) : (
+                    <Placeholder text="Room types to be added" />
+                  )}
                 </div>
                 <div>
                   <Caption>Room features</Caption>
@@ -697,39 +751,57 @@ export default function HotelDetails() {
             {/* 9 ─ Location & Getting There */}
             <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
               <SectionHeading>Location &amp; getting there</SectionHeading>
-              {na(hotel.location) ? (
+              {na(hotel.location) && (
                 <p
                   className="text-sm text-[#181818] leading-relaxed mb-4"
                   style={{ fontFamily: "Lato, sans-serif" }}
                 >
                   {hotel.location}
                 </p>
-              ) : (
-                <div className="mb-4"><Placeholder text="Location description to be added" /></div>
               )}
-              <div className="mb-4"><Placeholder text="Nearest airport, distance & transfer cost to be added" /></div>
-              <Placeholder text="Beach access & sister resort info to be added" />
+              {na(hotel.location_description) ? (
+                <p
+                  className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  {hotel.location_description}
+                </p>
+              ) : (
+                <>
+                  <div className="mb-4"><Placeholder text="Nearest airport, distance & transfer cost to be added" /></div>
+                  <Placeholder text="Beach access & sister resort info to be added" />
+                </>
+              )}
             </section>
 
             {/* 10 ─ Good to know */}
             <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
               <SectionHeading>Good to know</SectionHeading>
-              <ul
-                className="space-y-3 text-sm text-[#181818]"
-                style={{ fontFamily: "Lato, sans-serif" }}
-              >
-                {hotel.min_nights ? (
-                  <li className="flex gap-3">
-                    <span className="text-[#5E17EB] mt-0.5">•</span>
-                    <span>Minimum stay is {hotel.min_nights} nights.</span>
-                  </li>
-                ) : (
-                  <li><Placeholder text="Minimum stay note to be added" /></li>
-                )}
-                <li><Placeholder text="Initial consultation note to be added" /></li>
-                <li><Placeholder text="Cancellation policy to be added" /></li>
-                <li><Placeholder text="Check-in / check-out times to be added" /></li>
-              </ul>
+              {na(hotel.good_to_know) ? (
+                <p
+                  className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  {hotel.good_to_know}
+                </p>
+              ) : (
+                <ul
+                  className="space-y-3 text-sm text-[#181818]"
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  {hotel.min_nights ? (
+                    <li className="flex gap-3">
+                      <span className="text-[#5E17EB] mt-0.5">•</span>
+                      <span>Minimum stay is {hotel.min_nights} nights.</span>
+                    </li>
+                  ) : (
+                    <li><Placeholder text="Minimum stay note to be added" /></li>
+                  )}
+                  <li><Placeholder text="Initial consultation note to be added" /></li>
+                  <li><Placeholder text="Cancellation policy to be added" /></li>
+                  <li><Placeholder text="Check-in / check-out times to be added" /></li>
+                </ul>
+              )}
             </section>
 
             {/* Gallery */}
