@@ -591,8 +591,8 @@ export default function HotelDetails() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
                   <InfoChip
-                    label="Number of doctors available on-site"
-                    value={hotel.doctors_count ? `${hotel.doctors_count} doctors` : null}
+                    label="Doctor's availability"
+                    value={hotel.doctors_available != null ? (hotel.doctors_available ? "Yes" : "No") : null}
                   />
                   <InfoChip label="Assistance with medical reports" value={medicalValue} />
                 </div>
