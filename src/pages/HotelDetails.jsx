@@ -531,7 +531,7 @@ export default function HotelDetails() {
               <SectionHeading>About this retreat</SectionHeading>
               {na(hotel.description) ? (
                 <p
-                  className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap mb-6"
+                  className="text-xs text-[#181818] leading-relaxed whitespace-pre-wrap mb-6"
                   style={{ fontFamily: "Lato, sans-serif" }}
                 >
                   {hotel.description}
@@ -541,7 +541,7 @@ export default function HotelDetails() {
               )}
               {uniqueFeatures && (
                 <p
-                  className="text-sm text-[#181818] leading-relaxed mb-6"
+                  className="text-xs text-[#181818] leading-relaxed mb-6"
                   style={{ fontFamily: "Lato, sans-serif" }}
                 >
                   {uniqueFeatures}
@@ -570,7 +570,7 @@ export default function HotelDetails() {
               <SectionHeading>Ayurveda &amp; Wellness</SectionHeading>
               {na(hotel.ayurveda_description) ? (
                 <p
-                  className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap mb-6"
+                  className="text-xs text-[#181818] leading-relaxed whitespace-pre-wrap mb-6"
                   style={{ fontFamily: "Lato, sans-serif" }}
                 >
                   {hotel.ayurveda_description}
@@ -614,7 +614,7 @@ export default function HotelDetails() {
               <SectionHeading>Package breakdown</SectionHeading>
               {na(hotel.package_breakdown) ? (
                 <p
-                  className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap"
+                  className="text-xs text-[#181818] leading-relaxed whitespace-pre-wrap"
                   style={{ fontFamily: "Lato, sans-serif" }}
                 >
                   {hotel.package_breakdown}
@@ -629,7 +629,7 @@ export default function HotelDetails() {
               <SectionHeading>What is included in your stay</SectionHeading>
               {na(hotel.inclusions) ? (
                 <p
-                  className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap"
+                  className="text-xs text-[#181818] leading-relaxed whitespace-pre-wrap"
                   style={{ fontFamily: "Lato, sans-serif" }}
                 >
                   {hotel.inclusions}
@@ -650,7 +650,7 @@ export default function HotelDetails() {
               <SectionHeading>Dining</SectionHeading>
               {na(hotel.dining_description) ? (
                 <p
-                  className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap mb-6"
+                  className="text-xs text-[#181818] leading-relaxed whitespace-pre-wrap mb-6"
                   style={{ fontFamily: "Lato, sans-serif" }}
                 >
                   {hotel.dining_description}
@@ -697,7 +697,7 @@ export default function HotelDetails() {
               <SectionHeading>Accommodation</SectionHeading>
               {na(hotel.accommodation_description) ? (
                 <p
-                  className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap mb-6"
+                  className="text-xs text-[#181818] leading-relaxed whitespace-pre-wrap mb-6"
                   style={{ fontFamily: "Lato, sans-serif" }}
                 >
                   {hotel.accommodation_description}
@@ -710,7 +710,7 @@ export default function HotelDetails() {
                   <Caption>Room types</Caption>
                   {na(hotel.room_categories) ? (
                     <p
-                      className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap"
+                      className="text-xs text-[#181818] leading-relaxed whitespace-pre-wrap"
                       style={{ fontFamily: "Lato, sans-serif" }}
                     >
                       {hotel.room_categories}
@@ -753,7 +753,7 @@ export default function HotelDetails() {
               <SectionHeading>Location &amp; getting there</SectionHeading>
               {na(hotel.location) && (
                 <p
-                  className="text-sm text-[#181818] leading-relaxed mb-4"
+                  className="text-xs text-[#181818] leading-relaxed mb-4"
                   style={{ fontFamily: "Lato, sans-serif" }}
                 >
                   {hotel.location}
@@ -761,7 +761,7 @@ export default function HotelDetails() {
               )}
               {na(hotel.location_description) ? (
                 <p
-                  className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap"
+                  className="text-xs text-[#181818] leading-relaxed whitespace-pre-wrap"
                   style={{ fontFamily: "Lato, sans-serif" }}
                 >
                   {hotel.location_description}
@@ -779,7 +779,7 @@ export default function HotelDetails() {
               <SectionHeading>Good to know</SectionHeading>
               {na(hotel.good_to_know) ? (
                 <p
-                  className="text-sm text-[#181818] leading-relaxed whitespace-pre-wrap"
+                  className="text-xs text-[#181818] leading-relaxed whitespace-pre-wrap"
                   style={{ fontFamily: "Lato, sans-serif" }}
                 >
                   {hotel.good_to_know}
