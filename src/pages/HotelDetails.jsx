@@ -108,7 +108,7 @@ function InfoChip({ label, value }) {
       <Caption>{label}</Caption>
       {value ? (
         <div
-          className="inline-block bg-[#F3F0FF] text-[#5E17EB] text-sm px-4 py-2 rounded"
+          className="inline-block bg-[#F3F0FF] text-[#5E17EB] text-xs px-4 py-2 rounded"
           style={{ fontFamily: "Lato, sans-serif" }}
         >
           {value}
@@ -127,6 +127,92 @@ function Placeholder({ text }) {
       style={{ fontFamily: "Lato, sans-serif" }}
     >
       — {text} —
+    </div>
+  );
+}
+
+function PackageBreakdown({ text }) {
+  if (!text) return <Placeholder text="Packages to be added" />;
+  const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+  const cards = [];
+  for (let i = 0; i < lines.length; i += 2) {
+    cards.push({ name: lines[i], duration: lines[i + 1] ?? null });
+  }
+  const rows = [];
+  for (let i = 0; i < cards.length; i += 2) {
+    rows.push(cards.slice(i, i + 2));
+  }
+  return (
+    <div className="border border-[#E0DBF5] rounded-lg overflow-hidden">
+      {rows.map((row, rowIdx) => (
+        <div key={rowIdx} className={`flex ${rowIdx > 0 ? "border-t border-[#E0DBF5]" : ""}`}>
+          {row.map((card, colIdx) => (
+            <div key={colIdx} className={`flex-1 px-4 py-3 ${colIdx > 0 ? "border-l border-[#E0DBF5]" : ""}`}>
+              <p className="text-xs font-bold text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>{card.name}</p>
+              {card.duration && (
+                <p className="text-xs text-[#5E17EB] mt-1" style={{ fontFamily: "Lato, sans-serif" }}>{card.duration}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function InclusionsList({ text }) {
+  if (!text) return <Placeholder text="Inclusions to be added" />;
+  const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+  return (
+    <div className="bg-[#F3F0FF] rounded-lg px-5 py-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
+      {lines.map((line, i) => (
+        <div key={i} className="flex gap-2 items-start">
+          <span className="text-[#5E17EB] text-xs mt-0.5 shrink-0 font-bold">+</span>
+          <span className="text-xs text-[#181818] leading-relaxed" style={{ fontFamily: "Lato, sans-serif" }}>
+            {line.replace(/^[✓+]\s*/, "")}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function GoodToKnowText({ text }) {
+  if (!text) return null;
+  const paragraphs = text.split(/\n\n+/).map((p) => p.trim()).filter(Boolean);
+  if (paragraphs.length <= 1) {
+    return (
+      <p className="text-xs text-[#181818] leading-relaxed whitespace-pre-wrap" style={{ fontFamily: "Lato, sans-serif" }}>
+        {text}
+      </p>
+    );
+  }
+  return (
+    <div className="space-y-3">
+      {paragraphs.map((p, i) => (
+        <p key={i} className="text-xs text-[#181818] leading-relaxed border-l-2 border-[#F0EBE4] pl-3" style={{ fontFamily: "Lato, sans-serif" }}>
+          {p}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+function RoomCategoryRows({ text }) {
+  if (!text) return <Placeholder text="Room types to be added" />;
+  const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+  if (lines.length <= 1) {
+    return (
+      <p className="text-xs text-[#181818] leading-relaxed" style={{ fontFamily: "Lato, sans-serif" }}>{text}</p>
+    );
+  }
+  return (
+    <div className="space-y-2">
+      {lines.map((line, i) => (
+        <div key={i} className="border border-[#E8E3F0] rounded-lg px-4 py-3">
+          <p className="text-xs font-semibold text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>{line}</p>
+        </div>
+      ))}
     </div>
   );
 }
@@ -612,31 +698,13 @@ export default function HotelDetails() {
             {/* 3 ─ Package breakdown */}
             <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
               <SectionHeading>Package breakdown</SectionHeading>
-              {na(hotel.package_breakdown) ? (
-                <p
-                  className="text-xs text-[#181818] leading-relaxed whitespace-pre-wrap"
-                  style={{ fontFamily: "Lato, sans-serif" }}
-                >
-                  {hotel.package_breakdown}
-                </p>
-              ) : (
-                <Placeholder text="Packages to be added" />
-              )}
+              <PackageBreakdown text={hotel.package_breakdown} />
             </section>
 
             {/* 4 ─ What is included */}
             <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
               <SectionHeading>What is included in your stay</SectionHeading>
-              {na(hotel.inclusions) ? (
-                <p
-                  className="text-xs text-[#181818] leading-relaxed whitespace-pre-wrap"
-                  style={{ fontFamily: "Lato, sans-serif" }}
-                >
-                  {hotel.inclusions}
-                </p>
-              ) : (
-                <Placeholder text="Inclusions to be added" />
-              )}
+              <InclusionsList text={hotel.inclusions} />
             </section>
 
             {/* 5 ─ Charged separately */}
@@ -708,16 +776,7 @@ export default function HotelDetails() {
               <div className="border-t border-[#F0EBE4] pt-6 space-y-6">
                 <div>
                   <Caption>Room types</Caption>
-                  {na(hotel.room_categories) ? (
-                    <p
-                      className="text-xs text-[#181818] leading-relaxed whitespace-pre-wrap"
-                      style={{ fontFamily: "Lato, sans-serif" }}
-                    >
-                      {hotel.room_categories}
-                    </p>
-                  ) : (
-                    <Placeholder text="Room types to be added" />
-                  )}
+                  <RoomCategoryRows text={hotel.room_categories} />
                 </div>
                 <div>
                   <Caption>Room features</Caption>
@@ -778,15 +837,10 @@ export default function HotelDetails() {
             <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
               <SectionHeading>Good to know</SectionHeading>
               {na(hotel.good_to_know) ? (
-                <p
-                  className="text-xs text-[#181818] leading-relaxed whitespace-pre-wrap"
-                  style={{ fontFamily: "Lato, sans-serif" }}
-                >
-                  {hotel.good_to_know}
-                </p>
+                <GoodToKnowText text={hotel.good_to_know} />
               ) : (
                 <ul
-                  className="space-y-3 text-sm text-[#181818]"
+                  className="space-y-3 text-xs text-[#181818]"
                   style={{ fontFamily: "Lato, sans-serif" }}
                 >
                   {hotel.min_nights ? (
@@ -838,7 +892,7 @@ export default function HotelDetails() {
                 Book Your Stay
               </h2>
               <p
-                className="text-sm text-[#8C8C8C] mb-6 leading-relaxed"
+                className="text-xs text-[#8C8C8C] mb-6 leading-relaxed"
                 style={{ fontFamily: "Lato, sans-serif" }}
               >
                 Share your travel details below and our Wellness Advisors will assist you in planning your personalised Ayurveda and wellness retreat. Your enquiry is free and non-binding.
@@ -874,7 +928,7 @@ export default function HotelDetails() {
                         onChange={() => setBookingStatus(opt.value)}
                         className="w-4 h-4 text-[#5E17EB] border-[#E0D4C8] focus:ring-[#5E17EB]"
                       />
-                      <span className="text-sm text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>{opt.label}</span>
+                      <span className="text-xs text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>{opt.label}</span>
                     </label>
                   ))}
                 </div>
@@ -902,7 +956,7 @@ export default function HotelDetails() {
                           setDateTo("");
                         }
                       }}
-                      className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.dateFrom ? "border-red-400" : "border-[#E0D4C8]"}`}
+                      className={`w-full border rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.dateFrom ? "border-red-400" : "border-[#E0D4C8]"}`}
                     />
                     {formErrors.dateFrom && <p className="text-red-500 text-xs mt-1">{formErrors.dateFrom}</p>}
                   </div>
@@ -918,7 +972,7 @@ export default function HotelDetails() {
                         setDateTo(e.target.value);
                         setFormErrors((prev) => ({ ...prev, dateTo: undefined }));
                       }}
-                      className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.dateTo ? "border-red-400" : "border-[#E0D4C8]"}`}
+                      className={`w-full border rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.dateTo ? "border-red-400" : "border-[#E0D4C8]"}`}
                     />
                     {formErrors.dateTo && <p className="text-red-500 text-xs mt-1">{formErrors.dateTo}</p>}
                   </div>
@@ -928,7 +982,7 @@ export default function HotelDetails() {
                 <div className="flex gap-3">
                   <div className="flex-1">
                     <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Room type</label>
-                    <select value={roomType} onChange={(e) => setRoomType(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
+                    <select value={roomType} onChange={(e) => setRoomType(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2.5 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
                       <option>Single</option>
                       <option>Double</option>
                     </select>
@@ -937,7 +991,7 @@ export default function HotelDetails() {
                     <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Guests</label>
                     <div className="flex items-center border border-[#E0D4C8] rounded-lg w-full">
                       <button type="button" onClick={() => setPeople((p) => Math.max(1, p - 1))} className="px-3 py-2.5 text-base hover:bg-[#F0EBE4]/50 rounded-l-lg transition-colors leading-none flex-shrink-0">−</button>
-                      <span className="flex-1 py-2.5 text-sm border-l border-r border-[#E0D4C8] text-center" style={{ fontFamily: "Lato, sans-serif" }}>{people}</span>
+                      <span className="flex-1 py-2.5 text-xs border-l border-r border-[#E0D4C8] text-center" style={{ fontFamily: "Lato, sans-serif" }}>{people}</span>
                       <button type="button" onClick={() => setPeople((p) => p + 1)} className="px-3 py-2.5 text-base hover:bg-[#F0EBE4]/50 rounded-r-lg transition-colors leading-none flex-shrink-0">+</button>
                     </div>
                   </div>
@@ -947,14 +1001,14 @@ export default function HotelDetails() {
                 <div className="flex gap-3">
                   <div className="flex-1">
                     <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Room Category</label>
-                    <select value={roomCategory} onChange={(e) => setRoomCategory(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
+                    <select value={roomCategory} onChange={(e) => setRoomCategory(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2.5 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
                       <option value="base">Base category</option>
                       <option value="higher">Open to look for higher options</option>
                     </select>
                   </div>
                   <div className="flex-1">
                     <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Transport</label>
-                    <select value={transportMode} onChange={(e) => setTransportMode(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
+                    <select value={transportMode} onChange={(e) => setTransportMode(e.target.value)} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2.5 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB]" style={{ fontFamily: "Lato, sans-serif" }}>
                       <option value="">Select...</option>
                       <option value="Yes">Yes</option>
                       <option value="No">No</option>
@@ -970,7 +1024,7 @@ export default function HotelDetails() {
                       {dateFrom ? "Estimated price" : "Starting from"}
                     </p>
                     {pricingForMonth.map((mp) => (
-                      <div key={mp.id} className="flex justify-between items-center text-sm" style={{ fontFamily: "Lato, sans-serif" }}>
+                      <div key={mp.id} className="flex justify-between items-center text-xs" style={{ fontFamily: "Lato, sans-serif" }}>
                         <span className="text-[#555] capitalize">{mp.occupancy || "per night"}</span>
                         <span className="font-medium text-[#181818]">{mp.currency} {Number(mp.price).toLocaleString()}</span>
                       </div>
@@ -987,7 +1041,7 @@ export default function HotelDetails() {
                     {[{ value: "female", label: "Female" }, { value: "male", label: "Male" }, { value: "prefer-not", label: "Other" }].map((opt) => (
                       <label key={opt.value} className="flex items-center gap-1.5 cursor-pointer">
                         <input type="radio" name="gender" value={opt.value} checked={gender === opt.value} onChange={() => setGender(opt.value)} className="w-4 h-4 text-[#5E17EB] border-[#E0D4C8] focus:ring-[#5E17EB]" />
-                        <span className="text-sm text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>{opt.label}</span>
+                        <span className="text-xs text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>{opt.label}</span>
                       </label>
                     ))}
                   </div>
@@ -995,21 +1049,21 @@ export default function HotelDetails() {
                   {/* Full Name */}
                   <div className="mb-3">
                     <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Full Name*</label>
-                    <input type="text" placeholder="Enter full name" value={fullName} onChange={(e) => { setFullName(e.target.value); setFormErrors((p) => ({ ...p, fullName: undefined })); }} className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] ${formErrors.fullName ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }} />
+                    <input type="text" placeholder="Enter full name" value={fullName} onChange={(e) => { setFullName(e.target.value); setFormErrors((p) => ({ ...p, fullName: undefined })); }} className={`w-full border rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] ${formErrors.fullName ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }} />
                     {formErrors.fullName && <p className="text-red-500 text-xs mt-1">{formErrors.fullName}</p>}
                   </div>
 
                   {/* Email */}
                   <div className="mb-3">
                     <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Email*</label>
-                    <input type="email" placeholder="Enter email" value={email} onChange={(e) => { setEmail(e.target.value); setFormErrors((p) => ({ ...p, email: undefined })); }} className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] ${formErrors.email ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }} />
+                    <input type="email" placeholder="Enter email" value={email} onChange={(e) => { setEmail(e.target.value); setFormErrors((p) => ({ ...p, email: undefined })); }} className={`w-full border rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] ${formErrors.email ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }} />
                     {formErrors.email && <p className="text-red-500 text-xs mt-1">{formErrors.email}</p>}
                   </div>
 
                   {/* Country */}
                   <div className="mb-3">
                     <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Country*</label>
-                    <select value={country} onChange={(e) => { setCountry(e.target.value); setFormErrors((p) => ({ ...p, country: undefined })); }} className={`w-full border rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.country ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }}>
+                    <select value={country} onChange={(e) => { setCountry(e.target.value); setFormErrors((p) => ({ ...p, country: undefined })); }} className={`w-full border rounded-lg px-3 py-2.5 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#5E17EB] ${formErrors.country ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }}>
                       <option value="">Select country</option>
                       <option value="AT">Austria</option>
                       <option value="DE">Germany</option>
@@ -1025,14 +1079,14 @@ export default function HotelDetails() {
                   {/* Mobile */}
                   <div className="mb-3">
                     <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Mobile*</label>
-                    <input type="tel" placeholder="Enter mobile number" value={mobile} onChange={(e) => { setMobile(e.target.value); setFormErrors((p) => ({ ...p, mobile: undefined })); }} className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] ${formErrors.mobile ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }} />
+                    <input type="tel" placeholder="Enter mobile number" value={mobile} onChange={(e) => { setMobile(e.target.value); setFormErrors((p) => ({ ...p, mobile: undefined })); }} className={`w-full border rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] ${formErrors.mobile ? "border-red-400" : "border-[#E0D4C8]"}`} style={{ fontFamily: "Lato, sans-serif" }} />
                     {formErrors.mobile && <p className="text-red-500 text-xs mt-1">{formErrors.mobile}</p>}
                   </div>
 
                   {/* Remark */}
                   <div>
                     <label className="block text-xs text-[#8C8C8C] uppercase tracking-[0.16em] mb-1.5" style={{ fontFamily: "Lato, sans-serif" }}>Remark</label>
-                    <textarea placeholder="Any additional wishes..." value={comment} onChange={(e) => setComment(e.target.value)} rows={3} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] resize-y" style={{ fontFamily: "Lato, sans-serif" }} />
+                    <textarea placeholder="Any additional wishes..." value={comment} onChange={(e) => setComment(e.target.value)} rows={3} className="w-full border border-[#E0D4C8] rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#5E17EB] placeholder:text-[#AAA] resize-y" style={{ fontFamily: "Lato, sans-serif" }} />
                   </div>
                 </div>
               </div>
