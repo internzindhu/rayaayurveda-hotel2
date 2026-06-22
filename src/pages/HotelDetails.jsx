@@ -133,27 +133,20 @@ function Placeholder({ text }) {
 
 function PackageBreakdown({ text }) {
   if (!text) return <Placeholder text="Packages to be added" />;
-  const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
-  const cards = [];
-  for (let i = 0; i < lines.length; i += 2) {
-    cards.push({ name: lines[i], duration: lines[i + 1] ?? null });
-  }
-  const rows = [];
-  for (let i = 0; i < cards.length; i += 2) {
-    rows.push(cards.slice(i, i + 2));
-  }
+  const packages = text.split("/").map((s) => s.trim()).filter(Boolean);
   return (
-    <div className="border border-[#E0DBF5] rounded-lg overflow-hidden">
-      {rows.map((row, rowIdx) => (
-        <div key={rowIdx} className={`flex ${rowIdx > 0 ? "border-t border-[#E0DBF5]" : ""}`}>
-          {row.map((card, colIdx) => (
-            <div key={colIdx} className={`flex-1 px-4 py-3 ${colIdx > 0 ? "border-l border-[#E0DBF5]" : ""}`}>
-              <p className="text-xs font-bold text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>{card.name}</p>
-              {card.duration && (
-                <p className="text-xs text-[#5E17EB] mt-1" style={{ fontFamily: "Lato, sans-serif" }}>{card.duration}</p>
-              )}
-            </div>
-          ))}
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {packages.map((pkg) => (
+        <div
+          key={pkg}
+          className="border border-[#E0DBF5] rounded-xl px-5 py-4"
+        >
+          <p className="text-sm  text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>
+            Ayurveda Programme
+          </p>
+          <p className="text-xs text-[#5E17EB] mt-1" style={{ fontFamily: "Lato, sans-serif" }}>
+            {pkg}
+          </p>
         </div>
       ))}
     </div>
@@ -162,14 +155,24 @@ function PackageBreakdown({ text }) {
 
 function InclusionsList({ text }) {
   if (!text) return <Placeholder text="Inclusions to be added" />;
-  const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+  // Group lines: a line starting with ● begins a new item; other lines are continuations
+  const items = [];
+  for (const raw of text.split("\n")) {
+    const line = raw.trim();
+    if (!line) continue;
+    if (line.startsWith("●") || items.length === 0) {
+      items.push(line.replace(/^●\s*/, ""));
+    } else {
+      items[items.length - 1] += " " + line;
+    }
+  }
   return (
     <div className="bg-[#F3F0FF] rounded-lg px-5 py-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
-      {lines.map((line, i) => (
+      {items.map((item, i) => (
         <div key={i} className="flex gap-2 items-start">
           <span className="text-[#5E17EB] text-xs mt-0.5 shrink-0 font-bold">+</span>
           <span className="text-xs text-[#181818] leading-relaxed" style={{ fontFamily: "Lato, sans-serif" }}>
-            {line.replace(/^[✓+]\s*/, "")}
+            {item}
           </span>
         </div>
       ))}
@@ -201,16 +204,13 @@ function GoodToKnowText({ text }) {
 function RoomCategoryRows({ text }) {
   if (!text) return <Placeholder text="Room types to be added" />;
   const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
-  if (lines.length <= 1) {
-    return (
-      <p className="text-xs text-[#181818] leading-relaxed" style={{ fontFamily: "Lato, sans-serif" }}>{text}</p>
-    );
-  }
   return (
-    <div className="space-y-2">
-      {lines.map((line, i) => (
-        <div key={i} className="border border-[#E8E3F0] rounded-lg px-4 py-3">
-          <p className="text-xs font-semibold text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>{line}</p>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {lines.map((line) => (
+        <div key={line} className="border border-[#E0DBF5] rounded-xl px-5 py-4">
+          <p className="text-sm font-bold text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>
+            {line}
+          </p>
         </div>
       ))}
     </div>
