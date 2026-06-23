@@ -239,7 +239,7 @@ export default function HotelDetails() {
     const params = new URLSearchParams(location.search);
     return params.get("to") ?? "";
   });
-  const [roomType, setRoomType] = useState("Double");
+  const [roomType, setRoomType] = useState("Single");
   const [people, setPeople] = useState(2);
   const [bookingStatus, setBookingStatus] = useState("");
   const [roomCategory, setRoomCategory] = useState("base");
@@ -399,6 +399,8 @@ export default function HotelDetails() {
     return [best];
   })();
 
+  const priceMultiplier = roomType === "Double" ? 2 : 1;
+
   const propertyType =
     hotel.property_types?.length > 0
       ? hotel.property_types
@@ -429,7 +431,12 @@ export default function HotelDetails() {
         const prev = () => setCurrentSlide((i) => (i - 1 + n) % n);
         const next = () => setCurrentSlide((i) => (i + 1) % n);
         const idx1 = (currentSlide + 1) % n;
-        const idx2 = (currentSlide + 2) % n;
+        const getOffset = (idx, cur, total) => {
+          let d = idx - cur;
+          if (d > total / 2) d -= total;
+          if (d < -total / 2) d += total;
+          return d;
+        };
 
         return (
           <div className="bg-[#F5F1EC] pt-28 pb-0 px-4 sm:px-8">
@@ -512,10 +519,10 @@ export default function HotelDetails() {
                           style={{ fontFamily: "Lato, sans-serif" }}
                         >
                           <span className="capitalize text-[#8C8C8C]">
-                            {mp.occupancy || "per night"}
+                            {roomType} room / {mp.occupancy || "per night"}
                           </span>
                           <span className="font-medium text-[#181818] ml-3 whitespace-nowrap">
-                            {mp.currency} {Number(mp.price).toLocaleString()}
+                            {mp.currency} {(Number(mp.price) * priceMultiplier).toLocaleString()}
                           </span>
                         </div>
                       ))}
@@ -553,32 +560,28 @@ export default function HotelDetails() {
               </div>
 
               {/* ── Center main image ── */}
-              <div className="order-1 w-full h-[260px] overflow-hidden md:absolute md:top-0 md:bottom-0 md:h-auto md:left-[200px] md:right-[230px] md:w-auto">
-                <img
-                  src={slides[currentSlide]}
-                  alt={`${hotel.name} – slide ${currentSlide + 1}`}
-                  className="w-full h-full object-cover transition-opacity duration-500"
-                />
+              <div className="order-1 relative w-full h-[260px] overflow-hidden md:absolute md:top-0 md:bottom-0 md:h-auto md:left-[200px] md:right-[238px] md:w-auto">
+                {slides.map((src, i) => {
+                  const offset = getOffset(i, currentSlide, n);
+                  return (
+                    <img
+                      key={i}
+                      src={src}
+                      alt={`${hotel.name} – slide ${i + 1}`}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-in-out"
+                      style={{ transform: `translateX(${offset * 100}%)` }}
+                    />
+                  );
+                })}
               </div>
 
-              {/* ── Right thumbnail strip ── */}
-              <div className="hidden md:flex flex-col gap-1 absolute top-0 bottom-0 right-0 overflow-hidden w-[230px]">
-                <div className="flex-1 overflow-hidden">
-                  <img
-                    src={slides[idx1]}
-                    alt={`${hotel.name} – preview ${idx1 + 1}`}
-                    className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                    onClick={() => setCurrentSlide(idx1)}
-                  />
-                </div>
-                <div className="flex-1 overflow-hidden">
-                  <img
-                    src={slides[idx2]}
-                    alt={`${hotel.name} – preview ${idx2 + 1}`}
-                    className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                    onClick={() => setCurrentSlide(idx2)}
-                  />
-                </div>
+              {/* ── Right peek — half of next slide ── */}
+              <div className="hidden md:block absolute top-0 bottom-0 right-0 overflow-hidden w-[230px]">
+                <img
+                  src={slides[idx1]}
+                  alt={`${hotel.name} – next`}
+                  className="w-full h-full object-cover object-left"
+                />
               </div>
             </div>
 
@@ -1025,8 +1028,8 @@ export default function HotelDetails() {
                     </p>
                     {pricingForMonth.map((mp) => (
                       <div key={mp.id} className="flex justify-between items-center text-xs" style={{ fontFamily: "Lato, sans-serif" }}>
-                        <span className="text-[#555] capitalize">{mp.occupancy || "per night"}</span>
-                        <span className="font-medium text-[#181818]">{mp.currency} {Number(mp.price).toLocaleString()}</span>
+                        <span className="text-[#555] capitalize">{roomType} room / {mp.occupancy || "per night"}</span>
+                        <span className="font-medium text-[#181818]">{mp.currency} {(Number(mp.price) * priceMultiplier).toLocaleString()}</span>
                       </div>
                     ))}
                   </div>
