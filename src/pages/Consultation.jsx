@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import { submitConsultation } from "../lib/wellnessApi";
+import { countries } from "../data/countries";
 
 export default function Consultation() {
   const [formData, setFormData] = useState({
@@ -118,7 +119,7 @@ export default function Consultation() {
                   Name<span className="text-red-500">*</span>
                 </label>
                 <input
-                  type="text"
+                  type="text" 
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Enter name"
@@ -133,15 +134,18 @@ export default function Consultation() {
                 <label className="block text-gray-700 font-medium mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
                   Country<span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
+                <select
                   value={formData.country}
                   onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                  placeholder="Enter country"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E17EB] focus:border-transparent transition-all bg-white"
                   required
                   style={{ fontFamily: 'Poppins, sans-serif' }}
-                />
+                >
+                  <option value="">Select country</option>
+                  {countries.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
               </div>
 
               {/* Email */}
