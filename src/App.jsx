@@ -73,6 +73,7 @@ function App() {
         <Route path="/faq" element={<FAQ />} />
         <Route path="/individual-stays" element={<IndividualStays />} />
         <Route path="/group-stays" element={<GroupStays />} />
+        <Route path="/individual-stays/ayurveda/sri-lanka" element={<IndividualStaysSriLanka minNights={7} />} />
         <Route path="/individual-stays/sri-lanka" element={<IndividualStaysSriLanka />} />
         <Route path="/individual-stays/india" element={<IndividualStaysIndia />} />
         <Route path="/individual-stays/thailand" element={<IndividualStaysThailand />} />

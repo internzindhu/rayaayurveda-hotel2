@@ -150,7 +150,7 @@ function computePriceBounds(hotels) {
   return { min: prices[0], max: roundedMax };
 }
 
-export default function IndividualStaysSriLanka() {
+export default function IndividualStaysSriLanka({ minNights } = {}) {
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -163,7 +163,6 @@ export default function IndividualStaysSriLanka() {
   const [selectedPrice, setSelectedPrice] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeFilterParams, setActiveFilterParams] = useState(null);
-  const [hasSearched, setHasSearched] = useState(false);
   const [showBudgetSlider, setShowBudgetSlider] = useState(false);
   const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false);
 
@@ -212,7 +211,6 @@ export default function IndividualStaysSriLanka() {
   }, []);
 
   const handleSelectHotel = (hotel) => {
-    setHasSearched(true);
     setSearchInput(hotel.name);
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
@@ -220,7 +218,6 @@ export default function IndividualStaysSriLanka() {
   };
 
   const handleSelectCity = (city) => {
-    setHasSearched(true);
     setSearchInput(city);
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
@@ -247,7 +244,6 @@ export default function IndividualStaysSriLanka() {
   };
 
   const handleSearchClick = () => {
-    setHasSearched(true);
     setDisplayCount(INITIAL_DISPLAY);
     setShowDropdown(false);
     setAdvancedFiltersOpen(false);
@@ -282,6 +278,9 @@ export default function IndividualStaysSriLanka() {
   const advancedFilteredHotels = applyAdvancedFilters(hotels, activeFilterParams);
 
   const priceFilteredHotels = advancedFilteredHotels.filter((hotel) => {
+    if (minNights != null && !(hotel.min_nights != null && hotel.min_nights >= minNights)) {
+      return false;
+    }
     if (dateRange.from) {
       const arrival = dateRange.from;
       const hasCoveringPrice = hotel.monthly_prices?.some((mp) => {
@@ -622,7 +621,7 @@ export default function IndividualStaysSriLanka() {
 
           {/* Advanced Filters */}
           <div className="border-t border-[#E0D4C8] pt-4 transition-opacity duration-200">
-            <AdvancedFilters onApply={handleAdvancedFiltersApply} className="mb-0" open={advancedFiltersOpen} onOpenChange={setAdvancedFiltersOpen} disabled={!hasSearched} />
+            <AdvancedFilters onApply={handleAdvancedFiltersApply} className="mb-0" open={advancedFiltersOpen} onOpenChange={setAdvancedFiltersOpen} />
           </div>
         </div>
 

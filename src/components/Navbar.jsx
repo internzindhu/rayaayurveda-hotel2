@@ -3,9 +3,9 @@ import { Link, useLocation } from "react-router-dom";
 
 export default function Navbar() {
   const stayCountries = [
-    { label: "SRI LANKA", slug: "sri-lanka" },
-    // { label: "INDIA", slug: "india" },
-    // { label: "THAILAND", slug: "thailand" },
+    { label: "SRI LANKA", slug: "sri-lanka", retreatSlug: "ayurveda/sri-lanka" },
+    // { label: "INDIA", slug: "india", retreatSlug: "ayurveda/india" },
+    // { label: "THAILAND", slug: "thailand", retreatSlug: "ayurveda/thailand" },
   ];
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
@@ -214,7 +214,7 @@ export default function Navbar() {
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60] rounded-xl overflow-hidden">
                     <div className="px-4 py-2.5 text-sm text-white font-semibold">INDIVIDUAL STAYS</div>
                     {stayCountries.map((country) => (
-                      <Link key={`desktop-retreats-individual-${country.slug}`} to={`/individual-stays/${country.slug}`} className="block pl-8 pr-4 py-2 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsRetreatsOpen(false)}>{country.label}</Link>
+                      <Link key={`desktop-retreats-individual-${country.slug}`} to={`/individual-stays/${country.retreatSlug}`} className="block pl-8 pr-4 py-2 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsRetreatsOpen(false)}>{country.label}</Link>
                     ))}
                     {/* <div className="px-4 pt-3 pb-2 text-sm text-white font-semibold border-t border-white/10 mt-1">GROUP STAYS</div> */}
                     {/* {stayCountries.map((country) => (
@@ -393,7 +393,7 @@ export default function Navbar() {
                 <div className="pb-4 animate-mobile-dropdown">
                   <CategoryLabel>Individual Stays</CategoryLabel>
                   {stayCountries.map((country) => (
-                    <MobileLink key={`mobile-retreats-individual-${country.slug}`} to={`/individual-stays/${country.slug}`} indent onClose={() => { setIsRetreatsOpen(false); setIsMobileMenuOpen(false); }}>
+                    <MobileLink key={`mobile-retreats-individual-${country.slug}`} to={`/individual-stays/${country.retreatSlug}`} indent onClose={() => { setIsRetreatsOpen(false); setIsMobileMenuOpen(false); }}>
                       {country.label}
                     </MobileLink>
                   ))}

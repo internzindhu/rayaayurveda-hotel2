@@ -257,7 +257,11 @@ export default function IndividualStays({ heroConfig = {} }) {
 
   const advancedFilteredHotels = applyAdvancedFilters(hotels, activeFilterParams);
 
-  const priceFilteredHotels = advancedFilteredHotels.filter((hotel) => {
+  const minNightsFilteredHotels = advancedFilteredHotels.filter(
+    (hotel) => hotel.min_nights != null && hotel.min_nights >= 7
+  );
+
+  const priceFilteredHotels = minNightsFilteredHotels.filter((hotel) => {
     if (!selectedPrice || !priceBounds) return true;
     if (selectedPrice[0] <= priceBounds.min && selectedPrice[1] >= priceBounds.max) return true;
     const mp = getCurrentMonthPrice(hotel);
