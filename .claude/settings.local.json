@@ -30,7 +30,25 @@
       "Bash(find \"C:\\\\\\\\raya2\\\\\\\\backend- raya\" -type f -name \"*.js\" -o -name \"*.json\")",
       "Bash(ls -la \"C:\\\\\\\\raya2\\\\\\\\backend- raya\")",
       "Bash(find \"C:\\\\\\\\raya2\\\\\\\\backend- raya\\\\\\\\src\" -type f \\\\\\( -name \"*.ts\" -o -name \"*.js\" \\\\\\))",
-      "Bash(npx prisma *)"
+      "Bash(npx prisma *)",
+      "Bash(grep -rn \"is_primary\" prisma/schema.prisma)",
+      "Bash(grep -rln \"is_primary\" src)",
+      "Bash(find \"C:/raya2\" -maxdepth 2 -type d 2>/dev/null)",
+      "Bash(node --experimental-vm-modules -e \"require\\('@babel/core'\\)\")",
+      "Bash(npx eslint *)",
+      "Bash(npm run *)",
+      "Bash(disown)",
+      "Read(//tmp/**)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3005/api/hotels/f921f463-8446-4a0c-bab4-f654cc1cb592)",
+      "Bash(powershell -NoProfile -Command \"Get-NetTCPConnection -LocalPort 3000 -State Listen | Select-Object -ExpandProperty OwningProcess\")",
+      "Bash(read pid *)",
+      "Bash(echo 'PID: __TRACKED_VAR__')",
+      "Bash(powershell -NoProfile -Command 'Get-Process -Id __TRACKED_VAR__ | Select-Object Id,ProcessName,Path')",
+      "PowerShell(Get-Process -Id 39668)",
+      "Bash(pkill -f \"ts-node-dev\")",
+      "Bash(CORS_ORIGINS=\"http://localhost:3000,http://localhost:3001,http://localhost:5173,http://localhost:5174\" npm run dev)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 3005 -State Listen -ErrorAction SilentlyContinue)",
+      "PowerShell(Stop-Process -Id 53788 -Force -Confirm:$false)"
     ],
     "additionalDirectories": [
       "c:\\raya2\\rayaayurveda-hotel2"

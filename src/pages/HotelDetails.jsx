@@ -131,22 +131,140 @@ function Placeholder({ text }) {
   );
 }
 
-function PackageBreakdown({ text }) {
-  if (!text) return <Placeholder text="Packages to be added" />;
-  const packages = text.split("/").map((s) => s.trim()).filter(Boolean);
+function PackagesAccordion({ packageText, inclusionsText }) {
+  const [openIndex, setOpenIndex] = useState(0);
+
+  if (!packageText) return <Placeholder text="Packages to be added" />;
+  const packages = packageText.split("/").map((s) => s.trim()).filter(Boolean);
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      {packages.map((pkg) => (
-        <div
-          key={pkg}
-          className="border border-[#E0DBF5] rounded-xl px-5 py-4"
-        >
-          <p className="text-sm  text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>
-            Ayurveda Programme
-          </p>
-          <p className="text-xs text-[#5E17EB] mt-1" style={{ fontFamily: "Lato, sans-serif" }}>
-            {pkg}
-          </p>
+    <div className="space-y-3">
+      {packages.map((pkg, i) => {
+        const isOpen = openIndex === i;
+        return (
+          <div key={pkg} className="border border-[#E0DBF5] rounded-xl overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setOpenIndex(isOpen ? null : i)}
+              className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left"
+            >
+              <div>
+                <p className="text-sm text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>
+                  Ayurveda Programme
+                </p>
+                <p className="text-xs text-[#5E17EB] mt-1" style={{ fontFamily: "Lato, sans-serif" }}>
+                  {pkg}
+                </p>
+              </div>
+              <svg
+                className={`w-4 h-4 text-[#5E17EB] shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {isOpen && (
+              <div className="px-5 pb-5 pt-1 border-t border-[#F0EBE4]">
+                <Caption>What is included</Caption>
+                <InclusionsList text={inclusionsText} />
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function PackageItemsList({ items }) {
+  if (!Array.isArray(items) || items.length === 0) return <Placeholder text="Inclusions to be added" />;
+  return (
+    <div className="bg-[#F3F0FF] rounded-lg px-5 py-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
+      {items.map((item, i) => (
+        <div key={i} className="flex gap-2 items-start">
+          <span className="text-[#5E17EB] text-xs mt-0.5 shrink-0 font-bold">+</span>
+          <span className="text-xs text-[#181818] leading-relaxed" style={{ fontFamily: "Lato, sans-serif" }}>
+            {item}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PackagesList({ packages }) {
+  const [openId, setOpenId] = useState(null);
+
+  if (!Array.isArray(packages) || packages.length === 0) {
+    return <Placeholder text="Packages to be added" />;
+  }
+
+  // Group variants that share a group_label (e.g. the same programme offered
+  // at different lengths of stay) under one heading; ungrouped packages
+  // render as standalone entries.
+  const groups = [];
+  const byLabel = new Map();
+  for (const pkg of packages) {
+    if (pkg.group_label) {
+      if (!byLabel.has(pkg.group_label)) {
+        const group = { label: pkg.group_label, items: [] };
+        byLabel.set(pkg.group_label, group);
+        groups.push(group);
+      }
+      byLabel.get(pkg.group_label).items.push(pkg);
+    } else {
+      groups.push({ label: null, items: [pkg] });
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      {groups.map((group, gi) => (
+        <div key={group.label ?? `pkg-${gi}`}>
+          {group.label && (
+            <p
+              className="text-sm text-[#181818] mb-3"
+              style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
+            >
+              {group.label}
+            </p>
+          )}
+          <div className="space-y-3">
+            {group.items.map((pkg) => {
+              const isOpen = openId === pkg.id;
+              return (
+                <div key={pkg.id} className="border border-[#E0DBF5] rounded-xl overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setOpenId(isOpen ? null : pkg.id)}
+                    className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left"
+                  >
+                    <p className="text-sm text-[#181818]" style={{ fontFamily: "Lato, sans-serif" }}>
+                      {pkg.name}
+                    </p>
+                    <svg
+                      className={`w-4 h-4 text-[#5E17EB] shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {isOpen && (
+                    <div className="px-5 pb-5 pt-1 border-t border-[#F0EBE4]">
+                      <Caption>What is included</Caption>
+                      <PackageItemsList items={pkg.items} />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       ))}
     </div>
@@ -698,10 +816,10 @@ export default function HotelDetails() {
               </div>
             </section>
 
-            {/* 3 ─ Package breakdown */}
+            {/* 3 ─ Packages */}
             <section className="bg-white rounded-xl p-6 sm:p-8 shadow-sm">
-              <SectionHeading>Package breakdown</SectionHeading>
-              <PackageBreakdown text={hotel.package_breakdown} />
+              <SectionHeading>Packages</SectionHeading>
+              <PackagesList packages={hotel.packages} />
             </section>
 
             {/* 4 ─ What is included */}
