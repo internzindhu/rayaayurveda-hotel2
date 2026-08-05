@@ -429,7 +429,7 @@ export default function Consultation() {
             <div className="flex gap-3">
               {/* Instagram */}
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/rayalonglifeayurveda?igsh=MW9vMXNvNzkyNTVsdQ%3D%3D"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-12 h-12 border-2 border-[#5E17EB] rounded-xl flex items-center justify-center text-[#5E17EB] hover:bg-[#5E17EB] hover:text-white transition-colors duration-200"
@@ -441,7 +441,7 @@ export default function Consultation() {
               </a>
               {/* Facebook */}
               <a
-                href="https://facebook.com"
+                href="https://www.facebook.com/Rayalonglife/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-12 h-12 border-2 border-[#5E17EB] rounded-xl flex items-center justify-center text-[#5E17EB] hover:bg-[#5E17EB] hover:text-white transition-colors duration-200"

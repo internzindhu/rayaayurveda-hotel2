@@ -136,7 +136,7 @@ export default function Contact() {
                 </h3>
                 <div className="flex gap-3">
                   <a
-                    href="https://instagram.com"
+                    href="https://www.instagram.com/rayalonglifeayurveda?igsh=MW9vMXNvNzkyNTVsdQ%3D%3D"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-12 h-12 rounded-lg border-2 border-[#5E17EB] bg-white flex items-center justify-center text-[#5E17EB] hover:bg-[#5E17EB] hover:text-white transition-colors"
@@ -147,7 +147,7 @@ export default function Contact() {
                     </svg>
                   </a>
                   <a
-                    href="https://facebook.com"
+                    href="https://www.facebook.com/Rayalonglife/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-12 h-12 rounded-lg border-2 border-[#5E17EB] bg-white flex items-center justify-center text-[#5E17EB] hover:bg-[#5E17EB] hover:text-white transition-colors"
