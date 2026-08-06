@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import SEO from "../components/SEO";
+import TagWithTooltip from "../components/TagWithTooltip";
 import { fetchHotelById, fetchRelatedHotels, submitInquiry } from "../lib/wellnessApi";
 
 /* ─── Helpers ──────────────────────────────────────────────────────────────── */
@@ -17,7 +18,7 @@ function extractItems(arr, key) {
   return arr
     .map((row) => ({
       name: row[key]?.name ?? null,
-      description: row[key]?.description ?? null,
+      definition: row[key]?.definition ?? null,
     }))
     .filter((item) => item.name);
 }
@@ -28,7 +29,7 @@ function extractNames(arr, key) {
 
 function parseRaw(str) {
   if (!str || typeof str !== "string") return [];
-  return str.split(",").map((s) => s.trim()).filter(Boolean).map((name) => ({ name, description: null }));
+  return str.split(",").map((s) => s.trim()).filter(Boolean).map((name) => ({ name, definition: null }));
 }
 
 function getItems(arr, key, rawStr) {
@@ -790,7 +791,11 @@ export default function HotelDetails() {
                   <Caption>Ayurveda / Wellness offering</Caption>
                   {wellnessItems.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
-                      {wellnessItems.map((item) => <Chip key={item.name}>{item.name}</Chip>)}
+                      {wellnessItems.map((item) => (
+                        <TagWithTooltip key={item.name} name={item.name} definition={item.definition}>
+                          <Chip>{item.name}</Chip>
+                        </TagWithTooltip>
+                      ))}
                     </div>
                   ) : (
                     <Placeholder text="To be added" />
@@ -852,7 +857,11 @@ export default function HotelDetails() {
                   <Caption>Ayurveda / Wellness dining features</Caption>
                   {diningFeatures.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
-                      {diningFeatures.map((item) => <Chip key={item.name}>{item.name}</Chip>)}
+                      {diningFeatures.map((item) => (
+                        <TagWithTooltip key={item.name} name={item.name} definition={item.definition}>
+                          <Chip>{item.name}</Chip>
+                        </TagWithTooltip>
+                      ))}
                     </div>
                   ) : (
                     <Placeholder text="To be added" />
@@ -862,7 +871,11 @@ export default function HotelDetails() {
                   <Caption>Meal plan</Caption>
                   {mealPlans.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
-                      {mealPlans.map((item) => <Chip key={item.name}>{item.name}</Chip>)}
+                      {mealPlans.map((item) => (
+                        <TagWithTooltip key={item.name} name={item.name} definition={item.definition}>
+                          <Chip>{item.name}</Chip>
+                        </TagWithTooltip>
+                      ))}
                     </div>
                   ) : (
                     <Placeholder text="To be added" />
@@ -872,7 +885,11 @@ export default function HotelDetails() {
                   <Caption>Type of cuisine</Caption>
                   {cuisineTypes.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
-                      {cuisineTypes.map((item) => <Chip key={item.name}>{item.name}</Chip>)}
+                      {cuisineTypes.map((item) => (
+                        <TagWithTooltip key={item.name} name={item.name} definition={item.definition}>
+                          <Chip>{item.name}</Chip>
+                        </TagWithTooltip>
+                      ))}
                     </div>
                   ) : (
                     <Placeholder text="To be added" />

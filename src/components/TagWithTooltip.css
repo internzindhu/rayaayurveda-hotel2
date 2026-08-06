@@ -1,0 +1,80 @@
+/* TagWithTooltip — lightweight hover/tap popover for glossary-style tags */
+
+.twt-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.twt-tag {
+  text-decoration: underline dotted;
+  text-decoration-color: var(--twt-underline, var(--raya-primary, #5E17EB));
+  text-underline-offset: 3px;
+  cursor: help;
+}
+
+.twt-popover {
+  position: absolute;
+  left: 50%;
+  transform: translateX(calc(-50% + var(--twt-shift-x, 0px)));
+  width: max-content;
+  min-width: 160px;
+  max-width: min(260px, 80vw);
+  background: var(--twt-bg, var(--raya-dark, #181818));
+  color: var(--twt-text, var(--raya-cream, #FFFBF7));
+  font-family: "Lato", sans-serif;
+  font-size: 11.5px;
+  line-height: 1.5;
+  padding: 10px 12px;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+  z-index: 50;
+}
+
+.twt-popover--top {
+  bottom: calc(100% + 8px);
+}
+
+.twt-popover--top::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: calc(50% - var(--twt-shift-x, 0px));
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--twt-bg, var(--raya-dark, #181818));
+}
+
+.twt-popover--bottom {
+  top: calc(100% + 8px);
+}
+
+.twt-popover--bottom::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: calc(50% - var(--twt-shift-x, 0px));
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-bottom-color: var(--twt-bg, var(--raya-dark, #181818));
+}
+
+/* Desktop: reveal on hover / keyboard focus */
+@media (hover: hover) and (pointer: fine) {
+  .twt-wrapper:hover .twt-popover,
+  .twt-wrapper:focus-visible .twt-popover {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+}
+
+/* Mobile / any pointer: tap-toggled open state */
+.twt-wrapper--open .twt-popover {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
