@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import SEO from "../components/SEO";
 import TagWithTooltip from "../components/TagWithTooltip";
+import HotelMap from "../components/HotelMap";
 import { fetchHotelById, fetchRelatedHotels, submitInquiry } from "../lib/wellnessApi";
 
 /* ─── Helpers ──────────────────────────────────────────────────────────────── */
@@ -968,6 +969,11 @@ export default function HotelDetails() {
                   <div className="mb-4"><Placeholder text="Nearest airport, distance & transfer cost to be added" /></div>
                   <Placeholder text="Beach access & sister resort info to be added" />
                 </>
+              )}
+              {hotel.latitude != null && hotel.longitude != null && (
+                <div className="mt-6">
+                  <HotelMap hotels={[hotel]} cluster={false} className="h-[320px]" />
+                </div>
               )}
             </section>
 

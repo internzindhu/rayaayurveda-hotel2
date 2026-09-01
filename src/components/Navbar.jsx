@@ -301,7 +301,7 @@ export default function Navbar() {
                 </button>
                 {isServicesOpen && (
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60] rounded-xl overflow-hidden">
-                    <Link to="/vouchers" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsServicesOpen(false)}>VOUCHERS</Link>
+                    {/* -/- <Link to="/vouchers" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsServicesOpen(false)}>VOUCHERS</Link> */}
                     <Link to="/consultation" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsServicesOpen(false)}>BOOKING AND CONTACT</Link>
                   </div>
                 )}

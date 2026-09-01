@@ -48,7 +48,27 @@
       "Bash(pkill -f \"ts-node-dev\")",
       "Bash(CORS_ORIGINS=\"http://localhost:3000,http://localhost:3001,http://localhost:5173,http://localhost:5174\" npm run dev)",
       "PowerShell(Get-NetTCPConnection -LocalPort 3005 -State Listen -ErrorAction SilentlyContinue)",
-      "PowerShell(Stop-Process -Id 53788 -Force -Confirm:$false)"
+      "PowerShell(Stop-Process -Id 53788 -Force -Confirm:$false)",
+      "Bash(ls /raya2/ 2>/dev/null; echo \"---\"; cat package.json 2>/dev/null | head -40; echo \"---readme---\"; find . -iname \"README*\" -not -path \"*/node_modules*\" -maxdepth 2)",
+      "Bash(find /c -maxdepth 3 -iname \"*raya-admin*\" -not -path \"*/node_modules*\")",
+      "Read(//c/Users/perer/**)",
+      "Bash(find \"/c/Users/perer/Downloads/raya-admin/raya-admin\" -maxdepth 2 -type d -not -path \"*/node_modules*\" -not -path \"*/.git*\" 2>/dev/null)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(node -e \"require\\('@babel/core'\\)\")",
+      "Bash(taskkill //F //IM node.exe //FI \"WINDOWTITLE eq *ts-node-dev*\")",
+      "Bash(pkill -f \"src/server.ts\")",
+      "Bash(curl -s -o /dev/null -w \"post-kill check -> %{http_code}\\\\n\" --max-time 2 http://localhost:3005/api/hotels)",
+      "Bash(npm install *)",
+      "Bash(powershell -NoProfile -Command \"Get-NetTCPConnection -LocalPort 5183 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique\")",
+      "Bash(powershell -NoProfile -Command \"Stop-Process -Id 3540 -Force -ErrorAction SilentlyContinue\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" --max-time 2 http://localhost:5183)",
+      "Bash(xargs grep -l \"getSession\")",
+      "Bash(python3 -c ' *)",
+      "Bash(node -e ' *)",
+      "Bash(npm view *)",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>{const v=JSON.parse\\(d\\).filter\\(x=>x.startsWith\\('5.'\\)\\);console.log\\(v[v.length-1]\\)}\\)\")",
+      "Bash(curl -s \"https://mkvydwpkzflndxvaopbn.supabase.co/auth/v1/.well-known/jwks.json\")",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>{console.log\\(JSON.stringify\\(JSON.parse\\(d\\),null,2\\)\\)}\\)\")"
     ],
     "additionalDirectories": [
       "c:\\raya2\\rayaayurveda-hotel2"

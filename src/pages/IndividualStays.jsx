@@ -1,5 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import { List, Map as MapIcon } from "lucide-react";
 import Navbar from "../components/Navbar";
 import SEO from "../components/SEO";
 import RevealOnScroll from "../components/RevealOnScroll";
@@ -7,6 +9,7 @@ import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import { fetchWellnessHotels } from "../lib/wellnessApi";
 import AdvancedFilters from "../components/AdvancedFilters";
 import PriceRangeSlider from "../components/PriceRangeSlider";
+import HotelMap from "../components/HotelMap";
 
 const INITIAL_DISPLAY = 4;
 const DROPDOWN_MAX = 8;
@@ -140,6 +143,7 @@ export default function IndividualStays({ heroConfig = {} }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeFilterParams, setActiveFilterParams] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [viewMode, setViewMode] = useState("list");
 
   const [showBudgetSlider, setShowBudgetSlider] = useState(false);
 
@@ -513,7 +517,36 @@ export default function IndividualStays({ heroConfig = {} }) {
 
         {/* Hotels Grid */}
         <div className="relative mb-24 sm:mb-24">
-          <div className="hidden md:block absolute left-1/2 top-0 bottom-24 w-px bg-gray-900 transform -translate-x-1/2" />
+          {!loading && !error && priceFilteredHotels.length > 0 && (
+            <div className="flex justify-center sm:justify-end mb-8">
+              <div className="inline-flex items-center gap-1 bg-[#FFF8F2] border border-[#E0D4C8] rounded-full p-1">
+                <button
+                  type="button"
+                  onClick={() => setViewMode("list")}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs tracking-[0.12em] uppercase transition-colors ${
+                    viewMode === "list" ? "bg-[#5E17EB] text-white" : "text-[#181818] hover:text-[#5E17EB]"
+                  }`}
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  <List className="w-3.5 h-3.5" /> List
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("map")}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs tracking-[0.12em] uppercase transition-colors ${
+                    viewMode === "map" ? "bg-[#5E17EB] text-white" : "text-[#181818] hover:text-[#5E17EB]"
+                  }`}
+                  style={{ fontFamily: "Lato, sans-serif" }}
+                >
+                  <MapIcon className="w-3.5 h-3.5" /> Map
+                </button>
+              </div>
+            </div>
+          )}
+
+          {viewMode === "list" && (
+            <div className="hidden md:block absolute left-1/2 top-0 bottom-24 w-px bg-gray-900 transform -translate-x-1/2" />
+          )}
 
           {loading && (
             <p className="text-center text-[#181818] py-12" style={{ fontFamily: "Lato, sans-serif" }}>Loading hotels…</p>
@@ -525,66 +558,90 @@ export default function IndividualStays({ heroConfig = {} }) {
             <p className="text-center text-[#181818] py-12" style={{ fontFamily: "Lato, sans-serif" }}>No hotels found. Try adjusting your filters.</p>
           )}
           {!loading && !error && priceFilteredHotels.length > 0 && (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 items-start">
-                {hotelsToShow.map((hotel, index) => {
-                  const monthlyPrice = getCurrentMonthPrice(hotel);
-                  const priceDisplay = formatMonthlyPrice(monthlyPrice) ?? hotel.price ?? null;
-                  return (
-                    <RevealOnScroll key={hotel.id} delay={(index % 4) * 70} className="flex flex-col">
-                      <div className={`mb-4 ${index === 1 ? "lg:mt-[60px]" : index === 2 ? "lg:mt-[100px]" : ""}`}>
-                        <img
-                          src={getPrimaryImage(hotel.images) || "/hotel.png"}
-                          alt={hotel.name}
-                          className="w-full aspect-[4/3] object-cover rounded-lg"
-                        />
-                      </div>
-                      <h3
-                        className="text-xl sm:text-2xl md:text-2xl text-[#181818] mb-3"
-                        style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
+            <AnimatePresence mode="wait">
+              {viewMode === "list" ? (
+                <motion.div
+                  key="list"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                >
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 items-start">
+                    {hotelsToShow.map((hotel, index) => {
+                      const monthlyPrice = getCurrentMonthPrice(hotel);
+                      const priceDisplay = formatMonthlyPrice(monthlyPrice) ?? hotel.price ?? null;
+                      return (
+                        <RevealOnScroll key={hotel.id} delay={(index % 4) * 70} className="flex flex-col">
+                          <div className={`mb-4 ${index === 1 ? "lg:mt-[60px]" : index === 2 ? "lg:mt-[100px]" : ""}`}>
+                            <img
+                              src={getPrimaryImage(hotel.images) || "/hotel.png"}
+                              alt={hotel.name}
+                              className="w-full aspect-[4/3] object-cover rounded-lg"
+                            />
+                          </div>
+                          <h3
+                            className="text-xl sm:text-2xl md:text-2xl text-[#181818] mb-3"
+                            style={{ fontFamily: "Sentient, serif", fontStyle: "italic" }}
+                          >
+                            {hotel.name}
+                          </h3>
+                          {hotel.slogan_line && (
+                            <p className="text-sm text-[#5E17EB] mb-1" style={{ fontFamily: "Lato, sans-serif" }}>{hotel.slogan_line}</p>
+                          )}
+                          <p className="text-sm text-[#8C8C8C] mb-1" style={{ fontFamily: "Lato, sans-serif" }}>{hotel.location}</p>
+                          {priceDisplay && (
+                            <p className="text-sm font-medium text-[#181818] mb-2" style={{ fontFamily: "Lato, sans-serif" }}>{priceDisplay}</p>
+                          )}
+                          {hotel.facilities && hotel.facilities.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {hotel.facilities.slice(0, 4).map((f) => (
+                                <span key={f.facility_id} className="text-xs px-2 py-1 bg-[#FFF0E0] rounded" style={{ fontFamily: "Lato, sans-serif" }}>
+                                  {f.facility?.name}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          <Link
+                            to={`/book-hotel/${hotel.id}`}
+                            className="text-[#5E17EB] hover:underline inline-block uppercase mt-6"
+                            style={{ fontFamily: "Lato", fontWeight: "500", fontStyle: "normal", fontSize: "14px", lineHeight: "100%", letterSpacing: "0.1em", textTransform: "uppercase" }}
+                          >
+                            VIEW RETREAT →
+                          </Link>
+                        </RevealOnScroll>
+                      );
+                    })}
+                  </div>
+                  {displayCount < priceFilteredHotels.length && (
+                    <div className="text-center mt-24">
+                      <button
+                        type="button"
+                        onClick={() => setDisplayCount((prev) => Math.min(prev + INITIAL_DISPLAY, priceFilteredHotels.length))}
+                        className="text-[#5E17EB] text-sm sm:text-base tracking-[0.1em] uppercase hover:underline px-6 py-6 rounded-lg transition-colors"
+                        style={{ fontFamily: "Lato, sans-serif" }}
                       >
-                        {hotel.name}
-                      </h3>
-                      {hotel.slogan_line && (
-                        <p className="text-sm text-[#5E17EB] mb-1" style={{ fontFamily: "Lato, sans-serif" }}>{hotel.slogan_line}</p>
-                      )}
-                      <p className="text-sm text-[#8C8C8C] mb-1" style={{ fontFamily: "Lato, sans-serif" }}>{hotel.location}</p>
-                      {priceDisplay && (
-                        <p className="text-sm font-medium text-[#181818] mb-2" style={{ fontFamily: "Lato, sans-serif" }}>{priceDisplay}</p>
-                      )}
-                      {hotel.facilities && hotel.facilities.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {hotel.facilities.slice(0, 4).map((f) => (
-                            <span key={f.facility_id} className="text-xs px-2 py-1 bg-[#FFF0E0] rounded" style={{ fontFamily: "Lato, sans-serif" }}>
-                              {f.facility?.name}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      <Link
-                        to={`/book-hotel/${hotel.id}`}
-                        className="text-[#5E17EB] hover:underline inline-block uppercase mt-6"
-                        style={{ fontFamily: "Lato", fontWeight: "500", fontStyle: "normal", fontSize: "14px", lineHeight: "100%", letterSpacing: "0.1em", textTransform: "uppercase" }}
-                      >
-                        VIEW RETREAT →
-                      </Link>
-                    </RevealOnScroll>
-                  );
-                })}
-              </div>
-              {displayCount < priceFilteredHotels.length && (
-                <div className="text-center mt-24">
-                  <button
-                    type="button"
-                    onClick={() => setDisplayCount((prev) => Math.min(prev + INITIAL_DISPLAY, priceFilteredHotels.length))}
-                    className="text-[#5E17EB] text-sm sm:text-base tracking-[0.1em] uppercase hover:underline px-6 py-6 rounded-lg transition-colors"
-                    style={{ fontFamily: "Lato, sans-serif" }}
-                  >
-                    Show more hotels
-                  </button>
-                </div>
+                        Show more hotels
+                      </button>
+                    </div>
+                  )}
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="map"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                >
+                  <HotelMap
+                    hotels={priceFilteredHotels}
+                    className="h-[560px]"
+                    emptyMessage="Map locations for these retreats are being added — check back soon, or browse the list view in the meantime."
+                  />
+                </motion.div>
               )}
-            </>
+            </AnimatePresence>
           )}
         </div>
       </div>
