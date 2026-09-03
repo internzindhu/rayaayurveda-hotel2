@@ -10,14 +10,11 @@ const PROPERTY_TYPE_OPTIONS = [
 ];
 
 const MIN_NIGHTS_OPTIONS = ["1", "3", "5", "7", "14", "Other"];
-const MAX_OCCUPANCY_OPTIONS = ["1", "3", "Other"];
 
 const INITIAL_FILTERS = {
   propertyTypes: [],
   minNights: "",
-  maxOccupancy: "",
   doctorsAvailable: "",
-  medicalReportSupport: "",
   facilityIds: [],
   activityIds: [],
   mealPlanIds: [],
@@ -26,8 +23,6 @@ const INITIAL_FILTERS = {
   roomFeatureIds: [],
   restrictionIds: [],
   wellnessOfferingIds: [],
-  swimmingPool: false,
-  kidFriendly: false,
 };
 
 const MEAL_PLAN_INFO = {
@@ -38,11 +33,7 @@ function countActive(f) {
   return (
     f.propertyTypes.length +
     (f.minNights && f.minNights !== "Other" ? 1 : 0) +
-    (f.maxOccupancy && f.maxOccupancy !== "Other" ? 1 : 0) +
     (f.doctorsAvailable ? 1 : 0) +
-    (f.medicalReportSupport ? 1 : 0) +
-    (f.swimmingPool ? 1 : 0) +
-    (f.kidFriendly ? 1 : 0) +
     f.facilityIds.length +
     f.activityIds.length +
     f.mealPlanIds.length +
@@ -52,25 +43,6 @@ function countActive(f) {
     f.restrictionIds.length +
     f.wellnessOfferingIds.length
   );
-}
-
-function buildApiParams(f) {
-  const p = {};
-  if (f.propertyTypes.length > 0) p.property_type = f.propertyTypes[0];
-  if (f.minNights && f.minNights !== "Other") p.min_nights = f.minNights;
-  if (f.maxOccupancy && f.maxOccupancy !== "Other") p.max_occupancy = f.maxOccupancy;
-  if (f.doctorsAvailable) p.doctors_available = f.doctorsAvailable;
-  if (f.medicalReportSupport) p.medical_report_support = f.medicalReportSupport;
-  if (f.swimmingPool) p.swimming_pool = true;
-  if (f.facilityIds.length) p.facilities = f.facilityIds.join(",");
-  if (f.activityIds.length) p.activities = f.activityIds.join(",");
-  if (f.mealPlanIds.length) p.meal_plans = f.mealPlanIds.join(",");
-  if (f.cuisineTypeIds.length) p.cuisine_types = f.cuisineTypeIds.join(",");
-  if (f.diningFeatureIds.length) p.dining_features = f.diningFeatureIds.join(",");
-  if (f.roomFeatureIds.length) p.room_features = f.roomFeatureIds.join(",");
-  if (f.restrictionIds.length) p.restrictions = f.restrictionIds.join(",");
-  if (f.wellnessOfferingIds.length) p.wellness_offerings = f.wellnessOfferingIds.join(",");
-  return p;
 }
 
 // ─── Small UI pieces ──────────────────────────────────────────────────────────
@@ -236,94 +208,6 @@ function LookupCheckboxList({ items, selectedIds, onToggle, loading, infoMap }) 
   );
 }
 
-// ─── Static fallback data matching the image exactly ─────────────────────────
-
-const STATIC_ROOM_FEATURES = [
-  { id: "rf1", name: "Air Conditioning" },
-  { id: "rf2", name: "No Air Conditioning" },
-  { id: "rf3", name: "Private Pool" },
-  { id: "rf4", name: "Bathtub" },
-  { id: "rf5", name: "Shower" },
-  { id: "rf6", name: "TV" },
-];
-
-const STATIC_MEAL_PLANS = [
-  { id: "mp1", name: "Al Ayurveda", description: "Accommodation + 3 meals + Ayurveda treatments + Selected wellness activities" },
-  { id: "mp2", name: "Ayurveda Full Board", description: "Breakfast, lunch & dinner + Ayurveda treatments" },
-  { id: "mp3", name: "Full Board", description: "Breakfast, lunch, dinner" },
-  { id: "mp4", name: "Half Board", description: "Breakfast + dinner" },
-  { id: "mp5", name: "Bed & Breakfast", description: "Breakfast only" },
-  { id: "mp6", name: "Wellness Full Board", description: "3 meals + wellness activities" },
-];
-
-const STATIC_WELLNESS_OFFERINGS = [
-  { id: "wo1", name: "Full Ayurveda Only", description: "Structured program including treatments, meals & consultations" },
-  { id: "wo2", name: "Wellness Programs", description: "General wellness (spa, yoga, relaxation)" },
-  { id: "wo3", name: "Leisure + Ayurveda/Wellness included" },
-  { id: "wo4", name: "Leisure + Ayurveda/Wellness (separate packages)" },
-];
-
-const STATIC_FACILITIES = [
-  { id: "f1", name: "Spa" },
-  { id: "f2", name: "Yoga Pavilion" },
-  { id: "f3", name: "Sauna" },
-  { id: "f4", name: "Steam Room" },
-  { id: "f5", name: "Gym / Fitness Centre" },
-  { id: "f6", name: "Pilates" },
-  { id: "f7", name: "Restaurant" },
-  { id: "f8", name: "Free WiFi" },
-  { id: "f9", name: "Airport Transfers" },
-  { id: "f10", name: "Wheelchair Accessible" },
-  { id: "f11", name: "Disability-Friendly Rooms" },
-];
-
-const STATIC_DINING_FEATURES = [
-  { id: "df1", name: "Doctor-Prescribed Meals", description: "Customized after first doctor consultation" },
-  { id: "df2", name: "Dosha-Based Meals", description: "Meals designed to balance Vata, Pitta, and Kapha" },
-  { id: "df3", name: "Ayurveda Dining", description: "Meals prepared based on Ayurvedic principles" },
-  { id: "df4", name: "Wellness Dining", description: "Light, balanced meals focused on health and digestion" },
-  { id: "df5", name: "Herbal Teas / Fresh Juices", description: "Daily Ayurvedic infusions served alongside meals" },
-  { id: "df6", name: "No Processed Sugar", description: "Meals prepared using natural sweeteners instead of refined sugar" },
-  { id: "df7", name: "No Red Meat", description: "Meals exclude beef, pork, and similar meats" },
-  { id: "df8", name: "No Restrictions", description: "No specific dietary restrictions applied to meals" },
-];
-
-const STATIC_RESTRICTIONS = [
-  { id: "r1", name: "No Alcohol" },
-  { id: "r2", name: "No Smoking" },
-  { id: "r3", name: "No Restrictions" },
-  { id: "r4", name: "Kid Friendly (11.99 years and below)" },
-];
-
-const STATIC_CUISINE_TYPES = [
-  { id: "ct1", name: "Ayurveda Cuisine", description: "Based on Ayurvedic principles to balance doshas" },
-  { id: "ct2", name: "Wellness Cuisine", description: "Healthy, balanced meals for overall wellbeing" },
-  { id: "ct3", name: "Vegetarian", description: "No meat or seafood" },
-  { id: "ct4", name: "Vegan", description: "No animal products, only plant based" },
-  { id: "ct5", name: "Vegetarian & Non-Vegetarian" },
-  { id: "ct6", name: "Non-Vegetarian" },
-  { id: "ct7", name: "Satvik / Yogic Food", description: "Pure vegetarian, light meals promoting balance and clarity" },
-  { id: "ct8", name: "Organic", description: "Uses organically sourced ingredients (no chemicals/pesticides)" },
-  { id: "ct9", name: "Garden-to-Table", description: "Fresh, locally sourced ingredients (Focus on freshness)" },
-];
-
-const STATIC_ACTIVITIES = [
-  { id: "a1", name: "Yoga / Breathwork" },
-  { id: "a2", name: "Meditation" },
-  { id: "a3", name: "Tai Chi / Qi Gong", description: "Gentle mind-body movement practices" },
-  { id: "a4", name: "Reiki / Energy Healing", description: "Holistic energy balancing treatments" },
-  { id: "a5", name: "Sound Healing/Music Therapy", description: "Therapeutic sound-based relaxation sessions" },
-  { id: "a6", name: "Aromatherapy", description: "Use of essential oils for relaxation and wellbeing" },
-  { id: "a7", name: "Pilates", description: "Core-strengthening and flexibility exercises" },
-  { id: "a8", name: "Fitness / Gym Sessions" },
-  { id: "a9", name: "Arts & Crafts / Learning", description: "Cooking classes, painting, local craft workshops, herbal workshops" },
-  { id: "a10", name: "Religious / Spiritual Activities", description: "Temple visits, spiritual rituals, monk-led sessions" },
-  { id: "a11", name: "Cultural Experiences", description: "Village tours, city tours, cooking demonstrations" },
-  { id: "a12", name: "Nature Activities", description: "Nature walks, bird watching, cycling, hiking, garden tours" },
-  { id: "a13", name: "Water / Beach Activities", description: "Swimming, beach relaxation, snorkeling, diving, surfing" },
-  { id: "a14", name: "Sports & Leisure Activities", description: "Gym, Tennis, Golf, badminton and indoor games" },
-];
-
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function AdvancedFilters({ onApply, className = "mb-8", open: openProp, onOpenChange, disabled = false }) {
@@ -336,18 +220,22 @@ export default function AdvancedFilters({ onApply, className = "mb-8", open: ope
   };
   const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [lookups, setLookups] = useState(null);
-  const [lookupsLoading, setLookupsLoading] = useState(false);
+  const [lookupsLoading, setLookupsLoading] = useState(true);
   const onApplyRef = useRef(onApply);
   useEffect(() => { onApplyRef.current = onApply; });
 
+  // Load lookups once on mount so the real (integer) option IDs are ready
+  // before the user can interact with any checkbox. This is what keeps the
+  // IDs stored in `filters` aligned with the join IDs on each hotel record.
   useEffect(() => {
-    if (!open || lookups) return;
+    let cancelled = false;
     setLookupsLoading(true);
     fetchLookups()
-      .then((data) => setLookups(data))
-      .catch(() => setLookups({}))
-      .finally(() => setLookupsLoading(false));
-  }, [open, lookups]);
+      .then((data) => { if (!cancelled) setLookups(data); })
+      .catch(() => { if (!cancelled) setLookups({}); })
+      .finally(() => { if (!cancelled) setLookupsLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
 
   // Notify parent of filter changes for client-side filtering — no API call
   useEffect(() => {
@@ -380,16 +268,16 @@ export default function AdvancedFilters({ onApply, className = "mb-8", open: ope
     if (onApply) onApply({});
   };
 
-  // Merge API lookups with static fallbacks
+  // Options come straight from the loaded lookups (real integer IDs).
   const lk = lookups ?? {};
-  const roomFeatures = lk.room_features?.length ? lk.room_features : STATIC_ROOM_FEATURES;
-  const mealPlans = lk.meal_plans?.length ? lk.meal_plans : STATIC_MEAL_PLANS;
-  const wellnessOfferings = lk.wellness_offerings?.length ? lk.wellness_offerings : STATIC_WELLNESS_OFFERINGS;
-  const facilities = lk.facilities?.length ? lk.facilities : STATIC_FACILITIES;
-  const diningFeatures = lk.dining_features?.length ? lk.dining_features : STATIC_DINING_FEATURES;
-  const restrictions = lk.restrictions?.length ? lk.restrictions : STATIC_RESTRICTIONS;
-  const cuisineTypes = lk.cuisine_types?.length ? lk.cuisine_types : STATIC_CUISINE_TYPES;
-  const activities = lk.activities?.length ? lk.activities : STATIC_ACTIVITIES;
+  const roomFeatures = lk.room_features ?? [];
+  const mealPlans = lk.meal_plans ?? [];
+  const wellnessOfferings = lk.wellness_offerings ?? [];
+  const facilities = lk.facilities ?? [];
+  const diningFeatures = lk.dining_features ?? [];
+  const restrictions = lk.restrictions ?? [];
+  const cuisineTypes = lk.cuisine_types ?? [];
+  const activities = lk.activities ?? [];
 
   return (
     <div className={`w-full ${className}`}>
@@ -476,24 +364,6 @@ export default function AdvancedFilters({ onApply, className = "mb-8", open: ope
                         ))}
                       </div>
                     </div>
-                    <div>
-                      <p
-                        className="text-sm text-[#181818] mb-2"
-                        style={{ fontFamily: "Lato, sans-serif" }}
-                      >
-                        Maximum Occupancy Per Room
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {MAX_OCCUPANCY_OPTIONS.map((n) => (
-                          <PillButton
-                            key={n}
-                            label={n}
-                            active={filters.maxOccupancy === n}
-                            onClick={() => set("maxOccupancy")(filters.maxOccupancy === n ? "" : n)}
-                          />
-                        ))}
-                      </div>
-                    </div>
                   </div>
 
                   <SectionDivider />
@@ -522,18 +392,6 @@ export default function AdvancedFilters({ onApply, className = "mb-8", open: ope
                       <YesNoButtons
                         value={filters.doctorsAvailable}
                         onChange={set("doctorsAvailable")}
-                      />
-                    </div>
-                    <div>
-                      <p
-                        className="text-sm text-[#181818] mb-1"
-                        style={{ fontFamily: "Lato, sans-serif" }}
-                      >
-                        Assist with Obtaining Medical Reports
-                      </p>
-                      <YesNoButtons
-                        value={filters.medicalReportSupport}
-                        onChange={set("medicalReportSupport")}
                       />
                     </div>
                   </div>
@@ -591,18 +449,6 @@ export default function AdvancedFilters({ onApply, className = "mb-8", open: ope
 
                   {/* Facilities */}
                   <SectionTitle>Facilities</SectionTitle>
-                  <div className="mb-3">
-                    <CheckboxItem
-                      label="Swimming Pool"
-                      checked={filters.swimmingPool}
-                      onChange={() => set("swimmingPool")(!filters.swimmingPool)}
-                    />
-                    <CheckboxItem
-                      label="Kid Friendly"
-                      checked={filters.kidFriendly}
-                      onChange={() => set("kidFriendly")(!filters.kidFriendly)}
-                    />
-                  </div>
                   <LookupCheckboxList
                     items={facilities}
                     selectedIds={filters.facilityIds}
