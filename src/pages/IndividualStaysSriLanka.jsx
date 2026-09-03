@@ -26,40 +26,18 @@ const SRI_LANKA_CITIES = [
 function applyAdvancedFilters(hotels, filters) {
   if (!filters) return hotels;
   return hotels.filter((hotel) => {
+    // Category-style selections: a hotel is typically ONE of these, so matching
+    // ANY selected option is correct (OR logic).
     if (filters.propertyTypes?.length > 0 && hotel.property_types != null) {
       const hotelTypeNames = hotel.property_types.map((pt) => pt.property_type?.name).filter(Boolean);
       if (!filters.propertyTypes.some((t) => hotelTypeNames.includes(t))) return false;
     }
-    if (filters.minNights && filters.minNights !== "Other" && hotel.min_nights != null) {
+    if (filters.minNights && hotel.min_nights != null) {
       if (hotel.min_nights > parseInt(filters.minNights)) return false;
-    }
-    if (filters.maxOccupancy && filters.maxOccupancy !== "Other" && hotel.max_occupancy != null) {
-      if (hotel.max_occupancy < parseInt(filters.maxOccupancy)) return false;
     }
     if (filters.doctorsAvailable && hotel.doctors_available != null) {
       if (filters.doctorsAvailable === "yes" && !hotel.doctors_available) return false;
       if (filters.doctorsAvailable === "no" && hotel.doctors_available) return false;
-    }
-    if (filters.medicalReportSupport && hotel.medical_report_support != null) {
-      if (filters.medicalReportSupport === "yes" && !hotel.medical_report_support) return false;
-      if (filters.medicalReportSupport === "no" && hotel.medical_report_support) return false;
-    }
-    if (filters.kidFriendly && hotel.kid_friendly != null) {
-      if (!hotel.kid_friendly) return false;
-    }
-    if (filters.swimmingPool && hotel.facilities != null) {
-      const hasPool = hotel.facilities.some((f) =>
-        f.facility?.name?.toLowerCase().includes("swimming pool")
-      );
-      if (!hasPool) return false;
-    }
-    if (filters.facilityIds?.length > 0 && hotel.facilities != null) {
-      const hotelIds = new Set(hotel.facilities.map((f) => f.facility_id));
-      if (!filters.facilityIds.some((id) => hotelIds.has(id))) return false;
-    }
-    if (filters.activityIds?.length > 0 && hotel.activities != null) {
-      const hotelIds = new Set(hotel.activities.map((a) => a.activity_id ?? a.id));
-      if (!filters.activityIds.some((id) => hotelIds.has(id))) return false;
     }
     if (filters.mealPlanIds?.length > 0 && hotel.meal_plans != null) {
       const hotelIds = new Set(hotel.meal_plans.map((m) => m.meal_plan_id ?? m.id));
@@ -69,21 +47,33 @@ function applyAdvancedFilters(hotels, filters) {
       const hotelIds = new Set(hotel.cuisine_types.map((c) => c.cuisine_type_id ?? c.id));
       if (!filters.cuisineTypeIds.some((id) => hotelIds.has(id))) return false;
     }
-    if (filters.diningFeatureIds?.length > 0 && hotel.dining_features != null) {
-      const hotelIds = new Set(hotel.dining_features.map((d) => d.dining_feature_id ?? d.id));
-      if (!filters.diningFeatureIds.some((id) => hotelIds.has(id))) return false;
-    }
-    if (filters.roomFeatureIds?.length > 0 && hotel.room_features != null) {
-      const hotelIds = new Set(hotel.room_features.map((r) => r.room_feature_id ?? r.id));
-      if (!filters.roomFeatureIds.some((id) => hotelIds.has(id))) return false;
-    }
-    if (filters.restrictionIds?.length > 0 && hotel.restrictions != null) {
-      const hotelIds = new Set(hotel.restrictions.map((r) => r.restriction_id ?? r.id));
-      if (!filters.restrictionIds.some((id) => hotelIds.has(id))) return false;
-    }
     if (filters.wellnessOfferingIds?.length > 0 && hotel.wellness_offerings != null) {
       const hotelIds = new Set(hotel.wellness_offerings.map((w) => w.wellness_offering_id ?? w.id));
       if (!filters.wellnessOfferingIds.some((id) => hotelIds.has(id))) return false;
+    }
+
+    // Amenity-style selections: a hotel can genuinely have many of these, so
+    // when a guest picks several (e.g. Spa + Pool), the hotel must have ALL
+    // selected options (AND logic).
+    if (filters.facilityIds?.length > 0 && hotel.facilities != null) {
+      const hotelIds = new Set(hotel.facilities.map((f) => f.facility_id));
+      if (!filters.facilityIds.every((id) => hotelIds.has(id))) return false;
+    }
+    if (filters.activityIds?.length > 0 && hotel.activities != null) {
+      const hotelIds = new Set(hotel.activities.map((a) => a.activity_id ?? a.id));
+      if (!filters.activityIds.every((id) => hotelIds.has(id))) return false;
+    }
+    if (filters.diningFeatureIds?.length > 0 && hotel.dining_features != null) {
+      const hotelIds = new Set(hotel.dining_features.map((d) => d.dining_feature_id ?? d.id));
+      if (!filters.diningFeatureIds.every((id) => hotelIds.has(id))) return false;
+    }
+    if (filters.roomFeatureIds?.length > 0 && hotel.room_features != null) {
+      const hotelIds = new Set(hotel.room_features.map((r) => r.room_feature_id ?? r.id));
+      if (!filters.roomFeatureIds.every((id) => hotelIds.has(id))) return false;
+    }
+    if (filters.restrictionIds?.length > 0 && hotel.restrictions != null) {
+      const hotelIds = new Set(hotel.restrictions.map((r) => r.restriction_id ?? r.id));
+      if (!filters.restrictionIds.every((id) => hotelIds.has(id))) return false;
     }
     return true;
   });
@@ -305,7 +295,13 @@ export default function IndividualStaysSriLanka({ minNights } = {}) {
     return true;
   });
 
-  const hotelsToShow = priceFilteredHotels.slice(0, displayCount);
+  const sortedHotels = [...priceFilteredHotels].sort((a, b) => {
+    const aNights = a.min_nights ?? -1;
+    const bNights = b.min_nights ?? -1;
+    return bNights - aNights;
+  });
+
+  const hotelsToShow = sortedHotels.slice(0, displayCount);
 
   return (
     <div className="landing-theme min-h-screen bg-[#FFFBF7] overflow-x-hidden">
@@ -652,12 +648,20 @@ export default function IndividualStaysSriLanka({ minNights } = {}) {
                   const priceDisplay = formatMonthlyPrice(monthlyPrice) ?? hotel.price ?? null;
                   return (
                     <RevealOnScroll key={hotel.id} delay={(index % 4) * 70} className="flex flex-col">
-                      <div className={`mb-4 ${index % 4 === 1 ? "lg:mt-[60px]" : index % 4 === 2 ? "lg:mt-[100px]" : ""}`}>
+                      <div className={`relative mb-4 ${index % 4 === 1 ? "lg:mt-[60px]" : index % 4 === 2 ? "lg:mt-[100px]" : ""}`}>
                         <img
                           src={getPrimaryImage(hotel.images) || "/hotel.png"}
                           alt={hotel.name}
                           className="w-full aspect-[4/3] object-cover rounded-lg"
                         />
+                        {hotel.min_nights != null && (
+                          <span
+                            className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/60 text-white text-[10px] leading-none"
+                            style={{ fontFamily: "Lato, sans-serif" }}
+                          >
+                            Min {hotel.min_nights} {hotel.min_nights === 1 ? "night" : "nights"}
+                          </span>
+                        )}
                       </div>
                       <h3
                         className="text-xl sm:text-2xl md:text-2xl text-[#181818] mb-3"

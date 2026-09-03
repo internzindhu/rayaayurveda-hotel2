@@ -9,7 +9,14 @@ const PROPERTY_TYPE_OPTIONS = [
   { value: "Leisure", label: "Leisure (Wellness and Spa available)" },
 ];
 
-const MIN_NIGHTS_OPTIONS = ["1", "3", "5", "7", "14", "Other"];
+const MIN_NIGHTS_STOPS = [
+  { value: "", label: "Any" },
+  { value: "1", label: "1" },
+  { value: "3", label: "3" },
+  { value: "5", label: "5" },
+  { value: "7", label: "7" },
+  { value: "14", label: "14+" },
+];
 
 const INITIAL_FILTERS = {
   propertyTypes: [],
@@ -32,7 +39,7 @@ const MEAL_PLAN_INFO = {
 function countActive(f) {
   return (
     f.propertyTypes.length +
-    (f.minNights && f.minNights !== "Other" ? 1 : 0) +
+    (f.minNights ? 1 : 0) +
     (f.doctorsAvailable ? 1 : 0) +
     f.facilityIds.length +
     f.activityIds.length +
@@ -130,24 +137,6 @@ function CheckboxItem({ label, description, info, checked, onChange }) {
   );
 }
 
-function PillButton({ label, active, onClick }) {
-  const isWide = label === "Other";
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`${isWide ? "px-4" : "w-10"} h-10 rounded-full text-sm border transition-all flex items-center justify-center ${
-        active
-          ? "border-[#181818] text-[#181818] font-semibold bg-white"
-          : "border-[#AAAAAA] text-[#181818] bg-white hover:border-[#181818]"
-      }`}
-      style={{ fontFamily: "Lato, sans-serif" }}
-    >
-      {label}
-    </button>
-  );
-}
-
 function YesNoButtons({ value, onChange }) {
   return (
     <div className="flex gap-2 mt-1">
@@ -175,6 +164,77 @@ function YesNoButtons({ value, onChange }) {
       >
         No
       </button>
+    </div>
+  );
+}
+
+function MinNightsSlider({ value, onChange, stops }) {
+  const currentIndex = Math.max(
+    0,
+    stops.findIndex((s) => s.value === value)
+  );
+  const percent = (currentIndex / (stops.length - 1)) * 100;
+
+  return (
+    <div className="w-full">
+      <div className="relative h-8 flex items-center">
+        <div className="absolute left-0 right-0 h-[3px] rounded-full bg-[#E8E3DC]" />
+        <div
+          className="absolute left-0 h-[3px] rounded-full bg-[#5E17EB] transition-all"
+          style={{ width: `${percent}%` }}
+        />
+        <input
+          type="range"
+          min={0}
+          max={stops.length - 1}
+          step={1}
+          value={currentIndex}
+          onChange={(e) => onChange(stops[Number(e.target.value)].value)}
+          className="min-nights-range absolute left-0 right-0 w-full appearance-none bg-transparent cursor-pointer"
+          aria-label="Minimum nights stay"
+        />
+      </div>
+      <div className="flex justify-between mt-1">
+        {stops.map((s) => (
+          <span
+            key={s.label}
+            className={`text-xs ${
+              s.value === value ? "text-[#181818] font-semibold" : "text-[#8C8C8C]"
+            }`}
+            style={{ fontFamily: "Lato, sans-serif" }}
+          >
+            {s.label}
+          </span>
+        ))}
+      </div>
+      <style>{`
+        .min-nights-range::-webkit-slider-thumb {
+          appearance: none;
+          width: 16px;
+          height: 16px;
+          border-radius: 9999px;
+          background: #ffffff;
+          border: 2px solid #5E17EB;
+          cursor: pointer;
+          margin-top: 0;
+        }
+        .min-nights-range::-moz-range-thumb {
+          width: 16px;
+          height: 16px;
+          border-radius: 9999px;
+          background: #ffffff;
+          border: 2px solid #5E17EB;
+          cursor: pointer;
+        }
+        .min-nights-range::-webkit-slider-runnable-track {
+          height: 3px;
+          background: transparent;
+        }
+        .min-nights-range::-moz-range-track {
+          height: 3px;
+          background: transparent;
+        }
+      `}</style>
     </div>
   );
 }
@@ -348,21 +408,16 @@ export default function AdvancedFilters({ onApply, className = "mb-8", open: ope
                   <div className="flex flex-col gap-5">
                     <div>
                       <p
-                        className="text-sm text-[#181818] mb-2"
+                        className="text-sm text-[#181818] mb-3"
                         style={{ fontFamily: "Lato, sans-serif" }}
                       >
                         Minimum Nights Stay
                       </p>
-                      <div className="flex flex-wrap gap-2">
-                        {MIN_NIGHTS_OPTIONS.map((n) => (
-                          <PillButton
-                            key={n}
-                            label={n}
-                            active={filters.minNights === n}
-                            onClick={() => set("minNights")(filters.minNights === n ? "" : n)}
-                          />
-                        ))}
-                      </div>
+                      <MinNightsSlider
+                        value={filters.minNights}
+                        onChange={set("minNights")}
+                        stops={MIN_NIGHTS_STOPS}
+                      />
                     </div>
                   </div>
 
