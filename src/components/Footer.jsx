@@ -31,12 +31,12 @@ const navSections = [
     heading: "Ayurveda Guide",
     headingTo: "/ayurveda-guide",
     links: [
-      { label: "What Is Ayurveda", to: "/ayurveda-guide#what-is-ayurveda" },
-      { label: "Vata, Pitta & Kapha", to: "/ayurveda-guide#doshas" },
-      { label: "Preventive & Curative", to: "/ayurveda-guide#preventive-curative" },
-      { label: "Panchakarma", to: "/ayurveda-guide#panchakarma" },
-      { label: "Conditions & Cures", to: "/ayurveda-guide#conditions" },
-      { label: "Myths About Ayurveda", to: "/ayurveda-guide#myths" },
+      { label: "What Is Ayurveda", to: "/ayurveda-guide/what-is-ayurveda" },
+      { label: "Vata, Pitta & Kapha", to: "/ayurveda-guide/principles-vata-pitta-kapha" },
+      { label: "Preventive & Curative", to: "/ayurveda-guide/preventive-vs-curative" },
+      { label: "Panchakarma", to: "/ayurveda-guide/what-is-panchakarma" },
+      { label: "Conditions & Cures", to: "/ayurveda-guide/what-ayurveda-can-and-cannot-cure" },
+      { label: "Myths About Ayurveda", to: "/ayurveda-guide/myths-about-ayurveda" },
     ],
   },
   {

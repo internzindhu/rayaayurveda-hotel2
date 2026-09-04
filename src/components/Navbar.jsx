@@ -263,13 +263,13 @@ export default function Navbar() {
                 </button>
                 {isGuideOpen && (
                   <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 bg-[#5E17EB] shadow-lg ring-1 ring-[#5E17EB]/20 py-2 animate-dropdown z-[60] rounded-xl overflow-hidden">
-                    <Link to="/ayurveda-guide#what-is-ayurveda" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>WHAT IS AYURVEDA</Link>
-                    <Link to="/ayurveda-guide#doshas" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>VATA, PITTA & KAPHA</Link>
-                    <Link to="/ayurveda-guide#preventive-curative" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>PREVENTIVE & CURATIVE</Link>
-                    <Link to="/ayurveda-guide#panchakarma" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>WHAT IS PANCHAKARMA</Link>
-                    <Link to="/ayurveda-guide#conditions" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>CONDITIONS & CURES</Link>
-                    <Link to="/ayurveda-guide#myths" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>MYTHS ABOUT AYURVEDA</Link>
-                    <Link to="/ayurveda-guide#ayurveda-vs-wellness" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>AYURVEDA VS WELLNESS</Link>
+                    <Link to="/ayurveda-guide/what-is-ayurveda" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>WHAT IS AYURVEDA</Link>
+                    <Link to="/ayurveda-guide/principles-vata-pitta-kapha" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>VATA, PITTA & KAPHA</Link>
+                    <Link to="/ayurveda-guide/preventive-vs-curative" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>PREVENTIVE & CURATIVE</Link>
+                    <Link to="/ayurveda-guide/what-is-panchakarma" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>WHAT IS PANCHAKARMA</Link>
+                    <Link to="/ayurveda-guide/what-ayurveda-can-and-cannot-cure" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>CONDITIONS & CURES</Link>
+                    <Link to="/ayurveda-guide/myths-about-ayurveda" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>MYTHS ABOUT AYURVEDA</Link>
+                    <Link to="/ayurveda-guide/ayurveda-vs-wellness" className="block px-4 py-2.5 text-sm text-white hover:bg-[#411695] transition-colors duration-150 cursor-pointer" style={{ fontFamily: "Lato, sans-serif" }} onClick={() => setIsGuideOpen(false)}>AYURVEDA VS WELLNESS</Link>
                   </div>
                 )}
               </div>
@@ -458,13 +458,13 @@ export default function Navbar() {
               {isGuideOpen && (
                 <div className="pb-4 animate-mobile-dropdown">
                   {[
-                    { to: "/ayurveda-guide#what-is-ayurveda", label: "WHAT IS AYURVEDA" },
-                    { to: "/ayurveda-guide#doshas", label: "VATA, PITTA & KAPHA" },
-                    { to: "/ayurveda-guide#preventive-curative", label: "PREVENTIVE & CURATIVE" },
-                    { to: "/ayurveda-guide#panchakarma", label: "WHAT IS PANCHAKARMA" },
-                    { to: "/ayurveda-guide#conditions", label: "CONDITIONS & CURES" },
-                    { to: "/ayurveda-guide#myths", label: "MYTHS ABOUT AYURVEDA" },
-                    { to: "/ayurveda-guide#ayurveda-vs-wellness", label: "AYURVEDA VS WELLNESS" },
+                    { to: "/ayurveda-guide/what-is-ayurveda", label: "WHAT IS AYURVEDA" },
+                    { to: "/ayurveda-guide/principles-vata-pitta-kapha", label: "VATA, PITTA & KAPHA" },
+                    { to: "/ayurveda-guide/preventive-vs-curative", label: "PREVENTIVE & CURATIVE" },
+                    { to: "/ayurveda-guide/what-is-panchakarma", label: "WHAT IS PANCHAKARMA" },
+                    { to: "/ayurveda-guide/what-ayurveda-can-and-cannot-cure", label: "CONDITIONS & CURES" },
+                    { to: "/ayurveda-guide/myths-about-ayurveda", label: "MYTHS ABOUT AYURVEDA" },
+                    { to: "/ayurveda-guide/ayurveda-vs-wellness", label: "AYURVEDA VS WELLNESS" },
                   ].map(({ to, label }) => (
                     <MobileLink key={to} to={to} onClose={() => { setIsGuideOpen(false); setIsMobileMenuOpen(false); }}>{label}</MobileLink>
                   ))}

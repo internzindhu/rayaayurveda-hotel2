@@ -1,6 +1,27 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
+
+// Shared CTA styled to match the "VIEW RETREAT →" links used across the guide pages
+function ReadFullArticle({ to }) {
+  return (
+    <Link
+      to={to}
+      className="text-[#5E17EB] hover:underline inline-block uppercase mt-6"
+      style={{
+        fontFamily: "Lato",
+        fontWeight: "500",
+        fontStyle: "normal",
+        fontSize: "14px",
+        lineHeight: "100%",
+        letterSpacing: "0.1em",
+        textTransform: "uppercase",
+      }}
+    >
+      Read full article →
+    </Link>
+  );
+}
 
 const accordionData = [
   {
@@ -155,6 +176,7 @@ export default function AyurvedaGuide() {
               modern practice, making it accessible, effective, and safe for anyone
               seeking deep, lasting wellbeing.
             </p>
+            <ReadFullArticle to="/ayurveda-guide/what-is-ayurveda" />
           </div>
         </div>
       </section>
@@ -209,6 +231,7 @@ export default function AyurvedaGuide() {
             </p>
           </div>
         </div>
+        <ReadFullArticle to="/ayurveda-guide/principles-vata-pitta-kapha" />
       </section>
 
       {/* ── Preventive & Curative ── */}
@@ -280,6 +303,7 @@ export default function AyurvedaGuide() {
                 that ultimately allow you to return to yourself.
               </p>
             </div>
+            <ReadFullArticle to="/ayurveda-guide/preventive-vs-curative" />
           </div>
         </div>
       </section>
@@ -331,6 +355,7 @@ export default function AyurvedaGuide() {
               These profound treatments are safe, reliable, and deeply rejuvenating
               — offering a path toward complete healing and restored balance energy.
             </p>
+            <ReadFullArticle to="/ayurveda-guide/what-is-panchakarma" />
           </div>
         </div>
       </section>
@@ -403,6 +428,10 @@ export default function AyurvedaGuide() {
           completely cured. However, Ayurvedic treatments can significantly reduce
           symptoms, improve overall well-being, and support a better quality of life."
         </blockquote>
+
+        <div className="mt-12 text-center">
+          <ReadFullArticle to="/ayurveda-guide/what-ayurveda-can-and-cannot-cure" />
+        </div>
       </section>
 
       {/* ── Myths About Ayurveda ── */}
@@ -447,6 +476,7 @@ export default function AyurvedaGuide() {
               modern practice, making it accessible, effective, and safe for anyone
               seeking deep, lasting wellbeing.
             </p>
+            <ReadFullArticle to="/ayurveda-guide/myths-about-ayurveda" />
           </div>
         </div>
       </section>
@@ -484,6 +514,7 @@ export default function AyurvedaGuide() {
             wellbeing.
           </p>
         </div>
+        <ReadFullArticle to="/ayurveda-guide/ayurveda-vs-wellness" />
       </section>
     </div>
   );
