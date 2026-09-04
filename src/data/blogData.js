@@ -209,6 +209,224 @@ export const blogs = [
       },
     ],
   },
+  {
+    slug: "your-ayurvedic-constitution",
+    title: "Your Ayurvedic Constitution: Why the Same Lifestyle Doesn't Work for Everyone",
+    category: "Ayurveda Basics",
+    readTime: "4 min read",
+    excerpt:
+      "Ayurveda has explored individual differences for centuries through the concept of Prakriti, your natural constitution — the reason the same diet, climate and daily routine can suit one person and unbalance another.",
+    image: "/b5.jpg",
+    sections: [
+      {
+        type: "paragraph",
+        text: "Have you ever wondered why one person loves cold weather while another cannot tolerate it, or why some people can skip a meal comfortably while others become hungry almost immediately?",
+      },
+      {
+        type: "paragraph",
+        text: "Ayurveda has been exploring these individual differences for centuries through the concept of Prakriti, or your natural constitution.",
+      },
+      {
+        type: "paragraph",
+        text: "According to Ayurveda, every person contains the three doshas — Vata, Pitta and Kapha — but in different proportions. This unique combination forms an individual's constitution, influencing both physiological and psychological functions.",
+      },
+      { type: "h2", text: "What Can Your Constitution Influence?" },
+      {
+        type: "list",
+        items: [
+          "Appetite and digestion: Vata tends toward variable appetite, Pitta toward strong appetite, and Kapha toward slower digestion.",
+          "Sleep: Vata is generally described as lighter and more interrupted, while Kapha tends toward deeper, longer sleep.",
+          "Activity: Vata is associated with quick activity, Pitta with moderate activity, and Kapha with a slower, steadier nature.",
+          "Response to climate: Vata types tend to be more sensitive to cold, dry and windy weather. Pitta types are generally more sensitive to heat and strong sun, while Kapha types tend to be less comfortable in cold, damp and humid conditions.",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Your natural constitution is only part of the life story.",
+      },
+      { type: "h2", text: "When Doshas Go Out of Balance" },
+      {
+        type: "paragraph",
+        text: "Ayurveda distinguishes your underlying constitution from changes in your current doshic balance. Diet, lifestyle, seasons and other environmental influences can disturb this balance. Ayurveda therefore focuses not simply on identifying a 'body type,' but on understanding the individual and restoring balance when needed.",
+      },
+      {
+        type: "paragraph",
+        text: "This personalised approach is one reason Ayurveda retreats in Sri Lanka often begin with an individual consultation before treatments, food and daily routines are planned.",
+      },
+    ],
+  },
+  {
+    slug: "ayurveda-and-food",
+    title: "Ayurveda and Food: More Than Just Calories",
+    category: "Ayurvedic Nutrition",
+    readTime: "4 min read",
+    excerpt:
+      "What if eating well isn't only about calories or portion size, but about how well your body can actually use the food you eat? Ayurvedic nutrition looks at digestive fire, the six tastes, and the seasons.",
+    image: "/b6.jpg",
+    sections: [
+      {
+        type: "paragraph",
+        text: "What if eating well isn't only about calories, protein or portion size, but also about how well your body can actually use the food you eat?",
+      },
+      {
+        type: "paragraph",
+        text: "This is where Ayurvedic nutrition takes a different approach.",
+      },
+      {
+        type: "paragraph",
+        text: "Ayurveda considers Agni, or digestive fire, when thinking about food and digestion. It also follows the principle of 'Matrashi syat' — eating the quantity appropriate for your body and digestive capacity. Two people can eat the same meal and respond completely differently.",
+      },
+      { type: "h2", text: "Ayurveda Looks at Taste, Too" },
+      {
+        type: "paragraph",
+        text: "Ayurvedic food traditionally recognises six tastes:",
+      },
+      {
+        type: "list",
+        items: ["Sweet", "Sour", "Salty", "Pungent", "Bitter", "Astringent"],
+      },
+      {
+        type: "paragraph",
+        text: "Rather than focusing only on calories, Ayurveda considers how these tastes and the qualities of foods influence balance and digestion.",
+      },
+      { type: "h2", text: "Your Plate Can Change With the Seasons" },
+      {
+        type: "paragraph",
+        text: "Ayurvedic eating is not meant to look identical throughout the year.",
+      },
+      {
+        type: "list",
+        items: [
+          "Summer: sweet, bitter and astringent tastes are traditionally favoured for balancing the heat of summer.",
+          "Early autumn: bitter, astringent and sweet tastes become important as the body transitions from accumulated summer heat into drier weather.",
+          "Late autumn: colder, drier conditions call for more sweet, sour and salty tastes, with warming foods such as cooked grains, soups and stews.",
+          "Winter: Ayurveda favours sweet, sour and salty tastes for their traditionally warming and moisturising qualities.",
+          "Approaching spring: meals gradually become lighter, with more pungent tastes introduced.",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Think watermelon and fresh foods in summer versus warm soups and cooked meals when the weather becomes cooler.",
+      },
+      {
+        type: "paragraph",
+        text: "This is what makes Ayurvedic food and seasonal eating different from a fixed diet: what suits you can change with your digestion, environment and season.",
+      },
+      {
+        type: "paragraph",
+        text: "For travellers exploring Ayurveda retreats in Sri Lanka, food is therefore not simply part of the stay. It is part of the Ayurvedic experience itself.",
+      },
+    ],
+  },
+  {
+    slug: "ayurvedic-skin-rejuvenation",
+    title: "Ayurvedic Skin Rejuvenation: Why Healthy Skin Starts Deeper Than Skincare",
+    category: "Ayurvedic Rejuvenation",
+    readTime: "4 min read",
+    excerpt:
+      "When skin looks dry, dull or tired, another serum feels like the obvious answer. Ayurveda looks deeper — connecting the condition of the skin with digestion, daily routine and the health of the whole body.",
+    image: "/b7.jpg",
+    sections: [
+      {
+        type: "paragraph",
+        text: "When your skin looks dry, dull or tired, buying another serum may feel like the obvious solution. Ayurveda looks beyond the surface.",
+      },
+      {
+        type: "paragraph",
+        text: "In Ayurvedic teaching, the condition of the skin is connected with the health of the body as a whole. This is why Ayurvedic skin rejuvenation may combine external therapies with diet, daily routine and treatments selected according to the individual.",
+      },
+      { type: "h2", text: "What Does Ayurvedic Skincare Actually Involve?" },
+      {
+        type: "paragraph",
+        text: "Traditional Ayurvedic rejuvenation can include:",
+      },
+      {
+        type: "list",
+        items: [
+          "Herbal preparations: herbs may be prepared as pastes, powders, decoctions or medicated oils for different Ayurvedic applications.",
+          "Oil treatments: Ayurvedic oil massage, or Abhyanga, uses medicated or herbal oils and is traditionally used to nourish and lubricate the body.",
+          "Herbal pastes and powders: plant-based preparations may be applied externally as part of traditional skin and body therapies.",
+          "Food and digestion: Ayurveda gives considerable importance to Agni, or digestive capacity, rather than viewing skin care as something that happens only externally.",
+          "Personalised treatment: therapies are traditionally selected according to the person's constitution and current imbalance rather than giving everyone the same treatment.",
+        ],
+      },
+      { type: "h2", text: "Rasayana: Ayurveda's Approach to Rejuvenation" },
+      {
+        type: "paragraph",
+        text: "Rasayana is Ayurveda's traditional approach to rejuvenation and healthy ageing, focusing on nourishment and maintaining vitality rather than beauty alone.",
+      },
+      {
+        type: "paragraph",
+        text: "This makes the Ayurvedic idea of rejuvenation interesting: the goal was never simply younger-looking skin. Rasayana traditionally approaches healthy ageing through the wider health of the body, alongside diet, daily routine and other Ayurvedic practices.",
+      },
+      {
+        type: "paragraph",
+        text: "At an Ayurveda retreat in Sri Lanka, rejuvenation programmes may therefore combine personalised therapies, herbal preparations, Ayurvedic nutrition, yoga and restorative routines rather than focusing on skincare alone.",
+      },
+    ],
+  },
+  {
+    slug: "ayurveda-routine-time-and-season",
+    title: "Why Ayurveda Changes Your Routine With the Time of Day and Season",
+    category: "Ayurvedic Lifestyle",
+    readTime: "4 min read",
+    excerpt:
+      "Your body doesn't feel the same at 7 AM, 1 PM and 10 PM. Ayurveda builds daily and seasonal routines — Dinacharya and Ritucharya — that work with the body's natural rhythm rather than against it.",
+    image: "/b8.jpg",
+    sections: [
+      {
+        type: "paragraph",
+        text: "Have you noticed that your body does not feel the same at 7 AM, 1 PM and 10 PM?",
+      },
+      {
+        type: "paragraph",
+        text: "Your appetite changes. Your energy changes. Even your ability to focus or fall asleep changes.",
+      },
+      {
+        type: "paragraph",
+        text: "Ayurveda has a simple explanation: your body lives in rhythm with time and nature.",
+      },
+      {
+        type: "paragraph",
+        text: "In Ayurvedic teaching, Kala, meaning time, includes both the time of day and the time of year. Seasonal variation is considered important enough to be recognised as one of the factors that can contribute to imbalance.",
+      },
+      { type: "h2", text: "So What Does an Ayurvedic Routine Look Like?" },
+      {
+        type: "paragraph",
+        text: "Rather than treating every hour equally, Ayurveda encourages daily routines, or Dinacharya, that work with the body's natural rhythm.",
+      },
+      {
+        type: "list",
+        items: [
+          "Morning: establish a regular waking and self-care routine.",
+          "Midday: make lunch your larger meal, when digestion is traditionally considered stronger.",
+          "Evening: choose a smaller supper and begin reducing stimulation as bedtime approaches.",
+          "Night: less screen time and sensory stimulation can help create a calmer environment for sleep.",
+        ],
+      },
+      { type: "h2", text: "Your Routine Should Change With the Weather Too" },
+      {
+        type: "paragraph",
+        text: "Ayurveda applies the same thinking to seasons.",
+      },
+      {
+        type: "paragraph",
+        text: "When autumn becomes cool and dry, for example, traditional Ayurvedic guidance shifts toward warmer, oilier foods. During late winter, when digestion may become slower, lighter foods are gradually introduced while meals remain warm.",
+      },
+      {
+        type: "paragraph",
+        text: "This seasonal approach is known as Ritucharya.",
+      },
+      {
+        type: "paragraph",
+        text: "So an Ayurvedic lifestyle is not one perfect routine repeated 365 days a year. It is about noticing when your environment changes and learning to change with it.",
+      },
+      {
+        type: "paragraph",
+        text: "This relationship with natural rhythm is also central to the daily routines experienced at many Ayurveda retreats in Sri Lanka.",
+      },
+    ],
+  },
 ];
 
 export function getBlogBySlug(slug) {
