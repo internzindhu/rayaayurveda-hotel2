@@ -6,8 +6,7 @@ export const blogs = [
     readTime: "4 min read",
     excerpt:
       "For over 2,000 years, Ayurveda has functioned as a living medical system woven into everyday life in Sri Lanka — into the herbs growing beside village homes and healing knowledge passed through generations.",
-    image:
-      "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=1600&q=80",
+    image: "/b1.jpg",
     sections: [
       {
         type: "paragraph",
@@ -59,8 +58,7 @@ export const blogs = [
     readTime: "3 min read",
     excerpt:
       "Authentic Ayurveda is not rushed wellness or luxury staycations. It is slow observation, herbal intelligence, discipline, and learning to listen when the body whispers before it begins to scream.",
-    image:
-      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=80",
+    image: "/b2.jpg",
     sections: [
       { type: "h2", text: "More Than Treatment" },
       {
@@ -122,8 +120,7 @@ export const blogs = [
     readTime: "5 min read",
     excerpt:
       "Ayurveda teaches that the same five elements existing in nature — Ether, Air, Fire, Water, and Earth — also exist within us, combining to create the three governing energies known as the Doshas.",
-    image:
-      "https://images.unsplash.com/photo-1593811167562-9cef47bfc4d7?auto=format&fit=crop&w=1600&q=80",
+    image: "/b3.jpg",
     sections: [
       {
         type: "paragraph",
@@ -180,8 +177,7 @@ export const blogs = [
     readTime: "4 min read",
     excerpt:
       "At the heart of Ayurveda are Vata, Pitta, and Kapha — the three energies that influence how our body and mind function. Every person carries a unique combination, and Ayurveda focuses on keeping them in harmony.",
-    image:
-      "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=1600&q=80",
+    image: "/b4.jpg",
     sections: [
       {
         type: "paragraph",

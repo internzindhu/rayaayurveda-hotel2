@@ -15,6 +15,7 @@ export default function SEO({
 }) {
   const fullTitle = title ? `${title} ${DEFAULT_TITLE_SUFFIX}` : `Raya LongLife - Ayurvedic Healing Retreats`;
   const canonicalUrl = url ? `${BASE_URL}${url}` : undefined;
+  const ogImage = image.startsWith("http") ? image : `${BASE_URL}${image}`;
 
   return (
     <Helmet>
@@ -24,7 +25,7 @@ export default function SEO({
       {/* Open Graph */}
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
-      <meta property="og:image" content={image} />
+      <meta property="og:image" content={ogImage} />
       {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
       <meta property="og:type" content={type} />
 
@@ -32,7 +33,7 @@ export default function SEO({
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={image} />
+      <meta name="twitter:image" content={ogImage} />
 
       {/* Canonical */}
       {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
